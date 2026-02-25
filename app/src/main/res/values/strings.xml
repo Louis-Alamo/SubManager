@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">SubManager</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Inicio</string>
+    <string name="nav_expenses">Gastos</string>
+    <string name="nav_add">Agregar</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Tu Centro de Mando</string>
+    <string name="hero_card_title">Gasto Total del Mes</string>
+    <string name="hero_card_remaining">Te quedan %s para tus gastos libres</string>
+    <string name="upcoming_payments">Próximos Pagos</string>
+    <string name="expenses_by_category">Gastos por Categoría</string>
+    <string name="see_all">Ver todos</string>
+    <string name="days_until">en %d días</string>
+    <string name="tomorrow">mañana</string>
+    <string name="today">hoy</string>
+    <string name="overdue">vencido</string>
+
+    <!-- Expense List -->
+    <string name="filter_all">Todos</string>
+    <string name="filter_subscriptions">Suscripciones</string>
+    <string name="filter_services">Servicios</string>
+    <string name="filter_pending">Pendientes</string>
+    <string name="filter_paid">Pagados</string>
+    <string name="expires_in">Vence %s</string>
+    <string name="paid">Pagado</string>
+    <string name="swipe_action_paid">Marcar como pagado</string>
+    <string name="swipe_action_delete">Eliminar</string>
+    <string name="empty_state_title">Tu bolsillo está vacío</string>
+    <string name="empty_state_message">¡Agrega tu primer servicio para empezar a controlar tus gastos!</string>
+    <string name="empty_state_action">Agregar Servicio</string>
+
+    <!-- Add Expense -->
+    <string name="add_expense_title">Agregar Gasto</string>
+    <string name="popular_services">Servicios Populares</string>
+    <string name="service_name">Nombre del Servicio</string>
+    <string name="amount">Monto</string>
+    <string name="currency">Moneda</string>
+    <string name="category">Categoría</string>
+    <string name="billing_date">Fecha de cobro</string>
+    <string name="notes">Notas (opcional)</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="approximately">Aproximadamente %s</string>
+
+    <!-- Categories -->
+    <string name="category_streaming">Streaming</string>
+    <string name="category_home">Hogar</string>
+    <string name="category_software">Software</string>
+    <string name="category_fitness">Fitness</string>
+    <string name="category_education">Educación</string>
+    <string name="category_food">Comida</string>
+    <string name="category_other">Otros</string>
+
+    <!-- Popular Services -->
+    <string name="service_netflix">Netflix</string>
+    <string name="service_spotify">Spotify</string>
+    <string name="service_disney">Disney+</string>
+    <string name="service_hbo">HBO Max</string>
+    <string name="service_prime">Prime Video</string>
+    <string name="service_youtube">YouTube Premium</string>
+    <string name="service_apple">Apple TV+</string>
+    <string name="service_electricity">Luz (CFE)</string>
+    <string name="service_water">Agua</string>
+    <string name="service_internet">Internet</string>
+    <string name="service_gas">Gas</string>
+    <string name="service_phone">Teléfono</string>
+
+    <!-- Currency -->
+    <string name="currency_mxn">MXN</string>
+    <string name="currency_usd">USD</string>
+
+    <!-- Messages -->
+    <string name="expense_added">Gasto agregado exitosamente</string>
+    <string name="expense_updated">Gasto actualizado</string>
+    <string name="expense_deleted">Gasto eliminado</string>
+    <string name="marked_as_paid">Marcado como pagado</string>
+    <string name="undo">Deshacer</string>
+
+    <!-- Loading -->
+    <string name="loading">Cargando...</string>
+</resources>

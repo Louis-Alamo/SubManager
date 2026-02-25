@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#6366F1</color>
+    <color name="primary_dark">#4F46E5</color>
+    <color name="primary_light">#818CF8</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_purple">#A855F7</color>
+    <color name="accent_pink">#EC4899</color>
+
+    <!-- Background Colors -->
+    <color name="background">#F8FAFC</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F1F5F9</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_tertiary">#94A3B8</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Status Colors -->
+    <color name="success">#10B981</color>
+    <color name="warning">#F59E0B</color>
+    <color name="error">#EF4444</color>
+    <color name="info">#3B82F6</color>
+
+    <!-- Category Colors -->
+    <color name="category_streaming">#EF4444</color>
+    <color name="category_home">#3B82F6</color>
+    <color name="category_software">#8B5CF6</color>
+    <color name="category_fitness">#10B981</color>
+    <color name="category_education">#F59E0B</color>
+    <color name="category_food">#EC4899</color>
+    <color name="category_other">#6B7280</color>
+
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#4F46E5</color>
+    <color name="gradient_end">#7C3AED</color>
+
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+    <color name="scrim">#80000000</color>
+
+    <!-- Shimmer -->
+    <color name="shimmer_base">#F0F0F0</color>
+    <color name="shimmer_highlight">#F8F8F8</color>
+</resources>
