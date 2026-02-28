@@ -1,85 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ============================================================ -->
+    <!--  APP                                                          -->
+    <!-- ============================================================ -->
     <string name="app_name">SubManager</string>
+    <string name="app_tagline">Tus pagos, bajo control</string>
+    <string name="app_version">SubManager v2.4.1</string>
 
-    <!-- Navigation -->
-    <string name="nav_dashboard">Inicio</string>
-    <string name="nav_expenses">Gastos</string>
-    <string name="nav_add">Agregar</string>
+    <!-- ============================================================ -->
+    <!--  BOTTOM NAVIGATION                                            -->
+    <!-- ============================================================ -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_subscriptions">Suscripciones</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_payments">Pagos</string>
     <string name="nav_settings">Ajustes</string>
+    <string name="nav_analysis">Análisis</string>
 
-    <!-- Dashboard -->
-    <string name="dashboard_title">Tu Centro de Mando</string>
-    <string name="hero_card_title">Gasto Total del Mes</string>
-    <string name="hero_card_remaining">Te quedan %s para tus gastos libres</string>
-    <string name="upcoming_payments">Próximos Pagos</string>
-    <string name="expenses_by_category">Gastos por Categoría</string>
-    <string name="see_all">Ver todos</string>
-    <string name="days_until">en %d días</string>
-    <string name="tomorrow">mañana</string>
-    <string name="today">hoy</string>
-    <string name="overdue">vencido</string>
+    <!-- ============================================================ -->
+    <!--  DASHBOARD — PANTALLA PRINCIPAL                               -->
+    <!-- ============================================================ -->
+    <string name="dashboard_welcome">Bienvenido de nuevo</string>
+    <string name="dashboard_greeting">Hola, %1$s 👋</string>
 
-    <!-- Expense List -->
-    <string name="filter_all">Todos</string>
-    <string name="filter_subscriptions">Suscripciones</string>
-    <string name="filter_services">Servicios</string>
-    <string name="filter_pending">Pendientes</string>
-    <string name="filter_paid">Pagados</string>
-    <string name="expires_in">Vence %s</string>
-    <string name="paid">Pagado</string>
-    <string name="swipe_action_paid">Marcar como pagado</string>
-    <string name="swipe_action_delete">Eliminar</string>
-    <string name="empty_state_title">Tu bolsillo está vacío</string>
-    <string name="empty_state_message">¡Agrega tu primer servicio para empezar a controlar tus gastos!</string>
-    <string name="empty_state_action">Agregar Servicio</string>
+    <!-- Tarjetas de resumen -->
+    <string name="dashboard_card_pending">PENDIENTE</string>
+    <string name="dashboard_card_pending_subtitle">Por pagar este mes</string>
+    <string name="dashboard_card_paid">PAGADO</string>
+    <string name="dashboard_card_paid_subtitle">Completado con éxito</string>
+    <string name="dashboard_card_total">TOTAL</string>
+    <string name="dashboard_card_total_subtitle">Presupuesto del mes</string>
 
-    <!-- Add Expense -->
-    <string name="add_expense_title">Agregar Gasto</string>
-    <string name="popular_services">Servicios Populares</string>
-    <string name="service_name">Nombre del Servicio</string>
-    <string name="amount">Monto</string>
-    <string name="currency">Moneda</string>
-    <string name="category">Categoría</string>
-    <string name="billing_date">Fecha de cobro</string>
-    <string name="notes">Notas (opcional)</string>
-    <string name="save">Guardar</string>
-    <string name="cancel">Cancelar</string>
-    <string name="approximately">Aproximadamente %s</string>
+    <!-- Sección Añadir nuevo -->
+    <string name="dashboard_add_new_title">Añadir nuevo</string>
+    <string name="dashboard_add_subscription">Agregar Suscripción</string>
+    <string name="dashboard_add_subscription_hint">Netflix, Spotify, HBO, etc.</string>
+    <string name="dashboard_add_service">Pago registrado</string>
+    <string name="dashboard_add_service_hint">Agua, Luz, Internet, Gas</string>
+    <string name="dashboard_undo">DESHACER</string>
 
-    <!-- Categories -->
-    <string name="category_streaming">Streaming</string>
-    <string name="category_home">Hogar</string>
+    <!-- Próximos vencimientos -->
+    <string name="dashboard_upcoming_title">Próximos vencimientos</string>
+    <string name="dashboard_upcoming_days">Vence en %1$d días</string>
+    <string name="dashboard_upcoming_today">¡Vence hoy!</string>
+    <string name="dashboard_upcoming_tomorrow">Vence mañana</string>
+    <string name="dashboard_upcoming_empty">No tienes pagos próximos esta semana 🎉</string>
+    <string name="dashboard_see_all">Ver todos +</string>
+
+    <!-- ============================================================ -->
+    <!--  FORMULARIO — NUEVA SUSCRIPCIÓN                               -->
+    <!-- ============================================================ -->
+    <string name="form_subscription_title">Nueva Suscripción</string>
+    <string name="form_subscription_edit_title">Editar Suscripción</string>
+    <string name="form_save">Guardar</string>
+    <string name="form_cancel">Cancelar</string>
+
+    <!-- Campos -->
+    <string name="form_field_name_label">Nombre</string>
+    <string name="form_field_name_hint">Nombre del servicio</string>
+    <string name="form_field_amount_label">Monto</string>
+    <string name="form_field_amount_hint">0.00</string>
+    <string name="form_field_amount_prefix">$</string>
+    <string name="form_field_billing_cycle_label">Ciclo de facturación</string>
+    <string name="form_field_first_charge_label">Primera fecha de cobro</string>
+    <string name="form_field_first_charge_hint">Calculado automáticamente</string>
+    <string name="form_field_category_label">Categoría</string>
+    <string name="form_field_payment_method_label">Método de pago</string>
+    <string name="form_field_appearance_label">Apariencia</string>
+    <string name="form_field_cancel_date_label">Último día para cancelar</string>
+    <string name="form_field_cancel_days_remaining">%1$d días para cancelar</string>
+
+    <!-- Ciclos de facturación -->
+    <string name="cycle_monthly">Mensual</string>
+    <string name="cycle_bimonthly">Bimestral</string>
+    <string name="cycle_quarterly">Trimestral</string>
+    <string name="cycle_semiannual">Semestral</string>
+    <string name="cycle_annual">Anual</string>
+
+    <!-- Categorías -->
+    <string name="category_entertainment">Entretenimiento</string>
+    <string name="category_music">Música</string>
     <string name="category_software">Software</string>
-    <string name="category_fitness">Fitness</string>
+    <string name="category_work">Trabajo</string>
+    <string name="category_health">Salud</string>
     <string name="category_education">Educación</string>
-    <string name="category_food">Comida</string>
-    <string name="category_other">Otros</string>
+    <string name="category_gaming">Gaming</string>
+    <string name="category_other">Otro</string>
 
-    <!-- Popular Services -->
-    <string name="service_netflix">Netflix</string>
-    <string name="service_spotify">Spotify</string>
-    <string name="service_disney">Disney+</string>
-    <string name="service_hbo">HBO Max</string>
-    <string name="service_prime">Prime Video</string>
-    <string name="service_youtube">YouTube Premium</string>
-    <string name="service_apple">Apple TV+</string>
-    <string name="service_electricity">Luz (CFE)</string>
-    <string name="service_water">Agua</string>
-    <string name="service_internet">Internet</string>
-    <string name="service_gas">Gas</string>
-    <string name="service_phone">Teléfono</string>
+    <!-- Métodos de pago -->
+    <string name="payment_method_card">Tarjeta de crédito/débito</string>
+    <string name="payment_method_transfer">Transferencia</string>
+    <string name="payment_method_cash">Efectivo</string>
+    <string name="payment_method_paypal">PayPal</string>
 
-    <!-- Currency -->
-    <string name="currency_mxn">MXN</string>
-    <string name="currency_usd">USD</string>
+    <!-- Recordatorios -->
+    <string name="reminder_title">Recordarme</string>
+    <string name="reminder_subtitle">Antes del pago</string>
+    <string name="reminder_selector_hint">Seleccionar recordatorio…</string>
+    <string name="reminder_1_day">1 día antes</string>
+    <string name="reminder_3_days">3 días antes</string>
+    <string name="reminder_5_days">5 días antes</string>
+    <string name="reminder_custom_days">%1$d días</string>
+    <string name="reminder_custom_label">días</string>
+    <string name="reminder_auto_note">La fecha de cobro se calcula automáticamente.</string>
 
-    <!-- Messages -->
-    <string name="expense_added">Gasto agregado exitosamente</string>
-    <string name="expense_updated">Gasto actualizado</string>
-    <string name="expense_deleted">Gasto eliminado</string>
-    <string name="marked_as_paid">Marcado como pagado</string>
-    <string name="undo">Deshacer</string>
+    <!-- Validaciones -->
+    <string name="validation_name_required">El nombre es obligatorio</string>
+    <string name="validation_name_invalid">Ingresa un nombre válido</string>
+    <string name="validation_amount_required">Ingresa un monto válido</string>
+    <string name="validation_amount_zero">El monto debe ser mayor a $0.00</string>
+    <string name="validation_date_required">Selecciona una fecha de inicio</string>
+    <string name="validation_shared_exceeded">Las aportaciones no pueden superar el monto total</string>
 
-    <!-- Loading -->
-    <string name="loading">Cargando...</string>
+    <!-- ============================================================ -->
+    <!--  FORMULARIO — NUEVO SERVICIO FÍSICO                           -->
+    <!-- ============================================================ -->
+    <string name="form_service_title">Nuevo Servicio Físico</string>
+    <string name="form_service_edit_title">Editar Servicio Físico</string>
+    <string name="form_service_name_label">Nombre del servicio</string>
+    <string name="form_service_name_hint">Luz Eléctrica</string>
+
+    <!-- Monto variable -->
+    <string name="form_service_variable_amount_label">¿El monto varía cada mes?</string>
+    <string name="form_service_estimated_amount_label">Monto Estimado</string>
+    <string name="form_service_estimated_amount_note">El monto puede variar, este valor es referencial.</string>
+
+    <!-- Escanear recibo -->
+    <string name="form_service_scan_button">Escanear Recibo</string>
+    <string name="form_service_scan_processing">Procesando imagen…</string>
+    <string name="form_service_scan_success">Datos extraídos correctamente</string>
+    <string name="form_service_scan_error">No se pudo extraer información, por favor ingresa los datos manualmente.</string>
+    <string name="form_service_scan_review_title">Revisar datos detectados</string>
+    <string name="form_service_scan_confirm">Confirmar y usar estos datos</string>
+    <string name="form_service_scan_edit">Editar manualmente</string>
+
+    <!-- Gastos compartidos -->
+    <string name="form_service_shared_title">Gastos Compartidos</string>
+    <string name="form_service_shared_question">¿Compartes este gasto?</string>
+    <string name="form_service_shared_total_label">TOTAL RECIBO</string>
+    <string name="form_service_shared_contribution_label">APORTE DE %1$s</string>
+    <string name="form_service_shared_your_part_label">TU PARTE A PAGAR</string>
+    <string name="form_service_shared_calculated_note">* Cálculo balanceado</string>
+    <string name="form_service_shared_add_person">+ Agregar persona</string>
+    <string name="form_service_shared_person_hint">Nombre del tercero</string>
+
+    <!-- Guardar servicio -->
+    <string name="form_service_save_button">Guardar Servicio</string>
+
+    <!-- ============================================================ -->
+    <!--  HISTORIAL MENSUAL                                            -->
+    <!-- ============================================================ -->
+    <string name="history_title">Historial Mensual</string>
+    <string name="history_filter_digital">Digital</string>
+    <string name="history_filter_home">Hogar</string>
+    <string name="history_filter_all">Todos</string>
+    <string name="history_chart_subscriptions">Suscripciones</string>
+    <string name="history_chart_services">Servicios</string>
+    <string name="history_chart_others">Otros</string>
+    <string name="history_monthly_detail_title">Detalle Mensual</string>
+    <string name="history_see_all">Ver todos +</string>
+    <string name="history_empty">No hay pagos registrados en este mes.</string>
+    <string name="history_export_button">Exportar historial</string>
+    <string name="history_export_csv">Exportar como CSV</string>
+    <string name="history_export_pdf">Exportar como PDF</string>
+    <string name="history_export_success">Historial exportado correctamente</string>
+
+    <!-- Meses -->
+    <string name="month_january">Enero</string>
+    <string name="month_february">Febrero</string>
+    <string name="month_march">Marzo</string>
+    <string name="month_april">Abril</string>
+    <string name="month_may">Mayo</string>
+    <string name="month_june">Junio</string>
+    <string name="month_july">Julio</string>
+    <string name="month_august">Agosto</string>
+    <string name="month_september">Septiembre</string>
+    <string name="month_october">Octubre</string>
+    <string name="month_november">Noviembre</string>
+    <string name="month_december">Diciembre</string>
+
+    <!-- ============================================================ -->
+    <!--  ESTADOS DE PAGO                                              -->
+    <!-- ============================================================ -->
+    <string name="status_paid">Pagado</string>
+    <string name="status_pending">Pendiente</string>
+    <string name="status_overdue">Vencido</string>
+    <string name="status_cancelled">Cancelado</string>
+    <string name="action_mark_paid">Marcar como Pagado</string>
+    <string name="action_mark_paid_confirm">¿Marcar \"%1$s\" como pagado?</string>
+    <string name="action_undo_paid">Pago deshecho</string>
+
+    <!-- ============================================================ -->
+    <!--  AJUSTES                                                      -->
+    <!-- ============================================================ -->
+    <string name="settings_title">Ajustes</string>
+
+    <!-- Sección Cuenta -->
+    <string name="settings_section_account">CUENTA</string>
+    <string name="settings_account_guest">Invitado</string>
+    <string name="settings_account_guest_subtitle">Sin iniciar sesión</string>
+    <string name="settings_account_email_hint">Correo electrónico</string>
+    <string name="settings_account_password_hint">Contraseña</string>
+    <string name="settings_account_login_button">Iniciar Sesión</string>
+    <string name="settings_account_logout_button">Cerrar Sesión</string>
+    <string name="settings_account_logout_confirm">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="settings_account_register">¿No tienes cuenta? Regístrate</string>
+
+    <!-- Sección Premium -->
+    <string name="settings_premium_banner_title">Conviértete en Premium 👑</string>
+    <string name="settings_premium_banner_subtitle">Sincroniza y elimina anuncios</string>
+    <string name="settings_premium_feature_sync">Sincronización en la nube</string>
+    <string name="settings_premium_feature_multiplatform">Acceso multiplataforma</string>
+    <string name="settings_premium_feature_restore">Restauración de datos</string>
+    <string name="settings_premium_feature_webapp">Acceso a Web App</string>
+    <string name="settings_premium_badge">PREMIUM</string>
+
+    <!-- Sección Sincronización -->
+    <string name="settings_section_sync">SINCRONIZACIÓN</string>
+    <string name="settings_sync_backup">Respaldar a la Nube</string>
+    <string name="settings_sync_backup_subtitle">Guardar datos en el servidor</string>
+    <string name="settings_sync_restore">Restaurar desde la Nube</string>
+    <string name="settings_sync_restore_subtitle">Recuperar datos previos</string>
+    <string name="settings_sync_last_sync">Última sincronización: %1$s</string>
+    <string name="settings_sync_success">Datos respaldados correctamente</string>
+    <string name="settings_sync_error">Error al sincronizar. Intenta más tarde.</string>
+    <string name="settings_sync_no_internet">Sin conexión. Intenta más tarde.</string>
+    <string name="settings_sync_in_progress">Sincronizando…</string>
+    <string name="settings_sync_premium_only">Función exclusiva de Premium</string>
+
+    <!-- Sección Notificaciones -->
+    <string name="settings_section_notifications">NOTIFICACIONES</string>
+    <string name="settings_notifications_enable">Activar Alertas</string>
+    <string name="settings_notifications_enable_subtitle">Recordatorios de pago</string>
+    <string name="settings_notifications_tone">Tono de alerta</string>
+    <string name="settings_notifications_tone_default">Predeterminado (Bloop)</string>
+    <string name="settings_notifications_time">Hora del recordatorio</string>
+    <string name="settings_notifications_time_default">09:00 AM</string>
+
+    <!-- Pie de ajustes -->
+    <string name="settings_footer_terms">Términos</string>
+    <string name="settings_footer_privacy">Privacidad</string>
+    <string name="settings_footer_support">Soporte</string>
+
+    <!-- ============================================================ -->
+    <!--  PANTALLA PREMIUM — SELECCIÓN DE PLAN                         -->
+    <!-- ============================================================ -->
+    <string name="premium_title">Hazte Premium</string>
+    <string name="premium_plan_monthly">Plan Mensual</string>
+    <string name="premium_plan_annual">Plan Anual</string>
+    <string name="premium_plan_annual_badge">Ahorra 16%</string>
+    <string name="premium_price_monthly">$50.00 MXN / mes</string>
+    <string name="premium_price_annual">$500.00 MXN / año</string>
+    <string name="premium_price_annual_monthly_equiv">~$41.67 MXN / mes</string>
+    <string name="premium_cta_button">Suscribirme ahora</string>
+    <string name="premium_restore_purchase">Restaurar compra</string>
+    <string name="premium_terms_note">Al suscribirte aceptas los Términos de Servicio. La suscripción se renueva automáticamente. Puedes cancelar en cualquier momento desde Google Play.</string>
+
+    <!-- ============================================================ -->
+    <!--  CONFIRMACIÓN DE COMPRA EXITOSA                               -->
+    <!-- ============================================================ -->
+    <string name="purchase_success_title">¡Ya eres Premium! 👑</string>
+    <string name="purchase_success_subtitle">Ahora tienes acceso ilimitado a sincronización en la nube y alertas avanzadas.</string>
+    <string name="purchase_success_plan_label">Suscripción</string>
+    <string name="purchase_success_amount_label">Monto</string>
+    <string name="purchase_success_renewal_label">Próxima renovación</string>
+    <string name="purchase_success_payment_method_label">Método de pago</string>
+    <string name="purchase_success_payment_google_pay">Google Pay (•••• %1$s)</string>
+    <string name="purchase_success_cta">Comenzar a usar →</string>
+    <string name="purchase_success_invoice">Ver factura</string>
+
+    <!-- ============================================================ -->
+    <!--  AUTENTICACIÓN                                                -->
+    <!-- ============================================================ -->
+    <string name="auth_login_title">Iniciar Sesión</string>
+    <string name="auth_register_title">Crear Cuenta</string>
+    <string name="auth_email_label">Correo electrónico</string>
+    <string name="auth_email_hint">correo@ejemplo.com</string>
+    <string name="auth_password_label">Contraseña</string>
+    <string name="auth_password_hint">Mínimo 8 caracteres</string>
+    <string name="auth_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="auth_no_account">¿No tienes cuenta? Regístrate gratis</string>
+    <string name="auth_already_account">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="auth_login_error">Correo o contraseña incorrectos</string>
+    <string name="auth_register_success">Cuenta creada correctamente. ¡Bienvenido!</string>
+    <string name="auth_network_error">Error de conexión. Verifica tu internet.</string>
+
+    <!-- ============================================================ -->
+    <!--  NOTIFICACIONES — CONTENIDO DE PUSH                           -->
+    <!-- ============================================================ -->
+    <string name="notification_channel_reminders_name">Recordatorios de pago</string>
+    <string name="notification_channel_reminders_desc">Alertas de vencimiento de suscripciones y servicios</string>
+    <string name="notification_channel_sync_name">Sincronización</string>
+    <string name="notification_channel_sync_desc">Estado de sincronización con la nube</string>
+    <string name="notification_reminder_title">Pago próximo: %1$s</string>
+    <string name="notification_reminder_days_body">Tu pago de $%1$s vence en %2$d días.</string>
+    <string name="notification_reminder_today_title">¡Pago pendiente hoy! %1$s</string>
+    <string name="notification_reminder_today_body">No olvides pagar $%1$s antes de que venza.</string>
+    <string name="notification_reminder_overdue_title">Pago vencido: %1$s</string>
+    <string name="notification_reminder_overdue_body">Tu pago de $%1$s ha vencido. Revisa tu SubManager.</string>
+    <string name="notification_action_mark_paid">Marcar pagado</string>
+    <string name="notification_action_view">Ver detalle</string>
+    <string name="notification_sync_success_title">Sincronización completa</string>
+    <string name="notification_sync_success_body">Tus datos han sido respaldados en la nube.</string>
+
+    <!-- ============================================================ -->
+    <!--  PERMISOS                                                     -->
+    <!-- ============================================================ -->
+    <string name="permission_camera_title">Permiso de cámara</string>
+    <string name="permission_camera_rationale">SubManager necesita acceso a la cámara para escanear tus recibos físicos y extraer montos automáticamente.</string>
+    <string name="permission_camera_denied">Permiso de cámara denegado. Puedes activarlo en Ajustes del sistema.</string>
+    <string name="permission_notifications_title">Permiso de notificaciones</string>
+    <string name="permission_notifications_rationale">SubManager necesita enviarte recordatorios para que nunca se te pase una fecha de pago.</string>
+    <string name="permission_go_to_settings">Ir a Ajustes</string>
+
+    <!-- ============================================================ -->
+    <!--  DIÁLOGOS GENERALES                                           -->
+    <!-- ============================================================ -->
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_accept">Aceptar</string>
+    <string name="dialog_delete">Eliminar</string>
+    <string name="dialog_discard_changes_title">¿Descartar cambios?</string>
+    <string name="dialog_discard_changes_body">Los cambios no guardados se perderán.</string>
+    <string name="dialog_delete_subscription_title">Eliminar suscripción</string>
+    <string name="dialog_delete_subscription_body">¿Estás seguro de que deseas eliminar \"%1$s\"? Esta acción no se puede deshacer.</string>
+    <string name="dialog_delete_service_title">Eliminar servicio</string>
+    <string name="dialog_delete_service_body">¿Estás seguro de que deseas eliminar \"%1$s\"? Esta acción no se puede deshacer.</string>
+    <string name="dialog_logout_title">Cerrar sesión</string>
+    <string name="dialog_logout_body">¿Deseas cerrar sesión? Tus datos locales se conservarán en el dispositivo.</string>
+    <string name="dialog_restore_title">Restaurar datos</string>
+    <string name="dialog_restore_body">Esto reemplazará los datos locales con la versión de la nube. ¿Continuar?</string>
+
+    <!-- ============================================================ -->
+    <!--  SNACKBARS Y TOASTS                                           -->
+    <!-- ============================================================ -->
+    <string name="toast_saved_successfully">Guardado correctamente</string>
+    <string name="toast_deleted_successfully">Eliminado correctamente</string>
+    <string name="toast_marked_as_paid">%1$s marcado como pagado ✓</string>
+    <string name="toast_changes_saved">Cambios guardados</string>
+    <string name="toast_export_error">Error al exportar. Intenta de nuevo.</string>
+    <string name="toast_no_internet">Sin conexión a internet</string>
+    <string name="toast_session_expired">Tu sesión ha expirado. Inicia sesión nuevamente.</string>
+
+    <!-- ============================================================ -->
+    <!--  ESTADOS VACÍOS (EMPTY STATES)                                -->
+    <!-- ============================================================ -->
+    <string name="empty_subscriptions_title">Sin suscripciones aún</string>
+    <string name="empty_subscriptions_body">Agrega tu primera suscripción y mantén el control de tus pagos recurrentes.</string>
+    <string name="empty_subscriptions_cta">Agregar suscripción</string>
+    <string name="empty_services_title">Sin servicios registrados</string>
+    <string name="empty_services_body">Registra tus servicios del hogar como Luz, Agua o Gas para no olvidar ningún pago.</string>
+    <string name="empty_services_cta">Agregar servicio</string>
+    <string name="empty_history_title">Sin historial disponible</string>
+    <string name="empty_history_body">Aquí aparecerán tus pagos registrados mes a mes.</string>
+    <string name="empty_payments_title">No hay pagos pendientes</string>
+    <string name="empty_payments_body">¡Estás al día! No tienes pagos pendientes este mes. 🎉</string>
+
+    <!-- ============================================================ -->
+    <!--  ACCESIBILIDAD — CONTENT DESCRIPTIONS                         -->
+    <!-- ============================================================ -->
+    <string name="cd_back_button">Regresar</string>
+    <string name="cd_settings_button">Ajustes</string>
+    <string name="cd_more_options">Más opciones</string>
+    <string name="cd_help_button">Ayuda</string>
+    <string name="cd_close_button">Cerrar</string>
+    <string name="cd_add_button">Agregar nuevo</string>
+    <string name="cd_scan_receipt">Escanear recibo con la cámara</string>
+    <string name="cd_subscription_icon">Ícono de %1$s</string>
+    <string name="cd_service_icon">Ícono de servicio %1$s</string>
+    <string name="cd_paid_status">Estado: Pagado</string>
+    <string name="cd_pending_status">Estado: Pendiente</string>
+    <string name="cd_overdue_status">Estado: Vencido</string>
+    <string name="cd_donut_chart">Gráfica de distribución de gastos del mes</string>
+    <string name="cd_color_picker">Selector de color de apariencia</string>
+    <string name="cd_toggle_on">Activado</string>
+    <string name="cd_toggle_off">Desactivado</string>
+    <string name="cd_premium_badge">Función Premium</string>
+    <string name="cd_user_avatar">Foto de perfil de usuario</string>
+
+    <!-- ============================================================ -->
+    <!--  FORMATOS Y UNIDADES                                           -->
+    <!-- ============================================================ -->
+    <string name="format_currency">$%1$.2f</string>
+    <string name="format_currency_negative">-$%1$.2f</string>
+    <string name="format_date_full">%1$d de %2$s de %3$d</string>
+    <string name="format_date_short">%1$d %2$s</string>
+    <string name="format_date_day_month">%1$d %2$s %3$d</string>
+    <string name="format_next_charge">Próximo cobro: %1$s</string>
+    <string name="format_last_charge">Último cobro: %1$s</string>
+    <string name="format_renewal_date">%1$d/%2$s/%3$d</string>
+    <string name="format_time_am">%1$s AM</string>
+    <string name="format_time_pm">%1$s PM</string>
+
+    <!-- ============================================================ -->
+    <!--  LINKS Y LEGALES                                              -->
+    <!-- ============================================================ -->
+    <string name="legal_terms_url">https://submanager.app/terminos</string>
+    <string name="legal_privacy_url">https://submanager.app/privacidad</string>
+    <string name="legal_support_url">https://submanager.app/soporte</string>
+    <string name="legal_terms_label">Términos de Servicio</string>
+    <string name="legal_privacy_label">Política de Privacidad</string>
+    <string name="legal_support_label">Centro de Soporte</string>
+
 </resources>
