@@ -1,49 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="primary">#6366F1</color>
-    <color name="primary_dark">#4F46E5</color>
-    <color name="primary_light">#818CF8</color>
-
-    <!-- Accent Colors -->
-    <color name="accent_purple">#A855F7</color>
-    <color name="accent_pink">#EC4899</color>
-
-    <!-- Background Colors -->
-    <color name="background">#F8FAFC</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#F1F5F9</color>
-
-    <!-- Text Colors -->
-    <color name="text_primary">#1E293B</color>
-    <color name="text_secondary">#64748B</color>
-    <color name="text_tertiary">#94A3B8</color>
-    <color name="text_on_primary">#FFFFFF</color>
-
-    <!-- Status Colors -->
-    <color name="success">#10B981</color>
-    <color name="warning">#F59E0B</color>
-    <color name="error">#EF4444</color>
-    <color name="info">#3B82F6</color>
-
-    <!-- Category Colors -->
-    <color name="category_streaming">#EF4444</color>
-    <color name="category_home">#3B82F6</color>
-    <color name="category_software">#8B5CF6</color>
-    <color name="category_fitness">#10B981</color>
-    <color name="category_education">#F59E0B</color>
-    <color name="category_food">#EC4899</color>
-    <color name="category_other">#6B7280</color>
-
-    <!-- Gradient Colors -->
-    <color name="gradient_start">#4F46E5</color>
-    <color name="gradient_end">#7C3AED</color>
-
-    <!-- Transparent -->
-    <color name="transparent">#00000000</color>
-    <color name="scrim">#80000000</color>
-
-    <!-- Shimmer -->
-    <color name="shimmer_base">#F0F0F0</color>
-    <color name="shimmer_highlight">#F8F8F8</color>
+    <!--  ===============================  -->
+    <!--         PRIMARY — Blue            -->
+    <!--  ===============================  -->
+    <color name="color_primary">#2563EB</color>
+    <color name="color_primary_dark">#1D4ED8</color>
+    <color name="color_primary_light">#60A5FA</color>
+    <color name="color_primary_tint">#EFF6FF</color>
+    <!--  ===============================  -->
+    <!--         DARK BUTTON / NAV         -->
+    <!--  ===============================  -->
+    <color name="color_dark_button">#1E293B</color>
+    <color name="color_dark_900">#0F172A</color>
+    <!--  ===============================  -->
+    <!--         PREMIUM — Gold            -->
+    <!--  ===============================  -->
+    <color name="color_premium">#FBBF24</color>
+    <color name="color_premium_bg">#FEF3C7</color>
+    <!--  ===============================  -->
+    <!--         SEMANTIC — Success        -->
+    <!--  ===============================  -->
+    <color name="color_success">#16A34A</color>
+    <color name="color_success_bg">#DCFCE7</color>
+    <!--  ===============================  -->
+    <!--         SEMANTIC — Error          -->
+    <!--  ===============================  -->
+    <color name="color_error">#DC2626</color>
+    <color name="color_error_bg">#FEE2E2</color>
+    <!--  ===============================  -->
+    <!--         SEMANTIC — Warning        -->
+    <!--  ===============================  -->
+    <color name="color_warning">#F97316</color>
+    <!--  ===============================  -->
+    <!--         SEMANTIC — Selected       -->
+    <!--  ===============================  -->
+    <color name="color_selected_bg">#DBEAFE</color>
+    <!--  ===============================  -->
+    <!--         NEUTRALS                  -->
+    <!--  ===============================  -->
+    <color name="color_text_primary">#0F172A</color>
+    <color name="color_text_secondary">#374151</color>
+    <color name="color_text_muted">#6B7280</color>
+    <color name="color_text_hint">#9CA3AF</color>
+    <color name="color_border">#E5E7EB</color>
+    <color name="color_divider">#D1D5DB</color>
+    <color name="color_bg_app">#F4F5F7</color>
+    <color name="color_bg_surface">#F3F4F6</color>
+    <color name="color_bg_card">#FFFFFF</color>
+    <color name="color_bg_input">#F9FAFB</color>
+    <!--  ===============================  -->
+    <!--    COLOR PICKER — Apariencia      -->
+    <!--  ===============================  -->
+    <color name="picker_red">#EF4444</color>
+    <color name="picker_green">#22C55E</color>
+    <color name="picker_blue">#3B82F6</color>
+    <color name="picker_pink">#EC4899</color>
+    <color name="picker_black">#111827</color>
+    <color name="picker_dark_blue">#1D4ED8</color>
+    <color name="picker_orange">#F97316</color>
+    <color name="picker_purple">#7C3AED</color>
+    <!--  ===============================  -->
+    <!--    CHART / DONUT COLORS           -->
+    <!--  ===============================  -->
+    <color name="chart_subscriptions">#2563EB</color>
+    <color name="chart_services">#60A5FA</color>
+    <color name="chart_others">#BFDBFE</color>
+    <!--  ===============================  -->
+    <!--    BRAND COLORS (servicios)       -->
+    <!--  ===============================  -->
+    <color name="brand_netflix">#E50914</color>
+    <color name="brand_disney_plus">#113CCF</color>
+    <color name="brand_spotify">#1DB954</color>
+    <!--  ===============================  -->
+    <!--    STATUS BAR / SYSTEM UI         -->
+    <!--  ===============================  -->
+    <color name="status_bar_color">#FFFFFF</color>
+    <color name="navigation_bar_color">#FFFFFF</color>
 </resources>
