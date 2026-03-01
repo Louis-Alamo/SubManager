@@ -88,6 +88,12 @@
     <string name="category_gaming">Gaming</string>
     <string name="category_other">Otro</string>
 
+    <!-- Categorías Faltantes -->
+    <string name="category_streaming">Streaming</string>
+    <string name="category_home">Hogar</string>
+    <string name="category_fitness">Fitness</string>
+    <string name="category_food">Comida</string>
+
     <!-- Métodos de pago -->
     <string name="payment_method_card">Tarjeta de crédito/débito</string>
     <string name="payment_method_transfer">Transferencia</string>

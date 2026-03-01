@@ -2,51 +2,67 @@
     <!--  ===============================  -->
     <!--         PRIMARY — Blue            -->
     <!--  ===============================  -->
-    <color name="color_primary">#2563EB</color>
-    <color name="color_primary_dark">#1D4ED8</color>
-    <color name="color_primary_light">#60A5FA</color>
-    <color name="color_primary_tint">#EFF6FF</color>
+    <color name="primary">#2563EB</color>
+    <color name="primary_dark">#1D4ED8</color>
+    <color name="primary_light">#60A5FA</color>
+    <color name="primary_tint">#EFF6FF</color>
+
     <!--  ===============================  -->
     <!--         DARK BUTTON / NAV         -->
     <!--  ===============================  -->
-    <color name="color_dark_button">#1E293B</color>
-    <color name="color_dark_900">#0F172A</color>
+    <color name="dark_button">#1E293B</color>
+    <color name="dark_900">#0F172A</color>
+
     <!--  ===============================  -->
     <!--         PREMIUM — Gold            -->
     <!--  ===============================  -->
-    <color name="color_premium">#FBBF24</color>
-    <color name="color_premium_bg">#FEF3C7</color>
+    <color name="premium">#FBBF24</color>
+    <color name="premium_bg">#FEF3C7</color>
+
     <!--  ===============================  -->
     <!--         SEMANTIC — Success        -->
     <!--  ===============================  -->
-    <color name="color_success">#16A34A</color>
-    <color name="color_success_bg">#DCFCE7</color>
+    <color name="success">#16A34A</color>
+    <color name="success_bg">#DCFCE7</color>
+
     <!--  ===============================  -->
     <!--         SEMANTIC — Error          -->
     <!--  ===============================  -->
-    <color name="color_error">#DC2626</color>
-    <color name="color_error_bg">#FEE2E2</color>
+    <color name="error">#DC2626</color>
+    <color name="error_bg">#FEE2E2</color>
+
     <!--  ===============================  -->
     <!--         SEMANTIC — Warning        -->
     <!--  ===============================  -->
-    <color name="color_warning">#F97316</color>
+    <color name="warning">#F97316</color>
+
     <!--  ===============================  -->
     <!--         SEMANTIC — Selected       -->
     <!--  ===============================  -->
-    <color name="color_selected_bg">#DBEAFE</color>
+    <color name="selected_bg">#DBEAFE</color>
+
     <!--  ===============================  -->
     <!--         NEUTRALS                  -->
     <!--  ===============================  -->
-    <color name="color_text_primary">#0F172A</color>
-    <color name="color_text_secondary">#374151</color>
-    <color name="color_text_muted">#6B7280</color>
-    <color name="color_text_hint">#9CA3AF</color>
-    <color name="color_border">#E5E7EB</color>
-    <color name="color_divider">#D1D5DB</color>
-    <color name="color_bg_app">#F4F5F7</color>
-    <color name="color_bg_surface">#F3F4F6</color>
-    <color name="color_bg_card">#FFFFFF</color>
-    <color name="color_bg_input">#F9FAFB</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#374151</color>
+    <color name="text_muted">#6B7280</color>
+    <color name="text_hint">#9CA3AF</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="border">#E5E7EB</color>
+    <color name="divider">#D1D5DB</color>
+    <color name="background">#F4F5F7</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F3F4F6</color>
+    <color name="bg_card">#FFFFFF</color>
+    <color name="bg_input">#F9FAFB</color>
+
+    <!--  ===============================  -->
+    <!--         ACCENTS (Themes)          -->
+    <!--  ===============================  -->
+    <color name="accent_purple">#7C3AED</color>
+    <color name="accent_pink">#EC4899</color>
+
     <!--  ===============================  -->
     <!--    COLOR PICKER — Apariencia      -->
     <!--  ===============================  -->
@@ -58,18 +74,21 @@
     <color name="picker_dark_blue">#1D4ED8</color>
     <color name="picker_orange">#F97316</color>
     <color name="picker_purple">#7C3AED</color>
+
     <!--  ===============================  -->
     <!--    CHART / DONUT COLORS           -->
     <!--  ===============================  -->
     <color name="chart_subscriptions">#2563EB</color>
     <color name="chart_services">#60A5FA</color>
     <color name="chart_others">#BFDBFE</color>
+
     <!--  ===============================  -->
     <!--    BRAND COLORS (servicios)       -->
     <!--  ===============================  -->
     <color name="brand_netflix">#E50914</color>
     <color name="brand_disney_plus">#113CCF</color>
     <color name="brand_spotify">#1DB954</color>
+
     <!--  ===============================  -->
     <!--    STATUS BAR / SYSTEM UI         -->
     <!--  ===============================  -->
