@@ -47,6 +47,12 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         return listaSuscripciones.size();
     }
 
+    // ✨ MÉTODO NUEVO: El Fragment usará esto para mandarle la lista ya filtrada
+    public void actualizarLista(List<SuscripcionModel> nuevaLista) {
+        this.listaSuscripciones = nuevaLista;
+        notifyDataSetChanged(); // Hace que la pantalla parpadee y redibuje las tarjetas correctas
+    }
+
     public static class SuscripcionViewHolder extends RecyclerView.ViewHolder {
         ImageView ivLogo;
         TextView tvTitulo, tvCategoria, tvPrecio, tvEstado, tvFecha;
