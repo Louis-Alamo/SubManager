@@ -5,15 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"> <TextView
+    android:background="@color/background"> <TextView
     android:id="@+id/tvTituloSuscripciones"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
     android:layout_marginTop="24dp"
     android:text="Suscripciones"
-    android:textColor="#1F2937"
-    android:textSize="24sp"
+    android:textColor="@color/text_primary" android:textSize="24sp"
     android:textStyle="bold"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
@@ -27,8 +26,7 @@
         android:src="@drawable/ic_filter"
         android:padding="12dp"
         android:scaleType="fitCenter"
-        app:tint="#4B5563"
-        app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
+        app:tint="@color/text_secondary" app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvTituloSuscripciones" />
 
@@ -41,8 +39,7 @@
         android:src="@drawable/ic_search"
         android:padding="12dp"
         android:scaleType="fitCenter"
-        app:tint="#4B5563"
-        app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
+        app:tint="@color/text_secondary" app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
         app:layout_constraintEnd_toStartOf="@id/btnFiltro"
         app:layout_constraintTop_toTopOf="@id/tvTituloSuscripciones" />
 
@@ -69,21 +66,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Todas" />
+                android:text="Todas"
+                app:chipBackgroundColor="@color/selector_chip_bg"
+                android:textColor="@color/selector_chip_text"
+                app:chipStrokeColor="@color/selector_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:checkedIconVisible="false" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipEntretenimiento"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Entretenimiento" />
+                android:text="Entretenimiento"
+                app:chipBackgroundColor="@color/selector_chip_bg"
+                android:textColor="@color/selector_chip_text"
+                app:chipStrokeColor="@color/selector_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:checkedIconVisible="false" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMusica"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Música" />
+                android:text="Música"
+                app:chipBackgroundColor="@color/selector_chip_bg"
+                android:textColor="@color/selector_chip_text"
+                app:chipStrokeColor="@color/selector_chip_stroke"
+                app:chipStrokeWidth="1dp"
+                app:checkedIconVisible="false" />
 
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
@@ -105,9 +117,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="#2563EB"
-        app:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:backgroundTint="@color/primary" app:tint="@color/text_on_primary" app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

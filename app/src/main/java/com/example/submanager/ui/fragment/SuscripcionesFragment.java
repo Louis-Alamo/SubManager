@@ -34,7 +34,7 @@ public class SuscripcionesFragment extends Fragment {
 
         // 1. Llenamos la Lista Maestra (Esto después vendrá de Room/SQL)
         listaMaestra = new ArrayList<>();
-        listaMaestra.add(new SuscripcionModel("Netflix Premium", "Entretenimiento", 199.00, "15 Oct", "Pagado", R.drawable.ic_app_netflix));
+        listaMaestra.add(new SuscripcionModel("Netflix Premium", "Entretenimiento", 199.00, "15 Oct", "Pendiente", R.drawable.ic_app_netflix));
         listaMaestra.add(new SuscripcionModel("Spotify Duo", "Música", 129.00, "20 Oct", "Pendiente", R.drawable.ic_app_spotify));
         listaMaestra.add(new SuscripcionModel("Copilot", "Entretenimiento", 199.00, "15 Oct", "Pagado", R.drawable.ic_app_copilot));
 
