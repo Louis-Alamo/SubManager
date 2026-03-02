@@ -34,7 +34,7 @@ public class SuscripcionesFragment extends Fragment {
         List<SuscripcionModel> misSuscripciones = new ArrayList<>();
         misSuscripciones.add(new SuscripcionModel("Netflix Premium", "Entretenimiento", 199.00, "15 Oct", "Pagado", R.drawable.ic_app_netflix));
         misSuscripciones.add(new SuscripcionModel("Spotify Duo", "Música", 129.00, "20 Oct", "Pendiente", R.drawable.ic_app_spotify));
-
+        misSuscripciones.add(new SuscripcionModel("Copilot", "Entretenimiento", 199.00, "15 Oct", "Pagado", R.drawable.ic_app_copilot));
         adaptador = new SuscripcionAdapter(misSuscripciones);
         rvSuscripciones.setAdapter(adaptador);
 
