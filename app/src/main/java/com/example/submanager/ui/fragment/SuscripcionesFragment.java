@@ -22,7 +22,7 @@ public class SuscripcionesFragment extends Fragment {
 
     private RecyclerView rvSuscripciones;
     private SuscripcionAdapter adaptador;
-    private List<SuscripcionModel> listaMaestra; // ✨ Nuestra fuente de verdad inmutable
+    private List<SuscripcionModel> listaMaestra;
 
     @Nullable
     @Override
@@ -32,51 +32,197 @@ public class SuscripcionesFragment extends Fragment {
         rvSuscripciones = view.findViewById(R.id.rvSuscripciones);
         rvSuscripciones.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // 1. Llenamos la Lista Maestra (Esto después vendrá de Room/SQL)
+
         listaMaestra = new ArrayList<>();
-        listaMaestra.add(new SuscripcionModel("Netflix Premium", "Entretenimiento", 199.00, "15 Oct", "Pendiente", R.drawable.ic_app_netflix));
-        listaMaestra.add(new SuscripcionModel("Spotify Duo", "Música", 129.00, "20 Oct", "Pendiente", R.drawable.ic_app_spotify));
-        listaMaestra.add(new SuscripcionModel("Copilot", "Entretenimiento", 199.00, "15 Oct", "Pagado", R.drawable.ic_app_copilot));
+// Netflix Premium
+        listaMaestra.add(new SuscripcionModel(
+                "Netflix Premium",
+                199.00,
+                "Mensual",
+                "#E50914",           // color rojo Netflix
+                "Entretenimiento",
+                "Tarjeta de crédito",
+                "15 Oct 2025",       // fechaPrimerCobro
+                "15 Mar 2026",       // fechaProximoCobro
+                "12 Mar 2026",       // fechaLimiteCancelacion
+                true,                // recordatorioHabilitado
+                3,                   // diasAnticipacion
+                false,               // notificacionSilenciada
+                true,                // estaActiva
+                R.drawable.ic_app_netflix, // icono (ejemplo)
+                "2025-10-15T10:00:00", // creadoEn
+                "2026-02-15T10:00:00"  // actualizadoEn
+        ));
+
+// Spotify Duo
+        listaMaestra.add(new SuscripcionModel(
+                "Spotify Duo",
+                129.00,
+                "Mensual",
+                "#1DB954",
+                "Música",
+                "Tarjeta de débito",
+                "20 Oct 2025",
+                "20 Mar 2026",
+                "17 Mar 2026",
+                true,
+                3,
+                false,
+                true,
+                R.drawable.ic_app_spotify,   // icono
+                "2025-10-20T10:00:00",
+                "2026-02-20T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "GitHub Copilot",
+                200.00,
+                "Mensual",
+                "#24292F",
+                "Software",
+                "Tarjeta de crédito",
+                "15 Oct 2025",
+                "15 Mar 2026",
+                "12 Mar 2026",
+                true,
+                3,
+                false,
+                true,
+                R.drawable.ic_app_copilot, // icono
+                "2025-10-15T10:00:00",
+                "2026-02-15T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "Amazon Prime",
+                99.00,
+                "Mensual",
+                "#00A8E0",
+                "Entretenimiento",
+                "Tarjeta de crédito",
+                "02 Nov 2025",
+                "02 Apr 2026",
+                "30 Mar 2026",
+                true,
+                3,
+                false,
+                true,
+                R.drawable.ic_app_prime_video, // icono
+                "2025-11-02T10:00:00",
+                "2026-02-02T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "YouTube Premium",
+                139.00,
+                "Mensual",
+                "#FF0000",
+                "Entretenimiento",
+                "PayPal",
+                "05 Nov 2025",
+                "05 Apr 2026",
+                "02 Apr 2026",
+                true,
+                5,
+                false,
+                true,
+                R.drawable.ic_app_youtube, // icono
+                "2025-11-05T10:00:00",
+                "2026-02-05T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "Disney+",
+                179.00,
+                "Mensual",
+                "#0C3483",
+                "Entretenimiento",
+                "Tarjeta de crédito",
+                "10 Nov 2025",
+                "10 Apr 2026",
+                "07 Apr 2026",
+                true,
+                3,
+                false,
+                true,
+                R.drawable.ic_app_disneyplus, // icono
+                "2025-11-10T10:00:00",
+                "2026-02-10T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "Apple Music",
+                129.00,
+                "Mensual",
+                "#FC3C44",
+                "Música",
+                "Tarjeta de débito",
+                "18 Nov 2025",
+                "18 Apr 2026",
+                "15 Apr 2026",
+                true,
+                3,
+                false,
+                true,
+                R.drawable.ic_app_apple_music, // icono
+                "2025-11-18T10:00:00",
+                "2026-02-18T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "Xbox Game Pass",
+                249.00,
+                "Mensual",
+                "#107C10",
+                "Videojuegos",
+                "Tarjeta de crédito",
+                "21 Nov 2025",
+                "21 Apr 2026",
+                "18 Apr 2026",
+                true,
+                7,
+                false,
+                true,
+                R.drawable.ic_app_xbox, // icono
+                "2025-11-21T10:00:00",
+                "2026-02-21T10:00:00"
+        ));
+
+        listaMaestra.add(new SuscripcionModel(
+                "Google One",
+                39.00,
+                "Mensual",
+                "#4285F4",
+                "Productividad",
+                "Tarjeta de débito",
+                "25 Nov 2025",
+                "25 Apr 2026",
+                "22 Apr 2026",
+                false,
+                3,
+                true,
+                true,
+                R.drawable.ic_app_google, // icono
+                "2025-11-25T10:00:00",
+                "2026-02-25T10:00:00"
+        ));
 
 
-        // Entretenimiento
-        listaMaestra.add(new SuscripcionModel("Amazon Prime", "Entretenimiento", 99.00, "02 Nov", "Pagado", R.drawable.ic_app_prime_video));
-        listaMaestra.add(new SuscripcionModel("YouTube Premium", "Entretenimiento", 139.00, "05 Nov", "Pendiente", R.drawable.ic_app_youtube));
-        listaMaestra.add(new SuscripcionModel("Disney+", "Entretenimiento", 179.00, "10 Nov", "Pagado", R.drawable.ic_app_disneyplus));
-
-        // Música
-        listaMaestra.add(new SuscripcionModel("Apple Music", "Música", 129.00, "18 Nov", "Pagado", R.drawable.ic_app_apple_music));
-
-        // Videojuegos (¡Para el rato libre!)
-        listaMaestra.add(new SuscripcionModel("Xbox Game Pass", "Videojuegos", 249.00, "21 Nov", "Pendiente", R.drawable.ic_app_xbox));
-
-        // Software y Productividad
-        listaMaestra.add(new SuscripcionModel("GitHub Copilot", "Software", 200.00, "15 Oct", "Pagado", R.drawable.ic_app_copilot));
-        listaMaestra.add(new SuscripcionModel("Google One", "Productividad", 39.00, "25 Nov", "Pagado", R.drawable.ic_app_google));
-
-        // Educación
-
-
-        // 2. Arrancamos el adaptador pasándole todas las suscripciones al inicio
         adaptador = new SuscripcionAdapter(listaMaestra);
         rvSuscripciones.setAdapter(adaptador);
 
-        // 3. ¡La lógica de los Chips!
-        ChipGroup cgCategorias = view.findViewById(R.id.cgCategorias); // Asegúrate de ponerle este ID en tu XML
+        ChipGroup cgCategorias = view.findViewById(R.id.cgCategorias);
 
         cgCategorias.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            // Si el usuario desmarca todo por accidente, no hacemos nada o mostramos todas
             if (checkedIds.isEmpty()) return;
 
             int idSeleccionado = checkedIds.get(0);
             List<SuscripcionModel> listaFiltrada = new ArrayList<>();
 
             if (idSeleccionado == R.id.chipTodas) {
-                // Copiamos la lista maestra completa
                 listaFiltrada.addAll(listaMaestra);
 
             } else if (idSeleccionado == R.id.chipEntretenimiento) {
-                // Buscamos solo las de entretenimiento
                 for (SuscripcionModel sub : listaMaestra) {
                     if (sub.getCategoria().equals("Entretenimiento")) {
                         listaFiltrada.add(sub);
@@ -84,7 +230,6 @@ public class SuscripcionesFragment extends Fragment {
                 }
 
             } else if (idSeleccionado == R.id.chipMusica) {
-                // Buscamos solo las de música
                 for (SuscripcionModel sub : listaMaestra) {
                     if (sub.getCategoria().equals("Música")) {
                         listaFiltrada.add(sub);
@@ -92,7 +237,6 @@ public class SuscripcionesFragment extends Fragment {
                 }
             }
 
-            // 4. Le mandamos la orden al pintor de actualizar la pantalla
             adaptador.actualizarLista(listaFiltrada);
         });
 

@@ -36,10 +36,10 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
 
         holder.tvTitulo.setText(sub.getNombre());
         holder.tvCategoria.setText(sub.getCategoria());
-        holder.tvPrecio.setText(String.format("-$%.2f", sub.getPrecio()));
-        holder.tvEstado.setText(sub.getEstado());
-        holder.tvFecha.setText(sub.getFechaCobro());
-        holder.ivLogo.setImageResource(sub.getIconoId());
+        holder.tvPrecio.setText(String.format("-$%.2f", sub.getMonto()));
+        holder.tvEstado.setText(sub.getActualizadoEn());
+        holder.tvFecha.setText(sub.getFechaPrimerCobro());
+        holder.ivLogo.setImageResource(sub.getIcono());
     }
 
     @Override
@@ -47,10 +47,9 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         return listaSuscripciones.size();
     }
 
-    // ✨ MÉTODO NUEVO: El Fragment usará esto para mandarle la lista ya filtrada
     public void actualizarLista(List<SuscripcionModel> nuevaLista) {
         this.listaSuscripciones = nuevaLista;
-        notifyDataSetChanged(); // Hace que la pantalla parpadee y redibuje las tarjetas correctas
+        notifyDataSetChanged();
     }
 
     public static class SuscripcionViewHolder extends RecyclerView.ViewHolder {
