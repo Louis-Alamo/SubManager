@@ -6,6 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.example.submanager.data.dao.SuscripcionDao;
 import com.example.submanager.data.model.ConfiguracionAppModel;
 import com.example.submanager.data.model.EscaneosOcrModel;
 import com.example.submanager.data.model.RegistrosPagoModel;
@@ -22,6 +23,10 @@ import com.example.submanager.data.model.TercerosCompartidosModel;
         ConfiguracionAppModel.class
 }, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
+
+
+
+    public abstract SuscripcionDao suscripcionDao();
 
 
     private static volatile AppDatabase INSTANCE;

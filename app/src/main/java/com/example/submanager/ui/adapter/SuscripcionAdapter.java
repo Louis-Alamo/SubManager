@@ -39,7 +39,14 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         holder.tvPrecio.setText(String.format("-$%.2f", sub.getMonto()));
         holder.tvEstado.setText(sub.getActualizadoEn());
         holder.tvFecha.setText(sub.getFechaPrimerCobro());
-        holder.ivLogo.setImageResource(sub.getIcono());
+        android.content.Context context = holder.itemView.getContext();
+        String nombreIcono = sub.getNombreIcono();
+        int resId = context.getResources().getIdentifier(nombreIcono, "drawable", context.getPackageName());
+        if (resId != 0) {
+            holder.ivLogo.setImageResource(resId);
+        } else {
+            holder.ivLogo.setImageResource(R.mipmap.ic_launcher);
+        }
     }
 
     @Override

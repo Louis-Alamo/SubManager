@@ -1,9 +1,6 @@
 package com.example.submanager.data.model;
 
-
 import androidx.room.Entity;
-
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.PrimaryKey;
@@ -45,7 +42,6 @@ public class SuscripcionModel {
     @ColumnInfo(name = "fecha_limite_cancelacion")
     private String fechaLimiteCancelacion;
 
-
     @NonNull
     @ColumnInfo(name = "recordatorio_habilitado")
     private boolean recordatorioHabilitado = true;
@@ -53,6 +49,7 @@ public class SuscripcionModel {
     @NonNull
     @ColumnInfo(name = "dias_anticipacion")
     private int diasAnticipacion = 3;
+
     @NonNull
     @ColumnInfo(name = "notificacion_silenciada")
     private boolean notificacionSilenciada = false;
@@ -61,8 +58,9 @@ public class SuscripcionModel {
     @ColumnInfo(name = "esta_activa")
     private boolean estaActiva = true;
 
-    @ColumnInfo(name = "icono_res_id")
-    private int icono;
+    @NonNull
+    @ColumnInfo(name = "nombre_icono")
+    private String nombreIcono;
 
     @NonNull
     @ColumnInfo(name = "creado_en")
@@ -75,7 +73,7 @@ public class SuscripcionModel {
     public SuscripcionModel() {
     }
 
-    public SuscripcionModel(@NonNull String nombre, double monto, @NonNull String cicloFacturacion, @NonNull String color, @NonNull String categoria, @NonNull String metodoPago, @NonNull String fechaPrimerCobro, @NonNull String fechaProximoCobro, String fechaLimiteCancelacion, boolean recordatorioHabilitado, int diasAnticipacion, boolean notificacionSilenciada, boolean estaActiva, int icono, @NonNull String creadoEn, @NonNull String actualizadoEn) {
+    public SuscripcionModel(@NonNull String nombre, double monto, @NonNull String cicloFacturacion, @NonNull String color, @NonNull String categoria, @NonNull String metodoPago, @NonNull String fechaPrimerCobro, @NonNull String fechaProximoCobro, String fechaLimiteCancelacion, boolean recordatorioHabilitado, int diasAnticipacion, boolean notificacionSilenciada, boolean estaActiva, String nombreIcono, @NonNull String creadoEn, @NonNull String actualizadoEn) {
         this.nombre = nombre;
         this.monto = monto;
         this.cicloFacturacion = cicloFacturacion;
@@ -89,7 +87,7 @@ public class SuscripcionModel {
         this.diasAnticipacion = diasAnticipacion;
         this.notificacionSilenciada = notificacionSilenciada;
         this.estaActiva = estaActiva;
-        this.icono = icono;
+        this.nombreIcono = nombreIcono;
         this.creadoEn = creadoEn;
         this.actualizadoEn = actualizadoEn;
     }
@@ -213,12 +211,12 @@ public class SuscripcionModel {
         this.estaActiva = estaActiva;
     }
 
-    public int getIcono() {
-        return icono;
+    public String getNombreIcono() {
+        return nombreIcono;
     }
 
-    public void setIcono(int icono) {
-        this.icono = icono;
+    public void setNombreIcono(String nombreIcono) {
+        this.nombreIcono = nombreIcono;
     }
 
     @NonNull
