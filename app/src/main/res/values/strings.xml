@@ -48,20 +48,6 @@
     <string name="dashboard_upcoming_empty">No tienes pagos próximos esta semana 🎉</string>
     <string name="dashboard_see_all">Ver todos +</string>
 
-    <!-- Content Descriptions (Accesibilidad) -->
-    <string name="cd_settings_button">Ajustes</string>
-    <string name="cd_add_button">Agregar nuevo</string>
-
-    <!-- Bottom Sheet -->
-    <string name="bottom_sheet_add_title">¿Qué deseas agregar?</string>
-    <string name="bottom_sheet_new_subscription">Nueva Suscripción</string>
-    <string name="bottom_sheet_new_service">Nuevo Servicio</string>
-
-    <!-- Error / Estados -->
-    <string name="dashboard_error">Error al cargar los datos</string>
-    <string name="dashboard_retry">REINTENTAR</string>
-    <string name="dashboard_user_default">Usuario</string>
-
     <!-- ============================================================ -->
     <!--  FORMULARIO — NUEVA SUSCRIPCIÓN                               -->
     <!-- ============================================================ -->
