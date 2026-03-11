@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.submanager.data.AppDatabase;
+import com.example.submanager.ui.fragment.HomeFragment;
 import com.example.submanager.ui.fragment.SuscripcionesFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.nav_host_fragment, new SuscripcionesFragment())
+                    .replace(R.id.nav_host_fragment, new HomeFragment())
                     .commit();
-            bottomNav.setSelectedItemId(R.id.nav_suscripciones);
+            bottomNav.setSelectedItemId(R.id.nav_inicio);
         }
 
         // Corrección: Usar 'this' en lugar de 'requireContext()' ya que estamos en una Activity
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_inicio) {
-                // fragmentoSeleccionado = new InicioFragment();
+                fragmentoSeleccionado = new HomeFragment();
             } else if (itemId == R.id.nav_suscripciones) {
                 fragmentoSeleccionado = new SuscripcionesFragment();
             } else if (itemId == R.id.nav_estadisticas) {

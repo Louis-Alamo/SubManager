@@ -40,6 +40,14 @@ public class SuscripcionRepository {
         return todasLasSuscripciones;
     }
 
+    public LiveData<List<SuscripcionModel>> getSuscripcionesActivas() {
+        return suscripcionDao.getSuscripcionesActivas();
+    }
+
+    public LiveData<List<SuscripcionModel>> getSuscripcionesProximasAVencer(String startDate, String endDate) {
+        return suscripcionDao.getSuscripcionesProximasAVencer(startDate, endDate);
+    }
+
     // ─── ESCRITURA (Obligatorio mandarlas al hilo secundario) ───
 
     public void insertar(SuscripcionModel suscripcion) {
