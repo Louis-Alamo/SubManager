@@ -15,6 +15,8 @@ import com.example.submanager.data.model.ServicioFisicoModel;
 import com.example.submanager.data.model.SuscripcionModel;
 import com.example.submanager.data.model.TercerosCompartidosModel;
 
+import java.util.concurrent.Executors;
+
 @Database(entities = {
         SuscripcionModel.class,
         ServicioFisicoModel.class,
@@ -22,33 +24,35 @@ import com.example.submanager.data.model.TercerosCompartidosModel;
         RegistrosPagoModel.class,
         EscaneosOcrModel.class,
         ConfiguracionAppModel.class
-}, version = 2, exportSchema = false)
+}, version = 3, exportSchema = false) // Subimos versión a 3
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract SuscripcionDao suscripcionDao();
 
     private static volatile AppDatabase INSTANCE;
 
-    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            // Insertamos datos iniciales ("semilla" o "seed") como dummies.
 
-            String sqlDelete = "DELETE FROM suscripciones;";
-            db.execSQL(sqlDelete);
+            // Usamos un Executor para que la inserción no bloquee el hilo principal
+            Executors.newSingleThreadExecutor().execute(() -> {
+                // NOTA: Aquí usamos SQL puro porque en onCreate el DAO aún no está listo
+                db.execSQL("DELETE FROM suscripciones;");
 
-            String sqlInsert = "INSERT INTO suscripciones (\n" +
-                    "    nombre, monto, ciclo_facturacion, color, categoria, metodo_pago, \n" +
-                    "    fecha_primer_cobro, fecha_proximo_cobro, fecha_limite_cancelacion, \n" +
-                    "    recordatorio_habilitado, dias_anticipacion, notificacion_silenciada, \n" +
-                    "    esta_activa, nombre_icono, creado_en, actualizado_en\n" +
-                    ") VALUES \n" +
-                    "('Netflix Premium', 199.00, 'Mensual', '#E50914', 'Entretenimiento', 'Tarjeta de crédito', '2025-10-15', '2026-03-15', '2026-03-12', 1, 3, 0, 1, 'ic_app_netflix', '2025-10-15T10:00:00', '2026-02-15T10:00:00'),\n" +
-                    "('Spotify Duo', 129.00, 'Mensual', '#1DB954', 'Música', 'Tarjeta de débito', '2025-10-20', '2026-03-20', '2026-03-17', 1, 3, 0, 1, 'ic_app_spotify', '2025-10-20T10:00:00', '2026-02-20T10:00:00'),\n" +
-                    "('GitHub Copilot', 200.00, 'Mensual', '#24292F', 'Software', 'Tarjeta de crédito', '2025-10-15', '2026-03-15', '2026-03-12', 1, 3, 0, 1, 'ic_app_copilot', '2025-10-15T10:00:00', '2026-02-15T10:00:00'),\n" +
-                    "('Amazon Prime', 99.00, 'Mensual', '#00A8E0', 'Entretenimiento', 'Tarjeta de crédito', '2025-11-02', '2026-04-02', '2026-03-30', 1, 3, 0, 1, 'ic_app_prime_video', '2025-11-02T10:00:00', '2026-02-02T10:00:00');";
-            db.execSQL(sqlInsert);
+                String sqlInsert = "INSERT INTO suscripciones (" +
+                        "nombre, monto, ciclo_facturacion, color, categoria, metodo_pago, " +
+                        "fecha_primer_cobro, fecha_proximo_cobro, fecha_limite_cancelacion, " +
+                        "recordatorio_habilitado, dias_anticipacion, notificacion_silenciada, " +
+                        "esta_activa, nombre_icono, creado_en, actualizado_en" +
+                        ") VALUES " +
+                        "('Netflix Premium', 199.00, 'MENSUAL', '#E50914', 'ENTRETENIMIENTO', 'TARJETA', '2025-10-15', '2026-03-15', '2026-03-12', 1, 3, 0, 1, 'ic_app_netflix', '2025-10-15T10:00:00', '2026-02-15T10:00:00')," +
+                        "('Spotify Duo', 129.00, 'MENSUAL', '#1DB954', 'MUSICA', 'TARJETA', '2025-10-20', '2026-03-20', '2026-03-17', 1, 3, 0, 1, 'ic_app_spotify', '2025-10-20T10:00:00', '2026-02-20T10:00:00')," +
+                        "('GitHub Copilot', 200.00, 'MENSUAL', '#24292F', 'SOFTWARE', 'TARJETA', '2025-10-15', '2026-03-15', '2026-03-12', 1, 3, 0, 1, 'ic_app_copilot', '2025-10-15T10:00:00', '2026-02-15T10:00:00')," +
+                        "('Amazon Prime', 99.00, 'MENSUAL', '#00A8E0', 'ENTRETENIMIENTO', 'TARJETA', '2025-11-02', '2026-04-02', '2026-03-30', 1, 3, 0, 1, 'ic_app_prime_video', '2025-11-02T10:00:00', '2026-02-02T10:00:00');";
+                db.execSQL(sqlInsert);
+            });
         }
     };
 
