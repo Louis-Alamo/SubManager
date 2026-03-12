@@ -30,7 +30,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/ivAppIcon"
         app:layout_constraintEnd_toStartOf="@id/tvMonto"
-        app:layout_constraintTop_toTopOf="@id/vColorDot"
+        app:layout_constraintTop_toTopOf="@id/ivAppIcon"
         app:layout_constraintBottom_toTopOf="@id/tvFechaCategoria" />
 
     <!-- Fecha · Categoría -->
@@ -45,7 +45,7 @@
         app:layout_constraintStart_toEndOf="@id/ivAppIcon"
         app:layout_constraintEnd_toStartOf="@id/tvMonto"
         app:layout_constraintTop_toBottomOf="@id/tvNombre"
-        app:layout_constraintBottom_toBottomOf="@id/vColorDot" />
+        app:layout_constraintBottom_toBottomOf="@id/ivAppIcon" />
 
     <!-- Monto negativo en rojo -->
     <TextView
