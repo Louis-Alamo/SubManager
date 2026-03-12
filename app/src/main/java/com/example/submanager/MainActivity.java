@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.ui.fragment.DashboardFragment;
+import com.example.submanager.ui.fragment.HistorialFragment;
 import com.example.submanager.ui.fragment.SuscripcionesFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_suscripciones) {
                 fragmentoSeleccionado = new SuscripcionesFragment();
             } else if (itemId == R.id.nav_estadisticas) {
-                // fragmentoSeleccionado = new EstadisticasFragment();
+                fragmentoSeleccionado = new HistorialFragment();
             } else if (itemId == R.id.nav_alertas) {
                 // fragmentoSeleccionado = new AlertasFragment();
             } else if (itemId == R.id.nav_perfil) {
