@@ -7,12 +7,15 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="10dp">
 
-    <!-- Círculo de color del servicio -->
-    <View
-        android:id="@+id/vColorDot"
+    <!-- Ícono / círculo de color del servicio -->
+    <ImageView
+        android:id="@+id/ivAppIcon"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:background="@drawable/bg_status_badge"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@null"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -27,7 +30,7 @@
         android:textColor="@color/text_primary"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/vColorDot"
+        app:layout_constraintStart_toEndOf="@id/ivAppIcon"
         app:layout_constraintEnd_toStartOf="@id/tvMonto"
         app:layout_constraintTop_toTopOf="@id/vColorDot"
         app:layout_constraintBottom_toTopOf="@id/tvFechaCategoria" />
@@ -41,7 +44,7 @@
         android:text="15 Oct · Entretenimiento"
         android:textSize="11sp"
         android:textColor="@color/text_muted"
-        app:layout_constraintStart_toEndOf="@id/vColorDot"
+        app:layout_constraintStart_toEndOf="@id/ivAppIcon"
         app:layout_constraintEnd_toStartOf="@id/tvMonto"
         app:layout_constraintTop_toBottomOf="@id/tvNombre"
         app:layout_constraintBottom_toBottomOf="@id/vColorDot" />
