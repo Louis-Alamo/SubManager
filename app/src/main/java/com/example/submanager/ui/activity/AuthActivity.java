@@ -15,6 +15,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class AuthActivity extends AppCompatActivity {
 
+    public static final String EXTRA_TAB = "extra_tab";
+
     private ImageView btnBack;
     private TabLayout tabLayout;
     private LinearLayout formLogin, formRegistro;
@@ -40,6 +42,12 @@ public class AuthActivity extends AppCompatActivity {
         bindViews();
         setupTabs();
         setupListeners();
+
+        // Abrir en el tab correcto según quién llamó la Activity
+        int startTab = getIntent().getIntExtra(EXTRA_TAB, 0);
+        if (startTab == 1 && tabLayout.getTabAt(1) != null) {
+            tabLayout.getTabAt(1).select();
+        }
     }
 
     private void bindViews() {

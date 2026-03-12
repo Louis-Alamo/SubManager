@@ -17,6 +17,7 @@ import com.example.submanager.ui.activity.AuthActivity;
 import com.example.submanager.ui.activity.PremiumActivity;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class PerfilFragment extends Fragment {
@@ -31,6 +32,12 @@ public class PerfilFragment extends Fragment {
     private LinearLayout rowPrivacy;
     private LinearLayout rowSupport;
     private View btnHelp;
+
+    // ── Campos de login en-pantalla ───────────────────────────────────────────
+    private TextInputLayout tilEmail;
+    private TextInputLayout tilPassword;
+    private TextInputEditText etEmail;
+    private TextInputEditText etPassword;
 
     // ── Estado mock ───────────────────────────────────────────────────────────
     private boolean notificacionesActivas = true;
@@ -62,6 +69,12 @@ public class PerfilFragment extends Fragment {
         rowPrivacy           = root.findViewById(R.id.rowPrivacy);
         rowSupport           = root.findViewById(R.id.rowSupport);
         btnHelp              = root.findViewById(R.id.btnHelp);
+
+        // Campos de login inline
+        tilEmail    = root.findViewById(R.id.tilEmail);
+        tilPassword = root.findViewById(R.id.tilPassword);
+        etEmail     = root.findViewById(R.id.etEmail);
+        etPassword  = root.findViewById(R.id.etPassword);
 
         // Estado inicial del switch
         switchNotificaciones.setChecked(notificacionesActivas);
@@ -110,17 +123,20 @@ public class PerfilFragment extends Fragment {
                     showSnackbar(root, "¿Necesitas ayuda? Soporte disponible próximamente"));
         }
 
-        // Login / Register ────────────────────────────────────────────────────
+        // Login inline (usar campos ya en el fragment) ──────────────────────
         View btnLogin   = root.findViewById(R.id.btnLogin);
         View tvRegister = root.findViewById(R.id.tvRegister);
 
         if (btnLogin != null) {
-            btnLogin.setOnClickListener(v ->
-                    startActivity(new Intent(requireContext(), AuthActivity.class)));
+            btnLogin.setOnClickListener(v -> handleInlineLogin(root));
         }
+        // "¿No tienes cuenta?" → abrir AuthActivity directo en tab Registro
         if (tvRegister != null) {
-            tvRegister.setOnClickListener(v ->
-                    startActivity(new Intent(requireContext(), AuthActivity.class)));
+            tvRegister.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), AuthActivity.class);
+                intent.putExtra(AuthActivity.EXTRA_TAB, 1);
+                startActivity(intent);
+            });
         }
 
         // Premium banner ──────────────────────────────────────────────────────
@@ -129,6 +145,33 @@ public class PerfilFragment extends Fragment {
             bannerPremium.setOnClickListener(v ->
                     startActivity(new Intent(requireContext(), PremiumActivity.class)));
         }
+    }
+
+    // ── Login inline ──────────────────────────────────────────────────────────
+
+    private void handleInlineLogin(View root) {
+        if (tilEmail == null || tilPassword == null) return;
+        tilEmail.setError(null);
+        tilPassword.setError(null);
+
+        String email    = etEmail    != null && etEmail.getText()    != null ? etEmail.getText().toString().trim()    : "";
+        String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
+
+        boolean valid = true;
+        if (email.isEmpty()) {
+            tilEmail.setError("Ingresa tu correo");
+            valid = false;
+        }
+        if (password.isEmpty()) {
+            tilPassword.setError("Ingresa tu contraseña");
+            valid = false;
+        } else if (password.length() < 6) {
+            tilPassword.setError("Mínimo 6 caracteres");
+            valid = false;
+        }
+        if (!valid) return;
+
+        showSnackbar(root, "✅ ¡Bienvenido de vuelta!");
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

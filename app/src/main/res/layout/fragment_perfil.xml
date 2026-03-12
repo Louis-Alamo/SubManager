@@ -637,6 +637,8 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="18dp"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:background="?attr/selectableItemBackground">
 
                         <FrameLayout
@@ -689,6 +691,8 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="18dp"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:background="?attr/selectableItemBackground">
 
                         <FrameLayout
@@ -741,6 +745,8 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="18dp"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:background="?attr/selectableItemBackground">
 
                         <FrameLayout
