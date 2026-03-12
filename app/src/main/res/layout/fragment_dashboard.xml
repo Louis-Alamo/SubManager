@@ -471,35 +471,33 @@
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never" />
 
-            </LinearLayout>
-
-        </LinearLayout>
-
-            <!-- Empty state: sin vencimientos esta semana -->
-            <LinearLayout
-                android:id="@+id/emptyUpcoming"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:paddingVertical="32dp"
-                android:paddingHorizontal="24dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Empty state: sin vencimientos esta semana -->
+                <LinearLayout
+                    android:id="@+id/emptyUpcoming"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🎉"
-                    android:textSize="40sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dashboard_upcoming_empty"
-                    android:textColor="@color/text_muted"
-                    android:textSize="14sp"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginTop="8dp" />
+                    android:paddingVertical="32dp"
+                    android:paddingHorizontal="24dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎉"
+                        android:textSize="40sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dashboard_upcoming_empty"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
