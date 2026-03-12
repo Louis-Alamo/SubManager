@@ -21,7 +21,6 @@ public class PerfilFragment extends Fragment {
     // ── UI references ─────────────────────────────────────────────────────────
     private MaterialSwitch switchNotificaciones;
     private TextView tvHoraRecordatorio;
-    private LinearLayout rowTone;
     private LinearLayout rowTime;
     private LinearLayout rowBackup;
     private LinearLayout rowRestore;
@@ -53,7 +52,6 @@ public class PerfilFragment extends Fragment {
     private void bindViews(View root) {
         switchNotificaciones = root.findViewById(R.id.switchNotificaciones);
         tvHoraRecordatorio   = root.findViewById(R.id.tvHoraRecordatorio);
-        rowTone              = root.findViewById(R.id.rowTone);
         rowTime              = root.findViewById(R.id.rowTime);
         rowBackup            = root.findViewById(R.id.rowBackup);
         rowRestore           = root.findViewById(R.id.rowRestore);
@@ -78,10 +76,6 @@ public class PerfilFragment extends Fragment {
                     : "Alertas desactivadas";
             showSnackbar(root, msg);
         });
-
-        // Tono de alerta ─────────────────────────────────────────────────────
-        rowTone.setOnClickListener(v ->
-                showSnackbar(root, "Selector de tono próximamente"));
 
         // Hora del recordatorio ──────────────────────────────────────────────
         rowTime.setOnClickListener(v ->
