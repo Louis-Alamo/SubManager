@@ -160,22 +160,6 @@ public class AuthActivity extends AppCompatActivity {
         }
         if (!valid) return;
 
-    private void handleLogin() {
-        clearErrors();
-        String email    = etLoginEmail.getText()    != null ? etLoginEmail.getText().toString().trim()    : "";
-        String password = etLoginPassword.getText() != null ? etLoginPassword.getText().toString().trim() : "";
-
-        boolean valid = true;
-        if (email.isEmpty()) {
-            tilLoginEmail.setError("Ingresa tu correo");
-            valid = false;
-        }
-        if (password.isEmpty()) {
-            tilLoginPassword.setError("Ingresa tu contraseña");
-            valid = false;
-        }
-        if (!valid) return;
-
         btnIniciarSesion.setEnabled(false);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
