@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:overScrollMode="never"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
+
+        <!-- TOOLBAR -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/background"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_forward"
+                android:rotation="180"
+                android:tint="@color/text_primary"
+                android:contentDescription="@string/cd_back_button"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Nuevo Servicio"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- SUBTITLE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registra un servicio del hogar o fÃ­sico"
+            android:textColor="@color/text_muted"
+            android:textSize="13sp"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="12dp" />
+
+        <!-- TIPO DE SERVICIO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIPO DE SERVICIO"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="10dp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            android:clipToPadding="false">
+
+            <LinearLayout
+                android:id="@+id/chipGroupTipoServicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Each service type chip -->
+                <LinearLayout android:id="@+id/chipLuz"
+                    android:layout_width="80dp" android:layout_height="76dp"
+                    android:orientation="vertical" android:gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/primary_tint">
+                    <TextView android:layout_width="28dp" android:layout_height="28dp"
+                        android:text="ðŸ’¡" android:gravity="center" android:textSize="22sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Luz" android:textColor="@color/primary"
+                        android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/chipAgua"
+                    android:layout_width="80dp" android:layout_height="76dp"
+                    android:orientation="vertical" android:gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/background">
+                    <TextView android:layout_width="28dp" android:layout_height="28dp"
+                        android:text="ðŸš°" android:gravity="center" android:textSize="22sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Agua" android:textColor="@color/text_secondary"
+                        android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/chipGas"
+                    android:layout_width="80dp" android:layout_height="76dp"
+                    android:orientation="vertical" android:gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/background">
+                    <TextView android:layout_width="28dp" android:layout_height="28dp"
+                        android:text="ðŸ”¥" android:gravity="center" android:textSize="22sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Gas" android:textColor="@color/text_secondary"
+                        android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/chipInternet"
+                    android:layout_width="80dp" android:layout_height="76dp"
+                    android:orientation="vertical" android:gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/background">
+                    <TextView android:layout_width="28dp" android:layout_height="28dp"
+                        android:text="ðŸ“¶" android:gravity="center" android:textSize="22sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Internet" android:textColor="@color/text_secondary"
+                        android:textSize="11sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/chipTelefono"
+                    android:layout_width="80dp" android:layout_height="76dp"
+                    android:orientation="vertical" android:gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/background">
+                    <TextView android:layout_width="28dp" android:layout_height="28dp"
+                        android:text="ðŸ“±" android:gravity="center" android:textSize="22sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="TelÃ©fono" android:textColor="@color/text_secondary"
+                        android:textSize="11sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/chipOtro"
+                    android:layout_width="80dp" android:layout_height="76dp"
+                    android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/background">
+                    <TextView android:layout_width="28dp" android:layout_height="28dp"
+                        android:text="ðŸ”§" android:gravity="center" android:textSize="22sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Otro" android:textColor="@color/text_secondary"
+                        android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- FORM CARD -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <!-- Nombre del servicio -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nombre del servicio"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="@color/border"
+                    android:layout_marginBottom="14dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNombreServicio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Proveedor -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Proveedor (opcional)"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="@color/border"
+                    android:layout_marginBottom="14dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etProveedor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Toggle monto variable -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Monto variable" android:textColor="@color/text_primary"
+                            android:textSize="14sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="El monto cambia cada mes" android:textColor="@color/text_muted"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchMontoVariable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Monto -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilMonto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Monto (MXN)"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="@color/border"
+                    app:prefixText="$"
+                    android:layout_marginBottom="4dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMontoServicio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/tvMontaVariableNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ðŸ’¡ Ingresa el monto estimado mensual"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp"
+                    android:visibility="gone"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Fecha de corte -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Fecha de pago / corte"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_calendar"
+                    app:boxStrokeColor="@color/border"
+                    android:layout_marginBottom="14dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFechaCorte"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Notas -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Notas (opcional)"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="@color/border">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNotasServicio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:minLines="2"
+                        android:maxLines="4"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ESCANEAR RECIBO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ESCANEAR RECIBO"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="10dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:id="@+id/cardEscanear"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="18dp"
+                android:background="?attr/selectableItemBackground">
+
+                <TextView android:layout_width="40dp" android:layout_height="40dp"
+                    android:text="ðŸ“·" android:gravity="center" android:textSize="26sp"/>
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Escanear con cÃ¡mara" android:textColor="@color/text_primary"
+                        android:textSize="15sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Extrae datos automÃ¡ticamente del recibo"
+                        android:textColor="@color/text_muted" android:textSize="12sp"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEscanear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Escanear"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/primary_tint"
+                    android:textColor="@color/primary"
+                    app:cornerRadius="10dp"
+                    app:strokeWidth="0dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- GASTOS COMPARTIDOS -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Gastos compartidos" android:textColor="@color/text_primary"
+                            android:textSize="14sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Divide el costo con otras personas"
+                            android:textColor="@color/text_muted" android:textSize="12sp"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchCompartido"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Personas compartidas (visible cuando switch ON) -->
+                <LinearLayout
+                    android:id="@+id/containerPersonas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/rowPersona1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <FrameLayout android:layout_width="32dp" android:layout_height="32dp"
+                            android:layout_marginEnd="10dp">
+                            <View android:layout_width="32dp" android:layout_height="32dp"
+                                android:background="@drawable/bg_status_badge"
+                                android:backgroundTint="@color/primary_tint"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:layout_gravity="center" android:text="AL" android:textColor="@color/primary"
+                                android:textSize="12sp" android:textStyle="bold"/>
+                        </FrameLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Correo de la persona"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxStrokeColor="@color/border">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etPersona1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textEmailAddress"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAgregarPersona"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="+ Agregar persona"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/primary_tint"
+                        android:textColor="@color/primary"
+                        app:cornerRadius="10dp"
+                        app:strokeWidth="0dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- SAVE BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGuardarServicio"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginHorizontal="16dp"
+            android:text="Guardar Servicio"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/primary"
+            app:cornerRadius="16dp" />
+
+    </LinearLayout>
+</ScrollView>

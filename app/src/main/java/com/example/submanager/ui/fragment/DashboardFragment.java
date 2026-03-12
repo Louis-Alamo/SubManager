@@ -1,5 +1,6 @@
 package com.example.submanager.ui.fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.submanager.R;
+import com.example.submanager.ui.activity.NuevoServicioActivity;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -194,7 +196,8 @@ public class DashboardFragment extends Fragment {
         View cardSub  = root.findViewById(R.id.cardAgregarSuscripcion);
         View cardServ = root.findViewById(R.id.cardAgregarServicio);
         if (cardSub  != null) cardSub .setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
-        if (cardServ != null) cardServ.setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
+        if (cardServ != null) cardServ.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), NuevoServicioActivity.class)));
 
         // Ver todos → Alertas
         View tvSeeAll = root.findViewById(R.id.tvSeeAll);

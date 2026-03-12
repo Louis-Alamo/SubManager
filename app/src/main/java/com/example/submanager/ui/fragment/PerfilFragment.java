@@ -1,5 +1,6 @@
 package com.example.submanager.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.submanager.R;
+import com.example.submanager.ui.activity.AuthActivity;
+import com.example.submanager.ui.activity.PremiumActivity;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -113,11 +116,18 @@ public class PerfilFragment extends Fragment {
 
         if (btnLogin != null) {
             btnLogin.setOnClickListener(v ->
-                    showSnackbar(root, "Inicio de sesión próximamente"));
+                    startActivity(new Intent(requireContext(), AuthActivity.class)));
         }
         if (tvRegister != null) {
             tvRegister.setOnClickListener(v ->
-                    showSnackbar(root, "Registro próximamente"));
+                    startActivity(new Intent(requireContext(), AuthActivity.class)));
+        }
+
+        // Premium banner ──────────────────────────────────────────────────────
+        View bannerPremium = root.findViewById(R.id.bannerPremium);
+        if (bannerPremium != null) {
+            bannerPremium.setOnClickListener(v ->
+                    startActivity(new Intent(requireContext(), PremiumActivity.class)));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.submanager.ui.adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.submanager.R;
 import com.example.submanager.data.model.SuscripcionModel;
+import com.example.submanager.ui.activity.DetalleSuscripcionActivity;
 
 import java.util.List;
 
@@ -47,6 +49,17 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         } else {
             holder.ivLogo.setImageResource(R.mipmap.ic_launcher);
         }
+
+        // Navigate to detail on tap
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetalleSuscripcionActivity.class);
+            intent.putExtra("nombre",    sub.getNombre());
+            intent.putExtra("monto",     String.format("%.2f", sub.getMonto()));
+            intent.putExtra("categoria", sub.getCategoria());
+            intent.putExtra("ciclo",     sub.getCicloFacturacion());
+            intent.putExtra("iconRes",   resId != 0 ? resId : R.mipmap.ic_launcher);
+            context.startActivity(intent);
+        });
     }
 
     @Override

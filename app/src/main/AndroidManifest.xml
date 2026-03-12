@@ -23,6 +23,21 @@
         <activity
             android:name=".ui.activity.NuevaSuscripcionActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.activity.DetalleSuscripcionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.NuevoServicioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.PremiumActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.CompraExitosaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.AuthActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

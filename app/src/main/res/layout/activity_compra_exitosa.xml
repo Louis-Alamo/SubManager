@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:gravity="center">
+
+    <!-- CONFETTI AREA - top area with icon -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingHorizontal="24dp">
+
+        <!-- Crown icon big -->
+        <FrameLayout
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_marginBottom="24dp">
+            <View
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:background="@drawable/bg_status_badge"
+                android:backgroundTint="@color/premium_bg"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="👑"
+                android:textSize="56sp"/>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¡Ya eres Premium!"
+            android:textColor="@color/text_primary"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gracias por tu compra. Disfruta de todas las funciones sin límites."
+            android:textColor="@color/text_muted"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="16dp"/>
+    </LinearLayout>
+
+    <!-- DETAILS CARD -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="1dp"
+        app:cardBackgroundColor="@color/surface">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <!-- Fila Plan -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Plan"
+                    android:textColor="@color/text_muted" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvCompraplan"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Premium Anual" android:textColor="@color/text_primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/border"/>
+
+            <!-- Fila Monto -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Total pagado"
+                    android:textColor="@color/text_muted" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvCompraMonto"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="$500.00 MXN" android:textColor="@color/primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/border"/>
+
+            <!-- Fila Próxima renovación -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Próxima renovación"
+                    android:textColor="@color/text_muted" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvCompraRenovacion"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="11 Abr 2027" android:textColor="@color/text_primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/border"/>
+
+            <!-- Fila Método de pago -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Método de pago"
+                    android:textColor="@color/text_muted" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvCompraPago"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Tarjeta de crédito" android:textColor="@color/text_primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- CTA BUTTON -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnComenzar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        android:text="Comenzar a usar →"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primary"
+        app:cornerRadius="16dp" />
+
+    <!-- VER FACTURA LINK -->
+    <TextView
+        android:id="@+id/tvVerFactura"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver comprobante de pago"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        android:paddingVertical="10dp"
+        android:layout_marginBottom="32dp"/>
+
+</LinearLayout>

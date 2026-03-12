@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:overScrollMode="never"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="36dp">
+
+        <!-- TOOLBAR -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/background"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_forward"
+                android:rotation="180"
+                android:tint="@color/text_primary"
+                android:contentDescription="@string/cd_back_button"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+        </RelativeLayout>
+
+        <!-- HERO HEADER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="12dp"
+            android:paddingBottom="28dp"
+            android:paddingHorizontal="24dp">
+
+            <TextView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:text="👑"
+                android:gravity="center"
+                android:textSize="44sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hazte Premium"
+                android:textColor="@color/text_primary"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Controla todas tus suscripciones sin límites"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+        <!-- FEATURES CARD -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¿QUÉ INCLUYE?"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="14dp"/>
+
+                <!-- Feature rows -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="2dp">
+                    <TextView android:layout_width="22dp" android:layout_height="22dp"
+                        android:text="✅" android:gravity="center" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Suscripciones ilimitadas" android:textColor="@color/text_primary"
+                        android:textSize="14sp" android:layout_marginStart="12dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="2dp">
+                    <TextView android:layout_width="22dp" android:layout_height="22dp"
+                        android:text="✅" android:gravity="center" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Estadísticas y reportes avanzados"
+                        android:textColor="@color/text_primary" android:textSize="14sp"
+                        android:layout_marginStart="12dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="2dp">
+                    <TextView android:layout_width="22dp" android:layout_height="22dp"
+                        android:text="✅" android:gravity="center" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Backup y sincronización en la nube"
+                        android:textColor="@color/text_primary" android:textSize="14sp"
+                        android:layout_marginStart="12dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="2dp">
+                    <TextView android:layout_width="22dp" android:layout_height="22dp"
+                        android:text="✅" android:gravity="center" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Alertas inteligentes de vencimiento"
+                        android:textColor="@color/text_primary" android:textSize="14sp"
+                        android:layout_marginStart="12dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="22dp" android:layout_height="22dp"
+                        android:text="✅" android:gravity="center" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Soporte prioritario 24/7"
+                        android:textColor="@color/text_primary" android:textSize="14sp"
+                        android:layout_marginStart="12dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- PLANS TITLE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ELIGE TU PLAN"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="12dp" />
+
+        <!-- PLAN MENSUAL -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPlanMensual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeColor="@color/border"
+            app:strokeWidth="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="18dp">
+
+                <RadioButton
+                    android:id="@+id/radioPlanMensual"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="14dp"
+                    android:checked="false" />
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Plan Mensual" android:textColor="@color/text_primary"
+                        android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Sin compromiso · Cancela cuando quieras"
+                        android:textColor="@color/text_muted" android:textSize="12sp"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:gravity="end">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="$50" android:textColor="@color/text_primary"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="/mes" android:textColor="@color/text_muted"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- PLAN ANUAL -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPlanAnual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/premium_bg"
+            app:strokeColor="@color/premium"
+            app:strokeWidth="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Badge popular -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  🔥 MÁS POPULAR  "
+                    android:textColor="#7C5900"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_status_badge"
+                    android:backgroundTint="@color/premium"
+                    android:paddingVertical="4dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginTop="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="18dp"
+                    android:paddingBottom="18dp">
+
+                    <RadioButton
+                        android:id="@+id/radioPlanAnual"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="14dp"
+                        android:checked="true" />
+
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Plan Anual" android:textColor="@color/text_primary"
+                            android:textSize="16sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Equivale a $41.67/mes · Mejor precio"
+                            android:textColor="@color/text_secondary" android:textSize="12sp"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:gravity="end">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="$500" android:textColor="@color/text_primary"
+                            android:textSize="22sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Ahorra 16%" android:textColor="#7C5900"
+                            android:textSize="11sp" android:textStyle="bold"
+                            android:background="@drawable/bg_status_badge"
+                            android:backgroundTint="@color/premium"
+                            android:paddingHorizontal="8dp" android:paddingVertical="2dp"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CTA BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSuscribirse"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="14dp"
+            android:text="Suscribirme ahora 👑"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/primary"
+            app:cornerRadius="16dp" />
+
+        <!-- RESTORE LINK -->
+        <TextView
+            android:id="@+id/tvRestaurar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Restaurar compra"
+            android:textColor="@color/primary"
+            android:textSize="13sp"
+            android:paddingVertical="8dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- TERMS NOTE -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Al suscribirte aceptas los Términos y condiciones y la Política de privacidad. La suscripción se renueva automáticamente. Puedes cancelar en cualquier momento."
+            android:textColor="@color/text_muted"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:paddingHorizontal="24dp" />
+
+    </LinearLayout>
+</ScrollView>
