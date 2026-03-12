@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.ui.fragment.AlertasFragment;
 import com.example.submanager.ui.fragment.DashboardFragment;
+import com.example.submanager.ui.fragment.PerfilFragment;
 import com.example.submanager.ui.fragment.HistorialFragment;
 import com.example.submanager.ui.fragment.SuscripcionesFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_alertas) {
                 fragmentoSeleccionado = new AlertasFragment();
             } else if (itemId == R.id.nav_perfil) {
-                // fragmentoSeleccionado = new PerfilFragment();
+                fragmentoSeleccionado = new PerfilFragment();
             }
 
             if (fragmentoSeleccionado != null) {
