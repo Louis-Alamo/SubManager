@@ -308,12 +308,11 @@
             android:id="@+id/tvRestaurar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:text="Restaurar compra"
             android:textColor="@color/primary"
             android:textSize="13sp"
             android:paddingVertical="8dp"
-            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"/>
 
         <!-- TERMS NOTE -->
