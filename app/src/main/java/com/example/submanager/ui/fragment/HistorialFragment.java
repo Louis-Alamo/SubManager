@@ -202,17 +202,20 @@ public class HistorialFragment extends Fragment {
             h.tvNombre.setText(p.nombre);
             h.tvFechaCategoria.setText(p.fechaCategoria);
             h.tvMonto.setText(p.monto);
-            // Fondo de color siempre
-            try {
-                h.ivAppIcon.getBackground().setTint(Color.parseColor(p.colorHex));
-            } catch (Exception ignore) {}
-            // Ícono de la app si existe
             if (p.iconRes != 0) {
+                // Icono propio: sin fondo, se muestra tal cual
+                h.ivAppIcon.setBackground(null);
                 h.ivAppIcon.setImageResource(p.iconRes);
-                h.ivAppIcon.setPadding(9, 9, 9, 9);
-            } else {
-                h.ivAppIcon.setImageDrawable(null);
                 h.ivAppIcon.setPadding(0, 0, 0, 0);
+            } else {
+                // Sin icono: fondo circular de color sólido
+                android.graphics.drawable.GradientDrawable circle =
+                        new android.graphics.drawable.GradientDrawable();
+                circle.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                try { circle.setColor(Color.parseColor(p.colorHex)); }
+                catch (Exception ignore) { circle.setColor(Color.LTGRAY); }
+                h.ivAppIcon.setBackground(circle);
+                h.ivAppIcon.setImageDrawable(null);
             }
         }
 
