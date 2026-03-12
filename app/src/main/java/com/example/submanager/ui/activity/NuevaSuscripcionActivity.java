@@ -8,12 +8,22 @@ import android.widget.ImageView;
 import android.graphics.Color;
 import android.content.res.ColorStateList;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
+import com.example.submanager.data.model.SuscripcionModel;
 import com.example.submanager.R;
 import com.example.submanager.utils.CategoryManager;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.widget.GridLayout;
+import android.view.View;
+import android.view.LayoutInflater;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -21,6 +31,7 @@ import java.util.Locale;
 public class NuevaSuscripcionActivity extends AppCompatActivity {
 
     private static final String OPCION_PERSONALIZADO = "Personalizado…";
+    private int iconoSeleccionadoResId = R.drawable.ic_letter_s;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +60,12 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
 
         // ── Método de Pago ────────────────────────────────────────────────────
         setupMetodoPago();
+
+        // ── Icon Picker ───────────────────────────────────────────────────────
+        setupIconPicker();
+
+        // ── Guardar Suscripción ───────────────────────────────────────────────
+        setupGuardarButton();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -222,5 +239,130 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         
         // Inicializar el avatar con el color por defecto
         ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Selector de Icono
+    // ─────────────────────────────────────────────────────────────────────────
+    private void setupIconPicker() {
+        FloatingActionButton fabEdit = findViewById(R.id.fabEditAvatar);
+        ImageView ivAvatar = findViewById(R.id.ivSuscripcionAvatar);
+
+        int[] availableIcons = {
+            R.drawable.ic_app_netflix, R.drawable.ic_app_spotify, R.drawable.ic_app_youtube,
+            R.drawable.ic_app_xbox, R.drawable.ic_app_mercadolibre, R.drawable.ic_app_apple_music,
+            R.drawable.ic_app_crunchyroll, R.drawable.ic_app_duolingo, R.drawable.ic_app_google,
+            R.drawable.ic_app_twitch, R.drawable.ic_app_hbomax, R.drawable.ic_app_prime_video,
+            R.drawable.ic_app_tiktok, R.drawable.ic_app_paramount, R.drawable.ic_app_disneyplus,
+            R.drawable.ic_app_copilot, R.drawable.ic_service_home, R.drawable.ic_service_card,
+            R.drawable.ic_service_electricity, R.drawable.ic_service_gas, R.drawable.ic_service_water,
+            R.drawable.ic_service_internet, R.drawable.ic_service_phone, R.drawable.ic_service_fitness
+        };
+
+        fabEdit.setOnClickListener(v -> {
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_icon_picker, null);
+            GridLayout gridLayout = dialogView.findViewById(R.id.gridLayoutIcons);
+
+            AlertDialog alertDialog = new AlertDialog.Builder(this)
+                    .setView(dialogView)
+                    .create();
+
+            for (int iconResId : availableIcons) {
+                View iconWrapper = LayoutInflater.from(this).inflate(R.layout.item_icon_selector, gridLayout, false);
+                ImageView iconImageView = iconWrapper.findViewById(R.id.ivIcon);
+                iconImageView.setImageResource(iconResId);
+
+                iconWrapper.setOnClickListener(iv -> {
+                    iconoSeleccionadoResId = iconResId;
+                    ivAvatar.setImageResource(iconResId);
+                    alertDialog.dismiss();
+                });
+
+                gridLayout.addView(iconWrapper);
+            }
+
+            dialogView.findViewById(R.id.btnCancelIcon).setOnClickListener(btn -> alertDialog.dismiss());
+
+            alertDialog.show();
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Lógica para Guardar en Base de Datos
+    // ─────────────────────────────────────────────────────────────────────────
+    private void setupGuardarButton() {
+        SuscripcionViewModel viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
+
+        findViewById(R.id.btnSubmit).setOnClickListener(v -> {
+            TextInputEditText etNombre = findViewById(R.id.etNombre);
+            TextInputEditText etMonto = findViewById(R.id.etMonto);
+            AutoCompleteTextView autoCompleteCiclo = findViewById(R.id.autoCompleteCiclo);
+            AutoCompleteTextView autoCompletePago = findViewById(R.id.autoCompletePago);
+            TextInputEditText etFecha = findViewById(R.id.etFecha);
+            TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
+            ChipGroup chipGroupCategorias = findViewById(R.id.chipGroupCategorias);
+
+            String nombre = etNombre.getText().toString().trim();
+            String montoStr = etMonto.getText().toString().trim();
+            String ciclo = autoCompleteCiclo.getText().toString().trim();
+            String metodoPago = autoCompletePago.getText().toString().trim();
+            String fechaPrimerCobro = etFecha.getText().toString().trim();
+            String fechaLimite = etFechaLimite.getText().toString().trim();
+
+            if (nombre.isEmpty() || montoStr.isEmpty() || ciclo.isEmpty() || metodoPago.isEmpty() || fechaPrimerCobro.isEmpty()) {
+                Toast.makeText(this, "Por favor, completa los campos obligatorios.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double monto;
+            try {
+                monto = Double.parseDouble(montoStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Monto inválido", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Validar categoría seleccionada
+            int checkedChipId = chipGroupCategorias.getCheckedChipId();
+            String categoria = "Otra";
+            if (checkedChipId != View.NO_ID) {
+                Chip chip = findViewById(checkedChipId);
+                if (chip != null) {
+                    categoria = chip.getText().toString();
+                }
+            }
+
+            // Obtener nombre del icono a partir de su ID
+            String nombreIcono = getResources().getResourceEntryName(iconoSeleccionadoResId);
+
+            // Fecha de creación ISO básica
+            String timestampActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+            // Instanciar modelo
+            SuscripcionModel nuevaSuscripcion = new SuscripcionModel(
+                    nombre,
+                    monto,
+                    ciclo,
+                    colorSeleccionado,
+                    categoria,
+                    metodoPago,
+                    fechaPrimerCobro,
+                    fechaPrimerCobro, // Usamos la misma para proximo cobro inicial
+                    fechaLimite.isEmpty() ? null : fechaLimite,
+                    true, // recordatorio habilitado
+                    3,    // dias de anticipacion
+                    false, // notificacion no silenciada
+                    true,  // activa por defecto
+                    nombreIcono,
+                    timestampActual,
+                    timestampActual
+            );
+
+            // Guardar en Room usando ViewModel
+            viewModel.insertar(nuevaSuscripcion);
+
+            Toast.makeText(this, "Suscripción guardada exitosamente", Toast.LENGTH_SHORT).show();
+            finish();
+        });
     }
 }

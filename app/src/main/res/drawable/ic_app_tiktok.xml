@@ -10,7 +10,7 @@
   <!-- Sombra cian -->
   <path android:pathData="M48,22 L48,70 C48,74 44,78 40,78 C36,78 32,74 32,70 C32,66 36,62 40,62 C42,62 43,63 44,64 L44,22 Z"
       android:fillColor="#69C9D0"/>
-  <path android:pathData="M44,22 L44,38 C44,38 58,36 64,28 L64,44 C64,44 54,48 44,46 L44,70 C44,76 38,80 32,78 C26,76 22,70 24,64..."
+  <path android:pathData="M44,22 L44,38 C44,38 58,36 64,28 L64,44 C64,44 54,48 44,46 L44,70 C44,76 38,80 32,78 C26,76 22,70 24,64 L24,64 Z"
       android:fillColor="#69C9D0"
       android:fillAlpha="0"/>
   <!-- Forma principal blanca -->
