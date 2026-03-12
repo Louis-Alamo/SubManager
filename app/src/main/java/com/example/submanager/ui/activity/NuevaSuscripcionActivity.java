@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.graphics.Color;
+import android.content.res.ColorStateList;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.submanager.R;
 import com.example.submanager.utils.CategoryManager;
@@ -37,6 +40,12 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
 
         // ── Primera Fecha de Cobro ────────────────────────────────────────────
         setupFechaCobro();
+
+        // ── Fecha Límite de Cancelación ───────────────────────────────────────
+        setupFechaLimiteCancelacion();
+
+        // ── Apariencia (Color Picker) ─────────────────────────────────────────
+        setupColorPicker();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -108,5 +117,74 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
             }
         });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Fecha límite de cancelación: opcional, material date picker
+    // ─────────────────────────────────────────────────────────────────────────
+    private void setupFechaLimiteCancelacion() {
+        TextInputLayout tilFechaLimite = findViewById(R.id.tilFechaLimite);
+        TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
+                .datePicker()
+                .setTitleText("Seleccionar fecha límite")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            String fechaFormateada = sdf.format(new Date(selection));
+            etFechaLimite.setText(fechaFormateada);
+        });
+
+        etFechaLimite.setOnClickListener(v -> {
+            if (!datePicker.isAdded()) {
+                datePicker.show(getSupportFragmentManager(), "CANCEL_DATE_PICKER");
+            }
+        });
+
+        tilFechaLimite.setEndIconOnClickListener(v -> {
+            if (!datePicker.isAdded()) {
+                datePicker.show(getSupportFragmentManager(), "CANCEL_DATE_PICKER");
+            }
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Selector de color (Apariencia)
+    // ─────────────────────────────────────────────────────────────────────────
+    private String colorSeleccionado = "#2196F3"; // Por defecto azul
+
+    private void setupColorPicker() {
+        ImageView ivAvatar = findViewById(R.id.ivSuscripcionAvatar);
+        
+        int[] colorIds = {
+            R.id.colorBlue, R.id.colorPurple, R.id.colorGreen, 
+            R.id.colorOrange, R.id.colorRed, R.id.colorPink
+        };
+
+        for (int id : colorIds) {
+            ImageView colorView = findViewById(id);
+            if (colorView == null) continue;
+
+            colorView.setOnClickListener(v -> {
+                // Deseleccionar todos
+                for (int otherId : colorIds) {
+                    ImageView otherView = findViewById(otherId);
+                    if (otherView != null) otherView.setAlpha(0.4f);
+                }
+                
+                // Seleccionar el tocado
+                v.setAlpha(1.0f);
+                colorSeleccionado = (String) v.getTag();
+                
+                // Actualizar avatar
+                ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
+            });
+        }
+        
+        // Inicializar el avatar con el color por defecto
+        ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
     }
 }

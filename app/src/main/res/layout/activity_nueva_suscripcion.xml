@@ -139,7 +139,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:hint="@string/form_field_first_charge_label"
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/ic_calendar_today">
@@ -151,6 +151,51 @@
                     android:clickable="true"
                     android:hint="mm/dd/yyyy" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFechaLimite"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:hint="@string/form_field_cancel_date_label"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar_today">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFechaLimite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="mm/dd/yyyy (Opcional)" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/form_field_appearance_label"
+                android:textColor="#3F51B5"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="24dp">
+                <LinearLayout
+                    android:id="@+id/llColorPicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView android:id="@+id/colorBlue" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/circle_avatar_bg" app:tint="#2196F3" android:padding="2dp" android:layout_marginEnd="12dp" android:tag="#2196F3" android:contentDescription="Azul"/>
+                    <ImageView android:id="@+id/colorPurple" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/circle_avatar_bg" app:tint="#9C27B0" android:padding="2dp" android:layout_marginEnd="12dp" android:tag="#9C27B0" android:contentDescription="Morado" android:alpha="0.4"/>
+                    <ImageView android:id="@+id/colorGreen" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/circle_avatar_bg" app:tint="#4CAF50" android:padding="2dp" android:layout_marginEnd="12dp" android:tag="#4CAF50" android:contentDescription="Verde" android:alpha="0.4"/>
+                    <ImageView android:id="@+id/colorOrange" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/circle_avatar_bg" app:tint="#FF9800" android:padding="2dp" android:layout_marginEnd="12dp" android:tag="#FF9800" android:contentDescription="Naranja" android:alpha="0.4"/>
+                    <ImageView android:id="@+id/colorRed" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/circle_avatar_bg" app:tint="#F44336" android:padding="2dp" android:layout_marginEnd="12dp" android:tag="#F44336" android:contentDescription="Rojo" android:alpha="0.4"/>
+                    <ImageView android:id="@+id/colorPink" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/circle_avatar_bg" app:tint="#E91E63" android:padding="2dp" android:layout_marginEnd="12dp" android:tag="#E91E63" android:contentDescription="Rosa" android:alpha="0.4"/>
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <TextView
                 android:layout_width="wrap_content"
