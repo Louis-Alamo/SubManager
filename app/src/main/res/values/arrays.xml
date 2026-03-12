@@ -9,5 +9,30 @@
         <item>@string/category_food</item>
         <item>@string/category_other</item>
     </string-array>
+    <string-array name="ciclos_facturacion">
+        <item>Mensual</item>
+        <item>Anual</item>
+        <item>Semanal</item>
+    </string-array>
+
+    <string-array name="metodos_pago">
+        <item>Tarjeta de Crédito</item>
+        <item>PayPal</item>
+        <item>Transferencia</item>
+    </string-array>
+    <string-array name="categorias_suscripciones_all">
+        <item>@string/category_entertainment</item>
+        <item>@string/category_music</item>
+        <item>@string/category_software</item>
+        <item>@string/category_work</item>
+        <item>@string/category_health</item>
+        <item>@string/category_education</item>
+        <item>@string/category_gaming</item>
+        <item>@string/category_streaming</item>
+        <item>@string/category_home</item>
+        <item>@string/category_fitness</item>
+        <item>@string/category_food</item>
+        <item>@string/category_other</item>
+    </string-array>
 </resources>
 

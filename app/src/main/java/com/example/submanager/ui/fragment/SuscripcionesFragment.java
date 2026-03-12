@@ -1,9 +1,13 @@
 package com.example.submanager.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.submanager.ui.activity.NuevaSuscripcionActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +20,8 @@ import com.example.submanager.R;
 import com.example.submanager.data.model.SuscripcionModel;
 import com.example.submanager.ui.adapter.SuscripcionAdapter;
 import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
+import com.example.submanager.utils.CategoryManager;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
@@ -35,17 +41,24 @@ public class SuscripcionesFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Solo inflamos la vista y conectamos los IDs XML
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_suscripciones, container, false);
 
         rvSuscripciones = view.findViewById(R.id.rvSuscripciones);
         rvSuscripciones.setLayoutManager(new LinearLayoutManager(getContext()));
         cgCategorias = view.findViewById(R.id.cgCategorias);
+        CategoryManager.setupCategoryChips(cgCategorias, getContext(), true, "Todas");
 
-        // Iniciamos el adaptador vacío por ahora
         adaptador = new SuscripcionAdapter(new ArrayList<>());
         rvSuscripciones.setAdapter(adaptador);
+
+        // Botón flotante → abrir pantalla de nueva suscripción
+        FloatingActionButton fabAgregar = view.findViewById(R.id.fabAgregar);
+        fabAgregar.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), NuevaSuscripcionActivity.class);
+            startActivity(intent);
+        });
 
         return view;
     }
@@ -79,30 +92,29 @@ public class SuscripcionesFragment extends Fragment {
 
     // Método auxiliar con tu lógica exacta de filtrado
     private void aplicarFiltroActual() {
-        if (listaMaestra.isEmpty()) return;
+        if (listaMaestra.isEmpty())
+            return;
 
         List<Integer> checkedIds = cgCategorias.getCheckedChipIds();
-        if (checkedIds.isEmpty()) return;
+        if (checkedIds.isEmpty())
+            return;
 
         int idSeleccionado = checkedIds.get(0);
+        Chip chipSeleccionado = cgCategorias.findViewById(idSeleccionado);
+        if (chipSeleccionado == null) return;
+        String categoriaSeleccionada = chipSeleccionado.getText().toString();
+
         List<SuscripcionModel> listaFiltrada = new ArrayList<>();
 
-        if (idSeleccionado == R.id.chipTodas) {
+        if ("Todas".equals(categoriaSeleccionada)) {
             listaFiltrada.addAll(listaMaestra);
-        } else if (idSeleccionado == R.id.chipEntretenimiento) {
+        } else {
             for (SuscripcionModel sub : listaMaestra) {
-                if (sub.getCategoria().equals("Entretenimiento")) {
-                    listaFiltrada.add(sub);
-                }
-            }
-        } else if (idSeleccionado == R.id.chipMusica) {
-            for (SuscripcionModel sub : listaMaestra) {
-                if (sub.getCategoria().equals("Música")) {
+                if (sub.getCategoria().equals(categoriaSeleccionada)) {
                     listaFiltrada.add(sub);
                 }
             }
         }
-        // ¡Aquí puedes agregar más else-if para Videojuegos, Software, etc.!
 
         // Finalmente, mandamos la lista filtrada al RecyclerView
         adaptador.actualizarLista(listaFiltrada);

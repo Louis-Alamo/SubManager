@@ -21,13 +21,10 @@ import com.example.submanager.data.model.TercerosCompartidosModel;
         RegistrosPagoModel.class,
         EscaneosOcrModel.class,
         ConfiguracionAppModel.class
-}, version = 1, exportSchema = false)
+}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
-
-
     public abstract SuscripcionDao suscripcionDao();
-
 
     private static volatile AppDatabase INSTANCE;
 
