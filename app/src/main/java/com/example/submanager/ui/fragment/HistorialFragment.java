@@ -34,14 +34,17 @@ public class HistorialFragment extends Fragment {
 
     // ─── Mock model ─────────────────────────────────────────────────────────
     static class PagoMock {
-        String nombre, fechaCategoria, monto, colorHex;
-        int iconRes; // 0 = sin ícono, usa solo color de fondo
-        PagoMock(String nombre, String fechaCategoria, String monto, String colorHex, int iconRes) {
-            this.nombre = nombre;
+        String nombre, fechaCategoria, monto, colorHex, categoria;
+        int iconRes;
+        // categoria: "digital" | "hogar"
+        PagoMock(String nombre, String fechaCategoria, String monto,
+                 String colorHex, int iconRes, String categoria) {
+            this.nombre        = nombre;
             this.fechaCategoria = fechaCategoria;
-            this.monto = monto;
-            this.colorHex = colorHex;
-            this.iconRes = iconRes;
+            this.monto         = monto;
+            this.colorHex      = colorHex;
+            this.iconRes       = iconRes;
+            this.categoria     = categoria;
         }
     }
 
@@ -50,6 +53,8 @@ public class HistorialFragment extends Fragment {
     private TextView tvMesSeleccionado;
     private RecyclerView rvPagosMes;
     private View emptyState;
+    private PagoAdapter adapter;
+    private List<PagoMock> allPagos;
 
     @Nullable
     @Override
@@ -141,12 +146,17 @@ public class HistorialFragment extends Fragment {
 
     // ─── RecyclerView con datos mock ────────────────────────────────────────
     private void setupRecyclerView() {
-        List<PagoMock> pagos = getMockPagos();
+        allPagos = getMockPagos();
+        adapter = new PagoAdapter(new ArrayList<>(allPagos));
         rvPagosMes.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvPagosMes.setAdapter(new PagoAdapter(pagos));
+        rvPagosMes.setAdapter(adapter);
         rvPagosMes.setNestedScrollingEnabled(false);
+        actualizarVista(allPagos);
+    }
 
-        boolean sinDatos = pagos.isEmpty();
+    private void actualizarVista(List<PagoMock> filtrados) {
+        adapter.updateItems(filtrados);
+        boolean sinDatos = filtrados.isEmpty();
         rvPagosMes.setVisibility(sinDatos ? View.GONE : View.VISIBLE);
         emptyState.setVisibility(sinDatos ? View.VISIBLE : View.GONE);
     }
@@ -155,8 +165,26 @@ public class HistorialFragment extends Fragment {
     private void setupChips(@NonNull View root) {
         ChipGroup chipGroup = root.findViewById(R.id.cgFiltros);
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            // Aquí se filtraría la lista y se actualizaría el chart
+            if (checkedIds.isEmpty() || allPagos == null) return;
+            int id = checkedIds.get(0);
+            List<PagoMock> filtrados;
+            if (id == R.id.chipDigital) {
+                filtrados = filtrarPor("digital");
+            } else if (id == R.id.chipHogar) {
+                filtrados = filtrarPor("hogar");
+            } else {
+                filtrados = new ArrayList<>(allPagos);
+            }
+            actualizarVista(filtrados);
         });
+    }
+
+    private List<PagoMock> filtrarPor(String categoria) {
+        List<PagoMock> resultado = new ArrayList<>();
+        for (PagoMock p : allPagos) {
+            if (categoria.equals(p.categoria)) resultado.add(p);
+        }
+        return resultado;
     }
 
     // ─── Navegación de mes con flechas ──────────────────────────────────────
@@ -173,12 +201,25 @@ public class HistorialFragment extends Fragment {
     // ─── Datos mock ─────────────────────────────────────────────────────────
     private List<PagoMock> getMockPagos() {
         List<PagoMock> lista = new ArrayList<>();
-        lista.add(new PagoMock("Netflix",       "5 Mar · Entretenimiento",  "-$199.00", "#EF4444", R.drawable.ic_app_netflix));
-        lista.add(new PagoMock("Spotify",        "8 Mar · Música",           "-$129.00", "#22C55E", R.drawable.ic_app_spotify));
-        lista.add(new PagoMock("Xbox Game Pass", "10 Mar · Gaming",          "-$249.00", "#3B82F6", R.drawable.ic_app_xbox));
-        lista.add(new PagoMock("Luz Eléctrica",  "15 Mar · Hogar",           "-$640.00", "#F59E0B", R.drawable.ic_service_electricity));
-        lista.add(new PagoMock("YouTube Premium","18 Mar · Entretenimiento", "-$139.00", "#EC4899", R.drawable.ic_app_youtube));
-        lista.add(new PagoMock("Internet",       "20 Mar · Hogar",           "-$450.00", "#3B82F6", R.drawable.ic_service_internet));
+        // ── Digital ─────────────────────────────────────────────────────────
+        lista.add(new PagoMock("Netflix",         "1 Mar · Streaming",        "-$199.00", "#EF4444", R.drawable.ic_app_netflix,         "digital"));
+        lista.add(new PagoMock("Spotify",          "2 Mar · Música",           "-$129.00", "#22C55E", R.drawable.ic_app_spotify,          "digital"));
+        lista.add(new PagoMock("Xbox Game Pass",   "3 Mar · Gaming",           "-$249.00", "#107C10", R.drawable.ic_app_xbox,             "digital"));
+        lista.add(new PagoMock("Disney+",          "5 Mar · Streaming",        "-$159.00", "#0064FF", R.drawable.ic_app_disneyplus,       "digital"));
+        lista.add(new PagoMock("Prime Video",      "6 Mar · Streaming",        "-$99.00",  "#00A8E0", R.drawable.ic_app_prime_video,      "digital"));
+        lista.add(new PagoMock("YouTube Premium",  "8 Mar · Entretenimiento",  "-$139.00", "#FF0000", R.drawable.ic_app_youtube,          "digital"));
+        lista.add(new PagoMock("HBO Max",          "10 Mar · Streaming",       "-$179.00", "#00B4F5", R.drawable.ic_app_hbomax,           "digital"));
+        lista.add(new PagoMock("Twitch",           "12 Mar · Gaming",          "-$59.00",  "#9146FF", R.drawable.ic_app_twitch,           "digital"));
+        lista.add(new PagoMock("Duolingo Plus",    "14 Mar · Educación",       "-$89.00",  "#58CC02", R.drawable.ic_app_duolingo,         "digital"));
+        lista.add(new PagoMock("Mercado Libre +",  "16 Mar · Compras",         "-$99.00",  "#FFE600", R.drawable.ic_app_mercadolibre,     "digital"));
+        lista.add(new PagoMock("Microsoft Copilot","18 Mar · Software",        "-$200.00", "#0078D4", R.drawable.ic_app_copilot,          "digital"));
+        lista.add(new PagoMock("Google One",       "20 Mar · Almacenamiento",  "-$35.00",  "#4285F4", R.drawable.ic_app_google,           "digital"));
+        // ── Hogar ────────────────────────────────────────────────────────────
+        lista.add(new PagoMock("Luz Eléctrica",   "4 Mar · Hogar",            "-$640.00", "#F59E0B", R.drawable.ic_service_electricity,  "hogar"));
+        lista.add(new PagoMock("Internet",         "7 Mar · Hogar",            "-$450.00", "#3B82F6", R.drawable.ic_service_internet,     "hogar"));
+        lista.add(new PagoMock("Agua",             "9 Mar · Hogar",            "-$180.00", "#0EA5E9", R.drawable.ic_service_water,        "hogar"));
+        lista.add(new PagoMock("Gas",              "13 Mar · Hogar",           "-$320.00", "#F97316", R.drawable.ic_service_gas,          "hogar"));
+        lista.add(new PagoMock("Teléfono Celular", "17 Mar · Hogar",           "-$199.00", "#22C55E", R.drawable.ic_service_phone,        "hogar"));
         return lista;
     }
 
@@ -187,6 +228,12 @@ public class HistorialFragment extends Fragment {
 
         private final List<PagoMock> items;
         PagoAdapter(List<PagoMock> items) { this.items = items; }
+
+        void updateItems(List<PagoMock> nuevos) {
+            items.clear();
+            items.addAll(nuevos);
+            notifyDataSetChanged();
+        }
 
         @NonNull
         @Override
