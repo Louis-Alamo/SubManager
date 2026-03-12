@@ -46,6 +46,9 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
 
         // ── Apariencia (Color Picker) ─────────────────────────────────────────
         setupColorPicker();
+
+        // ── Método de Pago ────────────────────────────────────────────────────
+        setupMetodoPago();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -75,6 +78,39 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                         android.content.Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     imm.showSoftInput(autoCompleteCiclo,
+                            android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Método de pago: dropdown con opciones predefinidas + personalizado
+    // ─────────────────────────────────────────────────────────────────────────
+    private void setupMetodoPago() {
+        AutoCompleteTextView autoCompletePago = findViewById(R.id.autoCompletePago);
+
+        String[] metodos = getResources().getStringArray(R.array.metodos_pago);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                metodos);
+        autoCompletePago.setAdapter(adapter);
+
+        // Mostrar siempre el desplegable completo al pulsar el campo
+        autoCompletePago.setOnClickListener(v -> autoCompletePago.showDropDown());
+
+        // Si se elige "Personalizado…" → limpiar y abrir teclado
+        autoCompletePago.setOnItemClickListener((parent, view, position, id) -> {
+            String seleccionado = (String) parent.getItemAtPosition(position);
+            if (OPCION_PERSONALIZADO.equals(seleccionado)) {
+                autoCompletePago.setText("");
+                autoCompletePago.requestFocus();
+                android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(
+                        android.content.Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(autoCompletePago,
                             android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
                 }
             }
