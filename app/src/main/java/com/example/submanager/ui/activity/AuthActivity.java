@@ -1,17 +1,25 @@
 package com.example.submanager.ui.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.submanager.R;
+import com.example.submanager.data.AppDatabase;
+import com.example.submanager.data.model.UsuarioModel;
+import com.example.submanager.utils.CryptoUtils;
+import com.example.submanager.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -152,9 +160,40 @@ public class AuthActivity extends AppCompatActivity {
         }
         if (!valid) return;
 
-        // Mock success
-        Snackbar.make(btnIniciarSesion, "✅ ¡Bienvenido de vuelta!", Snackbar.LENGTH_SHORT).show();
-        btnIniciarSesion.postDelayed(this::finish, 800);
+    private void handleLogin() {
+        clearErrors();
+        String email    = etLoginEmail.getText()    != null ? etLoginEmail.getText().toString().trim()    : "";
+        String password = etLoginPassword.getText() != null ? etLoginPassword.getText().toString().trim() : "";
+
+        boolean valid = true;
+        if (email.isEmpty()) {
+            tilLoginEmail.setError("Ingresa tu correo");
+            valid = false;
+        }
+        if (password.isEmpty()) {
+            tilLoginPassword.setError("Ingresa tu contraseña");
+            valid = false;
+        }
+        if (!valid) return;
+
+        btnIniciarSesion.setEnabled(false);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            UsuarioModel usuario = AppDatabase.getInstance(this).usuarioDao().findByEmail(email);
+            handler.post(() -> {
+                btnIniciarSesion.setEnabled(true);
+                if (usuario == null) {
+                    tilLoginEmail.setError("No existe cuenta con ese correo");
+                } else if (!CryptoUtils.hashPassword(password, usuario.salt).equals(usuario.passwordHash)) {
+                    tilLoginPassword.setError("Contraseña incorrecta");
+                } else {
+                    new SessionManager(this).saveSession(usuario.email, usuario.nombre);
+                    Snackbar.make(btnIniciarSesion, "✅ ¡Bienvenido, " + usuario.nombre + "!", Snackbar.LENGTH_SHORT).show();
+                    btnIniciarSesion.postDelayed(this::finish, 800);
+                }
+            });
+        });
     }
 
     private void handleRegister() {
@@ -189,9 +228,37 @@ public class AuthActivity extends AppCompatActivity {
         }
         if (!valid) return;
 
-        // Mock success
-        Snackbar.make(btnCrearCuenta, "🎉 ¡Cuenta creada! Bienvenido a SubManager", Snackbar.LENGTH_SHORT).show();
-        btnCrearCuenta.postDelayed(this::finish, 800);
+        btnCrearCuenta.setEnabled(false);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            UsuarioModel existing = AppDatabase.getInstance(this).usuarioDao().findByEmail(email);
+            if (existing != null) {
+                handler.post(() -> {
+                    btnCrearCuenta.setEnabled(true);
+                    tilRegEmail.setError("Ya hay una cuenta con ese correo");
+                });
+                return;
+            }
+            String salt = CryptoUtils.generateSalt();
+            UsuarioModel nuevo = new UsuarioModel();
+            nuevo.nombre       = nombre;
+            nuevo.email        = email;
+            nuevo.passwordHash = CryptoUtils.hashPassword(password, salt);
+            nuevo.salt         = salt;
+            nuevo.creadoEn     = String.valueOf(System.currentTimeMillis());
+            long id = AppDatabase.getInstance(this).usuarioDao().insertUsuario(nuevo);
+            handler.post(() -> {
+                btnCrearCuenta.setEnabled(true);
+                if (id == -1) {
+                    tilRegEmail.setError("Ya hay una cuenta con ese correo");
+                } else {
+                    new SessionManager(this).saveSession(email, nombre);
+                    Snackbar.make(btnCrearCuenta, "🎉 ¡Cuenta creada! Bienvenido, " + nombre, Snackbar.LENGTH_SHORT).show();
+                    btnCrearCuenta.postDelayed(this::finish, 800);
+                }
+            });
+        });
     }
 
     private void clearErrors() {

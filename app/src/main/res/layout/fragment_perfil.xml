@@ -146,6 +146,13 @@
                         android:background="@color/border"
                         android:layout_marginBottom="18dp" />
 
+                    <!-- Formulario de login (visible cuando no hay sesión) -->
+                    <LinearLayout
+                        android:id="@+id/loginSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
                     <!-- Email -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilEmail"
@@ -164,7 +171,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textEmailAddress"
-                            android:hint="@string/auth_email_hint"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -187,7 +193,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword"
-                            android:hint="@string/auth_password_hint"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -213,6 +218,30 @@
                         android:paddingTop="12dp"
                         android:clickable="true"
                         android:focusable="true" />
+
+                    </LinearLayout>
+
+                    <!-- Vista de sesión activa (visible cuando hay sesión) -->
+                    <LinearLayout
+                        android:id="@+id/loggedInSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnLogout"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:text="@string/settings_account_logout_button"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            app:icon="@drawable/ic_logout"
+                            app:iconGravity="textStart"
+                            app:cornerRadius="12dp" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

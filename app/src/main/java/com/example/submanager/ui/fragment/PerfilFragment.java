@@ -2,6 +2,8 @@ package com.example.submanager.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +15,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.submanager.R;
+import com.example.submanager.data.AppDatabase;
+import com.example.submanager.data.model.UsuarioModel;
 import com.example.submanager.ui.activity.AuthActivity;
 import com.example.submanager.ui.activity.PremiumActivity;
+import com.example.submanager.utils.CryptoUtils;
+import com.example.submanager.utils.SessionManager;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PerfilFragment extends Fragment {
 
@@ -39,7 +47,14 @@ public class PerfilFragment extends Fragment {
     private TextInputEditText etEmail;
     private TextInputEditText etPassword;
 
-    // ── Estado mock ───────────────────────────────────────────────────────────
+    // ── Auth & sesión ───────────────────────────────────────────────────────────
+    private SessionManager sessionManager;
+    private LinearLayout loginSection;
+    private LinearLayout loggedInSection;
+    private TextView tvUserName;
+    private TextView tvUserEmail;
+
+    // ── Estado notificaciones ─────────────────────────────────────────────────
     private boolean notificacionesActivas = true;
 
     @Nullable
@@ -53,8 +68,16 @@ public class PerfilFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        sessionManager = new SessionManager(requireContext());
         bindViews(view);
         setupListeners(view);
+        updateAuthUI();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateAuthUI();
     }
 
     // ── Binding ───────────────────────────────────────────────────────────────
@@ -69,6 +92,11 @@ public class PerfilFragment extends Fragment {
         rowPrivacy           = root.findViewById(R.id.rowPrivacy);
         rowSupport           = root.findViewById(R.id.rowSupport);
         btnHelp              = root.findViewById(R.id.btnHelp);
+
+        tvUserName      = root.findViewById(R.id.tvUserName);
+        tvUserEmail     = root.findViewById(R.id.tvUserEmail);
+        loginSection    = root.findViewById(R.id.loginSection);
+        loggedInSection = root.findViewById(R.id.loggedInSection);
 
         // Campos de login inline
         tilEmail    = root.findViewById(R.id.tilEmail);
@@ -145,6 +173,32 @@ public class PerfilFragment extends Fragment {
             bannerPremium.setOnClickListener(v ->
                     startActivity(new Intent(requireContext(), PremiumActivity.class)));
         }
+        // Logout ──────────────────────────────────────────────────────────
+        View btnLogout = root.findViewById(R.id.btnLogout);
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> {
+                sessionManager.clearSession();
+                updateAuthUI();
+                showSnackbar(root, "Sesión cerrada");
+            });
+        }
+    }
+
+    // ── Estado de sesión ──────────────────────────────────────────────────────
+
+    private void updateAuthUI() {
+        if (!isAdded()) return;
+        if (sessionManager.isLoggedIn()) {
+            if (tvUserName  != null) tvUserName.setText(sessionManager.getNombre());
+            if (tvUserEmail != null) tvUserEmail.setText(sessionManager.getEmail());
+            if (loginSection    != null) loginSection.setVisibility(View.GONE);
+            if (loggedInSection != null) loggedInSection.setVisibility(View.VISIBLE);
+        } else {
+            if (tvUserName  != null) tvUserName.setText(getString(R.string.settings_account_guest));
+            if (tvUserEmail != null) tvUserEmail.setText(getString(R.string.settings_account_guest_subtitle));
+            if (loginSection    != null) loginSection.setVisibility(View.VISIBLE);
+            if (loggedInSection != null) loggedInSection.setVisibility(View.GONE);
+        }
     }
 
     // ── Login inline ──────────────────────────────────────────────────────────
@@ -165,13 +219,30 @@ public class PerfilFragment extends Fragment {
         if (password.isEmpty()) {
             tilPassword.setError("Ingresa tu contraseña");
             valid = false;
-        } else if (password.length() < 6) {
-            tilPassword.setError("Mínimo 6 caracteres");
-            valid = false;
         }
         if (!valid) return;
 
-        showSnackbar(root, "✅ ¡Bienvenido de vuelta!");
+        View btnLogin = root.findViewById(R.id.btnLogin);
+        if (btnLogin != null) btnLogin.setEnabled(false);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            UsuarioModel usuario = AppDatabase.getInstance(requireContext()).usuarioDao().findByEmail(email);
+            handler.post(() -> {
+                if (!isAdded()) return;
+                if (btnLogin != null) btnLogin.setEnabled(true);
+                if (usuario == null) {
+                    tilEmail.setError("No existe cuenta con ese correo");
+                } else if (!CryptoUtils.hashPassword(password, usuario.salt).equals(usuario.passwordHash)) {
+                    tilPassword.setError("Contraseña incorrecta");
+                } else {
+                    sessionManager.saveSession(usuario.email, usuario.nombre);
+                    updateAuthUI();
+                    showSnackbar(root, "✅ ¡Bienvenido, " + usuario.nombre + "!");
+                }
+            });
+        });
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

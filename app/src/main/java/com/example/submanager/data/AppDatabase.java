@@ -8,12 +8,14 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.submanager.data.dao.SuscripcionDao;
+import com.example.submanager.data.dao.UsuarioDao;
 import com.example.submanager.data.model.ConfiguracionAppModel;
 import com.example.submanager.data.model.EscaneosOcrModel;
 import com.example.submanager.data.model.RegistrosPagoModel;
 import com.example.submanager.data.model.ServicioFisicoModel;
 import com.example.submanager.data.model.SuscripcionModel;
 import com.example.submanager.data.model.TercerosCompartidosModel;
+import com.example.submanager.data.model.UsuarioModel;
 
 import java.util.concurrent.Executors;
 
@@ -23,11 +25,13 @@ import java.util.concurrent.Executors;
         TercerosCompartidosModel.class,
         RegistrosPagoModel.class,
         EscaneosOcrModel.class,
-        ConfiguracionAppModel.class
-}, version = 3, exportSchema = false) // Subimos versión a 3
+        ConfiguracionAppModel.class,
+        UsuarioModel.class
+}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract SuscripcionDao suscripcionDao();
+    public abstract UsuarioDao usuarioDao();
 
     private static volatile AppDatabase INSTANCE;
 
