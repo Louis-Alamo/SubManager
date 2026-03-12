@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <!-- Círculo naranja gas -->
+  <path android:pathData="M54,4 C26.4,4 4,26.4 4,54 C4,81.6 26.4,104 54,104 C81.6,104 104,81.6 104,54 C104,26.4 81.6,4 54,4 Z"
+      android:fillColor="#F97316"/>
+  <!-- Llama de gas -->
+  <path android:pathData="M54,20 C54,20 42,36 38,48 C35,57 38,64 44,68 C42,62 44,56 48,52 C48,58 50,62 54,66 C58,62 60,58 60,52 C64,56 66,62 64,68 C70,64 73,57 70,48 C66,36 54,20 54,20 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Centro de la llama (más claro) -->
+  <path android:pathData="M54,42 C54,42 48,50 48,58 C48,62 51,66 54,68 C57,66 60,62 60,58 C60,50 54,42 54,42 Z"
+      android:fillColor="#FEF3C7"/>
+</vector>

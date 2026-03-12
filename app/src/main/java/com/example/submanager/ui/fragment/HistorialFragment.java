@@ -176,9 +176,9 @@ public class HistorialFragment extends Fragment {
         lista.add(new PagoMock("Netflix",       "5 Mar · Entretenimiento",  "-$199.00", "#EF4444", R.drawable.ic_app_netflix));
         lista.add(new PagoMock("Spotify",        "8 Mar · Música",           "-$129.00", "#22C55E", R.drawable.ic_app_spotify));
         lista.add(new PagoMock("Xbox Game Pass", "10 Mar · Gaming",          "-$249.00", "#3B82F6", R.drawable.ic_app_xbox));
-        lista.add(new PagoMock("Luz Eléctrica",  "15 Mar · Hogar",           "-$640.00", "#F97316", 0));
+        lista.add(new PagoMock("Luz Eléctrica",  "15 Mar · Hogar",           "-$640.00", "#F59E0B", R.drawable.ic_service_electricity));
         lista.add(new PagoMock("YouTube Premium","18 Mar · Entretenimiento", "-$139.00", "#EC4899", R.drawable.ic_app_youtube));
-        lista.add(new PagoMock("Internet",       "20 Mar · Hogar",           "-$450.00", "#7C3AED", 0));
+        lista.add(new PagoMock("Internet",       "20 Mar · Hogar",           "-$450.00", "#3B82F6", R.drawable.ic_service_internet));
         return lista;
     }
 

@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <!-- Fondo negro TikTok -->
+  <path android:pathData="M0,20 Q0,0 20,0 L88,0 Q108,0 108,20 L108,88 Q108,108 88,108 L20,108 Q0,108 0,88 Z"
+      android:fillColor="#010101"/>
+  <!-- Nota musical estilizada -->
+  <!-- Sombra cian -->
+  <path android:pathData="M48,22 L48,70 C48,74 44,78 40,78 C36,78 32,74 32,70 C32,66 36,62 40,62 C42,62 43,63 44,64 L44,22 Z"
+      android:fillColor="#69C9D0"/>
+  <path android:pathData="M44,22 L44,38 C44,38 58,36 64,28 L64,44 C64,44 54,48 44,46 L44,70 C44,76 38,80 32,78 C26,76 22,70 24,64..."
+      android:fillColor="#69C9D0"
+      android:fillAlpha="0"/>
+  <!-- Forma principal blanca -->
+  <path android:pathData="M48,22 L58,22 C58,30 64,36 72,38 L72,48 C66,48 60,46 56,42 L56,70 C56,78 50,84 42,84 C34,84 28,78 28,70 C28,62 34,56 42,56 C44,56 46,56.5 48,57.5 L48,68 C46.5,67 44.5,66.5 43,66.5 C39,66.5 36,69.5 36,73.5 C36,77.5 39,80.5 43,80.5 C47,80.5 50,77.5 50,73.5 L50,22 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Sombra roja opuesta -->
+  <path android:pathData="M46,22 L56,22 C56,30 62,36 70,38 L70,48 C64,48 58,46 54,42 L54,70 C54,78 48,84 40,84 C32,84 26,78 26,70 C26,62 32,56 40,56 C42,56 44,56.5 46,57.5 L46,68 C44.5,67 42.5,66.5 41,66.5 C37,66.5 34,69.5 34,73.5 C34,77.5 37,80.5 41,80.5 C45,80.5 48,77.5 48,73.5 L48,22 Z"
+      android:fillColor="#EE1D52"
+      android:fillAlpha="0.6"/>
+</vector>

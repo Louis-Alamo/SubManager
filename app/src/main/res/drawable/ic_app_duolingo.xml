@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <!-- Círculo verde Duolingo -->
+  <path android:pathData="M54,4 C26.4,4 4,26.4 4,54 C4,81.6 26.4,104 54,104 C81.6,104 104,81.6 104,54 C104,26.4 81.6,4 54,4 Z"
+      android:fillColor="#58CC02"/>
+  <!-- Cuerpo del búho simplificado -->
+  <path android:pathData="M54,22 C42,22 34,30 34,40 C34,46 37,52 34,60 C32,66 34,76 44,78 C46,82 50,84 54,84 C58,84 62,82 64,78 C74,76 76,66 74,60 C71,52 74,46 74,40 C74,30 66,22 54,22 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Ojos -->
+  <path android:pathData="M44,38 C44,34 48,31 52,31 C56,31 58,34 58,38 C58,42 55,45 52,45 C48,45 44,42 44,38 Z"
+      android:fillColor="#1CB0F6"/>
+  <path android:pathData="M50,36 C50,34 51,33 52,33 C54,33 55,34 55,36 C55,38 54,39 52,39 C51,39 50,38 50,36 Z"
+      android:fillColor="#000000"/>
+  <path android:pathData="M56,38 C56,34 60,31 64,31 C68,31 70,34 70,38 C70,42 67,45 64,45 C60,45 56,42 56,38 Z"
+      android:fillColor="#1CB0F6"/>
+  <path android:pathData="M62,36 C62,34 63,33 64,33 C66,33 67,34 67,36 C67,38 66,39 64,39 C63,39 62,38 62,36 Z"
+      android:fillColor="#000000"/>
+  <!-- Pico -->
+  <path android:pathData="M50,50 L54,56 L58,50 Z"
+      android:fillColor="#FF9600"/>
+</vector>
