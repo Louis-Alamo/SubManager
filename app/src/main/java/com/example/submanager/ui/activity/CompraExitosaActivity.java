@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.submanager.R;
+import com.example.submanager.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.Calendar;
@@ -34,29 +35,32 @@ public class CompraExitosaActivity extends AppCompatActivity {
     }
 
     private void loadPurchaseData() {
-        String plan  = getIntent().getStringExtra("plan");
-        String monto = getIntent().getStringExtra("monto");
+        String plan   = getIntent().getStringExtra("plan");
+        String monto  = getIntent().getStringExtra("monto");
+        String expiry = getIntent().getStringExtra("expiry");
 
-        if (plan == null)  plan  = "Premium Anual";
+        if (plan  == null) plan  = "Premium Anual";
         if (monto == null) monto = "500.00";
 
         tvCompraPlan.setText(plan);
         tvCompraMonto.setText("$" + monto + " MXN");
         tvCompraPago.setText("Tarjeta de crédito");
 
-        // Compute renewal date (today + 1 year or + 1 month)
-        Calendar cal = Calendar.getInstance();
-        if (plan.contains("Anual")) {
-            cal.add(Calendar.YEAR, 1);
-        } else {
-            cal.add(Calendar.MONTH, 1);
+        // Compute renewal date if not passed
+        if (expiry == null) {
+            Calendar cal = Calendar.getInstance();
+            if (plan.contains("Anual")) cal.add(Calendar.YEAR, 1);
+            else cal.add(Calendar.MONTH, 1);
+            String[] months = {"Ene","Feb","Mar","Abr","May","Jun",
+                               "Jul","Ago","Sep","Oct","Nov","Dic"};
+            expiry = cal.get(Calendar.DAY_OF_MONTH)
+                    + " " + months[cal.get(Calendar.MONTH)]
+                    + " " + cal.get(Calendar.YEAR);
         }
-        String[] months = {"Ene","Feb","Mar","Abr","May","Jun",
-                           "Jul","Ago","Sep","Oct","Nov","Dic"};
-        String renewDate = cal.get(Calendar.DAY_OF_MONTH)
-                + " " + months[cal.get(Calendar.MONTH)]
-                + " " + cal.get(Calendar.YEAR);
-        tvCompraRenovacion.setText(renewDate);
+        tvCompraRenovacion.setText(expiry);
+
+        // Ensure Premium is persisted (safety net if launched independently)
+        new SessionManager(this).savePremium(plan, expiry);
     }
 
     private void setupListeners() {
