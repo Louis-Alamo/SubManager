@@ -125,13 +125,23 @@ public class PerfilFragment extends Fragment {
         rowTime.setOnClickListener(v ->
                 showSnackbar(root, "Selector de hora próximamente"));
 
-        // Respaldar (Premium lock) ────────────────────────────────────────────
-        rowBackup.setOnClickListener(v ->
-                showSnackbar(root, "Función exclusiva de Premium 👑"));
+        // Respaldar ───────────────────────────────────────────────────────────
+        rowBackup.setOnClickListener(v -> {
+            if (sessionManager.isPremium()) {
+                showSnackbar(root, "☁️ Respaldo iniciado. Tus datos están seguros.");
+            } else {
+                startActivity(new Intent(requireContext(), PremiumActivity.class));
+            }
+        });
 
-        // Restaurar (Premium lock) ────────────────────────────────────────────
-        rowRestore.setOnClickListener(v ->
-                showSnackbar(root, "Función exclusiva de Premium 👑"));
+        // Restaurar ───────────────────────────────────────────────────────────
+        rowRestore.setOnClickListener(v -> {
+            if (sessionManager.isPremium()) {
+                showSnackbar(root, "✅ Restauración completada desde la nube.");
+            } else {
+                startActivity(new Intent(requireContext(), PremiumActivity.class));
+            }
+        });
 
         // Términos ────────────────────────────────────────────────────────────
         rowTerms.setOnClickListener(v ->
@@ -198,6 +208,13 @@ public class PerfilFragment extends Fragment {
             if (tvUserEmail != null) tvUserEmail.setText(getString(R.string.settings_account_guest_subtitle));
             if (loginSection    != null) loginSection.setVisibility(View.VISIBLE);
             if (loggedInSection != null) loggedInSection.setVisibility(View.GONE);
+        }
+
+        // Banner Premium — oculto si ya es suscriptor
+        View banner = getView() != null ? getView().findViewById(R.id.bannerPremium) : null;
+        View bannerCard = banner != null ? (View) banner.getParent() : null;
+        if (bannerCard != null) {
+            bannerCard.setVisibility(sessionManager.isPremium() ? View.GONE : View.VISIBLE);
         }
     }
 

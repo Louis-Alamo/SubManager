@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 
 public class SessionManager {
 
-    private static final String PREF_NAME   = "SubManagerSession";
-    private static final String KEY_LOGGED  = "isLoggedIn";
-    private static final String KEY_EMAIL   = "email";
-    private static final String KEY_NOMBRE  = "nombre";
+    private static final String PREF_NAME      = "SubManagerSession";
+    private static final String KEY_LOGGED     = "isLoggedIn";
+    private static final String KEY_EMAIL      = "email";
+    private static final String KEY_NOMBRE     = "nombre";
+    private static final String KEY_PREMIUM    = "isPremium";
+    private static final String KEY_PREM_PLAN  = "premiumPlan";
+    private static final String KEY_PREM_EXPIRY = "premiumExpiry";
 
     private final SharedPreferences prefs;
 
@@ -38,5 +41,33 @@ public class SessionManager {
 
     public String getNombre() {
         return prefs.getString(KEY_NOMBRE, "");
+    }
+
+    public void savePremium(String plan, String expiry) {
+        prefs.edit()
+                .putBoolean(KEY_PREMIUM, true)
+                .putString(KEY_PREM_PLAN, plan)
+                .putString(KEY_PREM_EXPIRY, expiry)
+                .apply();
+    }
+
+    public void clearPremium() {
+        prefs.edit()
+                .remove(KEY_PREMIUM)
+                .remove(KEY_PREM_PLAN)
+                .remove(KEY_PREM_EXPIRY)
+                .apply();
+    }
+
+    public boolean isPremium() {
+        return prefs.getBoolean(KEY_PREMIUM, false);
+    }
+
+    public String getPremiumPlan() {
+        return prefs.getString(KEY_PREM_PLAN, "");
+    }
+
+    public String getPremiumExpiry() {
+        return prefs.getString(KEY_PREM_EXPIRY, "");
     }
 }
