@@ -14,75 +14,37 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.submanager.R;
+import com.example.submanager.data.model.SuscripcionModel;
 import com.example.submanager.ui.activity.NuevoServicioActivity;
+import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import com.example.submanager.utils.SessionManager;
 
 public class DashboardFragment extends Fragment {
 
-    // ══════════════════════════════════════════════════════════════
-    //  Modelo mock
-    // ══════════════════════════════════════════════════════════════
-    static class SuscripcionMock {
-        String nombre, colorHex, categoria;
-        double monto;
-        int iconRes;
-        /** días para vencer: ≥0 = pendiente, <0 = ya pagado este mes */
-        int diasParaVencer;
-
-        SuscripcionMock(String nombre, double monto, String colorHex,
-                        int iconRes, int diasParaVencer, String categoria) {
-            this.nombre        = nombre;
-            this.monto         = monto;
-            this.colorHex      = colorHex;
-            this.iconRes       = iconRes;
-            this.diasParaVencer = diasParaVencer;
-            this.categoria     = categoria;
-        }
-    }
-
-    // ══════════════════════════════════════════════════════════════
-    //  Datos mock
-    // ══════════════════════════════════════════════════════════════
-    private List<SuscripcionMock> buildMockData() {
-        List<SuscripcionMock> l = new ArrayList<>();
-        // --- Pendientes (diasParaVencer >= 0) ---
-        l.add(new SuscripcionMock("YouTube Premium",    89.00,  "#FF0000", R.drawable.ic_app_youtube,      0,  "digital"));
-        l.add(new SuscripcionMock("Netflix Premium",    219.00, "#E50914", R.drawable.ic_app_netflix,      1,  "digital"));
-        l.add(new SuscripcionMock("Luz Eléctrica",      850.00, "#F97316", R.drawable.ic_service_electricity, 2, "hogar"));
-        l.add(new SuscripcionMock("Spotify",            99.00,  "#1DB954", R.drawable.ic_app_spotify,      3,  "digital"));
-        l.add(new SuscripcionMock("Disney+",            159.00, "#113CCF", R.drawable.ic_app_disneyplus,   5,  "digital"));
-        l.add(new SuscripcionMock("Xbox Game Pass",     259.00, "#107C10", R.drawable.ic_app_xbox,         7,  "digital"));
-        l.add(new SuscripcionMock("Spotify Familiar",   149.00, "#1DB954", R.drawable.ic_app_spotify,      15, "digital"));
-        l.add(new SuscripcionMock("Agua",               180.00, "#0EA5E9", R.drawable.ic_service_water,    20, "hogar"));
-        // --- Pagados (diasParaVencer < 0) ---
-        l.add(new SuscripcionMock("HBO Max",            189.00, "#7C3AED", R.drawable.ic_app_hbomax,      -5,  "digital"));
-        l.add(new SuscripcionMock("Amazon Prime Video", 129.00, "#00A8E0", R.drawable.ic_app_prime_video, -8,  "digital"));
-        l.add(new SuscripcionMock("Google One 100GB",   79.00,  "#4285F4", R.drawable.ic_app_google,      -12, "digital"));
-        l.add(new SuscripcionMock("Internet Hogar",     599.00, "#2563EB", R.drawable.ic_service_internet,-3,  "hogar"));
-        l.add(new SuscripcionMock("Mercado Libre+",     99.00,  "#FFE600", R.drawable.ic_app_mercadolibre,-15, "digital"));
-        l.add(new SuscripcionMock("Apple Music",        79.00,  "#FC3C44", R.drawable.ic_app_apple_music, -20, "digital"));
-        return l;
-    }
-
-    // ══════════════════════════════════════════════════════════════
-    //  Vistas
-    // ══════════════════════════════════════════════════════════════
-    private TextView tvGreeting, tvMontoPendiente, tvMontoPagado, tvMontoTotal;
+    private TextView tvWelcome, tvGreeting, tvMontoPendiente, tvMontoPagado, tvMontoTotal;
     private RecyclerView rvProximos;
     private LinearLayout sectionProximos;
     private View emptyUpcoming;
     private UpcomingAdapter adapter;
+    private SuscripcionViewModel viewModel;
+    private boolean summaryLoaded = false;
+    private boolean upcomingLoaded = false;
 
     @Nullable
     @Override
@@ -96,17 +58,10 @@ public class DashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ── Shimmer → contenido real ──────────────────────────────
         ShimmerFrameLayout shimmer = view.findViewById(R.id.shimmerDashboard);
         View scroll = view.findViewById(R.id.scrollDashboard);
 
-        view.postDelayed(() -> {
-            shimmer.stopShimmer();
-            shimmer.setVisibility(View.GONE);
-            scroll.setVisibility(View.VISIBLE);
-        }, 1200);
-
-        // ── Bind vistas ───────────────────────────────────────────
+        tvWelcome         = view.findViewById(R.id.tvWelcome);
         tvGreeting        = view.findViewById(R.id.tvGreeting);
         tvMontoPendiente  = view.findViewById(R.id.tvMontoPendiente);
         tvMontoPagado     = view.findViewById(R.id.tvMontoPagado);
@@ -115,25 +70,40 @@ public class DashboardFragment extends Fragment {
         sectionProximos   = view.findViewById(R.id.sectionProximos);
         emptyUpcoming     = view.findViewById(R.id.emptyUpcoming);
 
-        // ── Datos ─────────────────────────────────────────────────
-        List<SuscripcionMock> todos = buildMockData();
-
-        // ── Saludo por hora ───────────────────────────────────────
+        setupWelcomeUser();
         setupGreeting();
 
-        // ── Tarjetas resumen ──────────────────────────────────────
-        setupSummaryCards(todos);
+        viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
 
-        // ── Próximos vencimientos (0..7 días) ─────────────────────
-        setupUpcomingList(todos);
+        // Resumen general desde la tabla completa
+        viewModel.getTodasLasSuscripciones().observe(getViewLifecycleOwner(), suscripciones -> {
+            if (suscripciones != null) {
+                setupSummaryCards(suscripciones);
+                summaryLoaded = true;
+                maybeShowContent(shimmer, scroll);
+            }
+        });
 
-        // ── Navegación ────────────────────────────────────────────
+        // Proximos vencimientos directamente desde Room
+        viewModel.getSuscripcionesProximas().observe(getViewLifecycleOwner(), suscripcionesProximas -> {
+            if (suscripcionesProximas != null) {
+                setupUpcomingList(suscripcionesProximas);
+                upcomingLoaded = true;
+                maybeShowContent(shimmer, scroll);
+            }
+        });
+
         setupNavigation(view);
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  Saludo dinámico según hora del día
-    // ══════════════════════════════════════════════════════════════
+    private void maybeShowContent(ShimmerFrameLayout shimmer, View scroll) {
+        if (summaryLoaded && upcomingLoaded) {
+            shimmer.stopShimmer();
+            shimmer.setVisibility(View.GONE);
+            scroll.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void setupGreeting() {
         int hora = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         String saludo;
@@ -143,63 +113,120 @@ public class DashboardFragment extends Fragment {
         tvGreeting.setText(saludo);
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  Totales calculados de los datos mock
-    // ══════════════════════════════════════════════════════════════
-    private void setupSummaryCards(List<SuscripcionMock> todos) {
-        double pendiente = 0, pagado = 0, total = 0;
-        for (SuscripcionMock s : todos) {
-            total += s.monto;
-            if (s.diasParaVencer >= 0) pendiente += s.monto;
-            else                       pagado    += s.monto;
+    private void setupWelcomeUser() {
+        if (tvWelcome == null || getContext() == null) return;
+
+        SessionManager sessionManager = new SessionManager(requireContext());
+        String nombre = sessionManager.getNombre();
+
+        if (nombre != null) {
+            nombre = nombre.trim();
         }
-        tvMontoPendiente.setText(String.format(Locale.getDefault(), "$%.0f", pendiente));
-        tvMontoPagado   .setText(String.format(Locale.getDefault(), "$%.0f", pagado));
-        tvMontoTotal    .setText(String.format(Locale.getDefault(), "$%.0f", total));
+
+        if (nombre != null && !nombre.isEmpty()) {
+            tvWelcome.setText("Bienvenido, " + nombre);
+        } else {
+            tvWelcome.setText("Bienvenido");
+        }
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  RecyclerView: próximos 7 días
-    // ══════════════════════════════════════════════════════════════
-    private void setupUpcomingList(List<SuscripcionMock> todos) {
-        List<SuscripcionMock> proximos = new ArrayList<>();
-        for (SuscripcionMock s : todos) {
-            if (s.diasParaVencer >= 0 && s.diasParaVencer <= 7) {
+    private void setupSummaryCards(List<SuscripcionModel> todos) {
+        double pendiente = 0, pagado = 0, total = 0;
+
+        for (SuscripcionModel s : todos) {
+            if (!s.isEstaActiva()) continue;
+
+            total += s.getMonto();
+
+            long dias = getDiasRestantes(s.getFechaProximoCobro());
+            if (dias >= 0) {
+                pendiente += s.getMonto();
+            } else {
+                pagado += s.getMonto();
+            }
+        }
+
+        tvMontoPendiente.setText(String.format(Locale.getDefault(), "$%.0f", pendiente));
+        tvMontoPagado.setText(String.format(Locale.getDefault(), "$%.0f", pagado));
+        tvMontoTotal.setText(String.format(Locale.getDefault(), "$%.0f", total));
+    }
+
+    private void setupUpcomingList(List<SuscripcionModel> proximosDesdeBd) {
+        List<SuscripcionModel> proximos = new ArrayList<>();
+        for (SuscripcionModel s : proximosDesdeBd) {
+            if (!s.isEstaActiva()) continue;
+
+            long dias = getDiasRestantes(s.getFechaProximoCobro());
+            // Mostrar todo lo futuro para asegurar visibilidad real desde BD
+            if (dias >= 0) {
                 proximos.add(s);
             }
         }
-        // Ordenar por días ascendente
-        proximos.sort((a, b) -> Integer.compare(a.diasParaVencer, b.diasParaVencer));
+
+        proximos.sort((a, b) -> {
+            long diasA = getDiasRestantes(a.getFechaProximoCobro());
+            long diasB = getDiasRestantes(b.getFechaProximoCobro());
+            return Long.compare(diasA, diasB);
+        });
 
         if (proximos.isEmpty()) {
             if (sectionProximos != null) sectionProximos.setVisibility(View.GONE);
-            if (emptyUpcoming  != null) emptyUpcoming.setVisibility(View.VISIBLE);
-        } else {
-            if (sectionProximos != null) sectionProximos.setVisibility(View.VISIBLE);
-            if (emptyUpcoming  != null) emptyUpcoming.setVisibility(View.GONE);
+            if (emptyUpcoming != null) emptyUpcoming.setVisibility(View.VISIBLE);
+            if (adapter != null) adapter.setItems(new ArrayList<>());
+            return;
+        }
+
+        if (sectionProximos != null) sectionProximos.setVisibility(View.VISIBLE);
+        if (emptyUpcoming != null) emptyUpcoming.setVisibility(View.GONE);
+
+        if (adapter == null) {
             adapter = new UpcomingAdapter(proximos);
             rvProximos.setLayoutManager(new LinearLayoutManager(requireContext()));
             rvProximos.setNestedScrollingEnabled(false);
             rvProximos.setAdapter(adapter);
+        } else {
+            adapter.setItems(proximos);
         }
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  Navegación entre tabs
-    // ══════════════════════════════════════════════════════════════
+    private long getDiasRestantes(String fechaStr) {
+        if (fechaStr == null || fechaStr.isEmpty()) return 999;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            Date fechaCobro = sdf.parse(fechaStr);
+            if (fechaCobro == null) return 999;
+
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+            today.set(Calendar.MILLISECOND, 0);
+
+            Calendar target = Calendar.getInstance();
+            target.setTime(fechaCobro);
+            target.set(Calendar.HOUR_OF_DAY, 0);
+            target.set(Calendar.MINUTE, 0);
+            target.set(Calendar.SECOND, 0);
+            target.set(Calendar.MILLISECOND, 0);
+
+            long diff = target.getTimeInMillis() - today.getTimeInMillis();
+            return TimeUnit.MILLISECONDS.toDays(diff);
+        } catch (ParseException e) {
+            return 999;
+        }
+    }
+
     private void setupNavigation(View root) {
-        // Ajustes → Perfil
         View ivSettings = root.findViewById(R.id.ivSettings);
         if (ivSettings != null) ivSettings.setOnClickListener(v -> navigateTo(R.id.nav_perfil));
 
-        // Agregar suscripción / servicio → Suscripciones
         View cardSub  = root.findViewById(R.id.cardAgregarSuscripcion);
         View cardServ = root.findViewById(R.id.cardAgregarServicio);
-        if (cardSub  != null) cardSub .setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
+        if (cardSub != null) cardSub.setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
         if (cardServ != null) cardServ.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), NuevoServicioActivity.class)));
 
-        // Ver todos → Alertas
         View tvSeeAll = root.findViewById(R.id.tvSeeAll);
         if (tvSeeAll != null) tvSeeAll.setOnClickListener(v -> navigateTo(R.id.nav_alertas));
     }
@@ -210,14 +237,16 @@ public class DashboardFragment extends Fragment {
         if (nav != null) nav.setSelectedItemId(navItemId);
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  Adapter interno para rvProximos
-    // ══════════════════════════════════════════════════════════════
     private class UpcomingAdapter extends RecyclerView.Adapter<UpcomingAdapter.VH> {
 
-        private final List<SuscripcionMock> items;
+        private List<SuscripcionModel> items;
 
-        UpcomingAdapter(List<SuscripcionMock> items) { this.items = items; }
+        UpcomingAdapter(List<SuscripcionModel> items) { this.items = items; }
+
+        void setItems(List<SuscripcionModel> newItems) {
+            this.items = newItems;
+            notifyDataSetChanged();
+        }
 
         @NonNull
         @Override
@@ -229,63 +258,30 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull VH h, int pos) {
-            SuscripcionMock item = items.get(pos);
+            SuscripcionModel item = items.get(pos);
 
-            // ── Nombre ───────────────────────────────────────────
-            h.tvNombre.setText(item.nombre);
-
-            // ── Subtítulo: categoría capitalizada ────────────────
-            String catLabel = "digital".equals(item.categoria) ? "Digital · Mensual"
-                                                                : "Hogar · Mensual";
+            h.tvNombre.setText(item.getNombre());
+            String catLabel = item.getCategoria() + " · " + item.getCicloFacturacion();
             h.tvSub.setText(catLabel);
+            h.tvMonto.setText(String.format(Locale.getDefault(), "-$%.0f", item.getMonto()));
 
-            // ── Monto ─────────────────────────────────────────────
-            h.tvMonto.setText(String.format(Locale.getDefault(), "-$%.0f", item.monto));
-
-            // ── Ícono o círculo color ─────────────────────────────
-            if (item.iconRes != 0) {
+            int iconResId = getResources().getIdentifier(item.getNombreIcono(), "drawable", requireContext().getPackageName());
+            if (iconResId != 0) {
                 h.ivIcon.setBackground(null);
-                h.ivIcon.setImageResource(item.iconRes);
+                h.ivIcon.setImageResource(iconResId);
                 h.ivIcon.setPadding(0, 0, 0, 0);
             } else {
                 GradientDrawable circle = new GradientDrawable();
                 circle.setShape(GradientDrawable.OVAL);
-                try { circle.setColor(Color.parseColor(item.colorHex)); }
+                try { circle.setColor(Color.parseColor(item.getColor())); }
                 catch (Exception e) { circle.setColor(Color.LTGRAY); }
                 h.ivIcon.setBackground(circle);
                 h.ivIcon.setImageDrawable(null);
             }
 
-            // ── Badge de días ────────────────────────────────────
-            int dias = item.diasParaVencer;
-            String badgeText;
-            int badgeBgColor, badgeTextColor;
-
-            if (dias == 0) {
-                badgeText      = "¡Hoy!";
-                badgeBgColor   = 0xFFFEE2E2; // error_bg
-                badgeTextColor = 0xFFDC2626; // error
-            } else if (dias == 1) {
-                badgeText      = "Mañana";
-                badgeBgColor   = 0xFFFFF7ED; // orange bg
-                badgeTextColor = 0xFFF97316; // warning
-            } else {
-                badgeText      = dias + " días";
-                badgeBgColor   = 0xFFEFF6FF; // primary_tint
-                badgeTextColor = 0xFF2563EB; // primary
-            }
-
-            h.tvBadge.setText(badgeText);
-            h.tvBadge.setTextColor(badgeTextColor);
-            GradientDrawable badgeBg = new GradientDrawable();
-            badgeBg.setShape(GradientDrawable.RECTANGLE);
-            badgeBg.setCornerRadius(20f);
-            badgeBg.setColor(badgeBgColor);
-            h.tvBadge.setBackground(badgeBg);
-
-            // ── Tap → Snackbar ────────────────────────────────────
-            h.itemView.setOnClickListener(v ->
-                    Snackbar.make(v, item.nombre + " – $" + (int) item.monto, Snackbar.LENGTH_SHORT).show());
+            long dias = getDiasRestantes(item.getFechaProximoCobro());
+            String badge = dias == 0 ? "Hoy" : (dias == 1 ? "1 día" : dias + " días");
+            h.tvDias.setText(badge);
         }
 
         @Override
@@ -293,17 +289,15 @@ public class DashboardFragment extends Fragment {
 
         class VH extends RecyclerView.ViewHolder {
             ImageView ivIcon;
-            TextView  tvNombre, tvSub, tvMonto, tvBadge;
-
-            VH(@NonNull View v) {
-                super(v);
-                ivIcon   = v.findViewById(R.id.ivUpcomingIcon);
-                tvNombre = v.findViewById(R.id.tvNombreServicio);
-                tvSub    = v.findViewById(R.id.tvDiasRestantes);
-                tvMonto  = v.findViewById(R.id.tvMontoUpcoming);
-                tvBadge  = v.findViewById(R.id.tvBadgeDias);
+            TextView tvNombre, tvSub, tvMonto, tvDias;
+            VH(@NonNull View itemView) {
+                super(itemView);
+                ivIcon = itemView.findViewById(R.id.ivUpcomingIcon);
+                tvNombre = itemView.findViewById(R.id.tvNombreServicio);
+                tvSub = itemView.findViewById(R.id.tvDiasRestantes);
+                tvMonto = itemView.findViewById(R.id.tvMontoUpcoming);
+                tvDias = itemView.findViewById(R.id.tvBadgeDias);
             }
         }
     }
 }
-

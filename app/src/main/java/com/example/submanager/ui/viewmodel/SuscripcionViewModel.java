@@ -13,19 +13,37 @@ import java.util.List;
 
 public class SuscripcionViewModel extends AndroidViewModel {
 
-    private SuscripcionRepository repository;
+    private final SuscripcionRepository repository;
 
-    private LiveData<List<SuscripcionModel>> todasLasSuscripciones;
+    private final LiveData<List<SuscripcionModel>> todasLasSuscripciones;
+    private final LiveData<List<SuscripcionModel>> suscripcionesActivasOrdenadas;
+    private final LiveData<List<SuscripcionModel>> suscripcionesProximas;
+    private final LiveData<Double> montoTotalActivas;
 
     public SuscripcionViewModel(@NonNull Application application) {
         super(application);
         repository = new SuscripcionRepository(application);
 
         todasLasSuscripciones = repository.getTodasLasSuscripciones();
+        suscripcionesActivasOrdenadas = repository.getSuscripcionesActivasOrdenadas();
+        suscripcionesProximas = repository.getSuscripcionesProximas();
+        montoTotalActivas = repository.getMontoTotalActivas();
     }
 
     public LiveData<List<SuscripcionModel>> getTodasLasSuscripciones() {
         return todasLasSuscripciones;
+    }
+
+    public LiveData<List<SuscripcionModel>> getSuscripcionesActivasOrdenadas() {
+        return suscripcionesActivasOrdenadas;
+    }
+
+    public LiveData<List<SuscripcionModel>> getSuscripcionesProximas() {
+        return suscripcionesProximas;
+    }
+
+    public LiveData<Double> getMontoTotalActivas() {
+        return montoTotalActivas;
     }
 
     public void insertar(SuscripcionModel suscripcion) {

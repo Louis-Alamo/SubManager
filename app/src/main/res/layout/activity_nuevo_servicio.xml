@@ -29,7 +29,7 @@
                 android:padding="8dp"
                 android:src="@drawable/ic_arrow_forward"
                 android:rotation="180"
-                android:tint="@color/text_primary"
+                app:tint="@color/text_primary"
                 android:contentDescription="@string/cd_back_button"
                 android:background="?attr/selectableItemBackgroundBorderless" />
 
@@ -47,7 +47,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Registra un servicio del hogar o fÃ­sico"
+            android:text="Registra un servicio del hogar o fisico"
             android:textColor="@color/text_muted"
             android:textSize="13sp"
             android:paddingHorizontal="20dp"
@@ -99,8 +99,8 @@
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_status_badge"
                     android:backgroundTint="@color/background">
-                    <TextView android:layout_width="28dp" android:layout_height="28dp"
-                        android:text="ðŸš°" android:gravity="center" android:textSize="22sp"/>
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp"
+                        android:src="@drawable/ic_service_agua" android:contentDescription="@null"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="Agua" android:textColor="@color/text_secondary"
                         android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
@@ -125,8 +125,8 @@
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_status_badge"
                     android:backgroundTint="@color/background">
-                    <TextView android:layout_width="28dp" android:layout_height="28dp"
-                        android:text="ðŸ“¶" android:gravity="center" android:textSize="22sp"/>
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp"
+                        android:src="@drawable/ic_service_internet" android:contentDescription="@null"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="Internet" android:textColor="@color/text_secondary"
                         android:textSize="11sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
@@ -150,8 +150,8 @@
                     android:orientation="vertical" android:gravity="center"
                     android:background="@drawable/bg_status_badge"
                     android:backgroundTint="@color/background">
-                    <TextView android:layout_width="28dp" android:layout_height="28dp"
-                        android:text="ðŸ”§" android:gravity="center" android:textSize="22sp"/>
+                    <ImageView android:layout_width="28dp" android:layout_height="28dp"
+                        android:src="@drawable/ic_service_otro" android:contentDescription="@null"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="Otro" android:textColor="@color/text_secondary"
                         android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
@@ -263,7 +263,7 @@
                     android:id="@+id/tvMontaVariableNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ðŸ’¡ Ingresa el monto estimado mensual"
+                    android:text="* Ingresa el monto estimado mensual"
                     android:textColor="@color/text_muted"
                     android:textSize="11sp"
                     android:visibility="gone"
@@ -344,17 +344,17 @@
                 android:padding="18dp"
                 android:background="?attr/selectableItemBackground">
 
-                <TextView android:layout_width="40dp" android:layout_height="40dp"
-                    android:text="ðŸ“·" android:gravity="center" android:textSize="26sp"/>
+                <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                    android:src="@drawable/ic_camera" android:contentDescription="@null"/>
 
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:orientation="vertical"
                     android:layout_marginStart="14dp">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Escanear con cÃ¡mara" android:textColor="@color/text_primary"
+                        android:text="Escanear con camara" android:textColor="@color/text_primary"
                         android:textSize="15sp" android:textStyle="bold"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Extrae datos automÃ¡ticamente del recibo"
+                        android:text="Extrae datos automaticamente del recibo"
                         android:textColor="@color/text_muted" android:textSize="12sp"
                         android:layout_marginTop="2dp"/>
                 </LinearLayout>
