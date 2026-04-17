@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Indicador pill para el ítem activo de la navegación inferior -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/primary_tint" />
+    <corners android:radius="50dp" />
+</shape>

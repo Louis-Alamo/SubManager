@@ -1,8 +1,13 @@
 package com.example.submanager;
 
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.submanager.data.AppDatabase;
@@ -18,9 +23,36 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Edge-to-edge: el contenido se dibuja detrás de las barras del sistema
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        // Aplicar el inset de la barra de navegación del sistema como padding inferior
+        // de la BottomNav, para que el contenido no quede oculto detrás de ella.
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (v, insets) -> {
+            int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            v.setPadding(
+                    v.getPaddingLeft(),
+                    v.getPaddingTop(),
+                    v.getPaddingRight(),
+                    navBarHeight
+            );
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        // Para que el FragmentContainer también respete la barra de estado superior
+        View fragmentContainer = findViewById(R.id.nav_host_fragment);
+        ViewCompat.setOnApplyWindowInsetsListener(fragmentContainer, (v, insets) -> {
+            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            lp.topMargin = statusBarHeight;
+            v.setLayoutParams(lp);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -29,11 +61,9 @@ public class MainActivity extends AppCompatActivity {
             bottomNav.setSelectedItemId(R.id.nav_inicio);
         }
 
-        // Corrección: Usar 'this' en lugar de 'requireContext()' ya que estamos en una Activity
-        // Además, las operaciones de Room no deben hacerse en el hilo principal sin .allowMainThreadQueries()
-        // Por ahora lo comentamos o lo envolvemos en un hilo si es solo para prueba.
-        new Thread(() -> {
-            AppDatabase.getInstance(this).getOpenHelper().getWritableDatabase();        }).start();
+        new Thread(() ->
+            AppDatabase.getInstance(this).getOpenHelper().getWritableDatabase()
+        ).start();
 
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment fragmentoSeleccionado = null;

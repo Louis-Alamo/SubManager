@@ -13,8 +13,11 @@
         <item name="colorError">@color/error</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/surface</item>
+        <!-- Barra de sistema transparente para integración edge-to-edge -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">true</item>
+        <!-- Estilo global de la BottomNavigationView -->
+        <item name="bottomNavigationStyle">@style/BottomNavStyle</item>
         <item name="elevationOverlayEnabled">false</item>
     </style>
 
@@ -90,5 +93,15 @@
 
     <style name="ShapeAppearance.FAB" parent="">
         <item name="cornerSize">16dp</item>
+    </style>
+
+    <!-- ===================================================== -->
+    <!-- Bottom Navigation Bar — diseño moderno con pill       -->
+    <!-- ===================================================== -->
+    <style name="BottomNavStyle" parent="Widget.Material3.BottomNavigationView">
+        <!-- Fondo con esquinas superiores redondeadas -->
+        <item name="android:background">@drawable/bg_bottom_nav</item>
+        <!-- Elevación para sombra suave -->
+        <item name="elevation">12dp</item>
     </style>
 </resources>
