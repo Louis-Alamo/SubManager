@@ -1,6 +1,5 @@
 package com.example.submanager.data.repository;
 
-
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
@@ -8,11 +7,20 @@ import androidx.lifecycle.LiveData;
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.data.dao.SuscripcionDao;
 import com.example.submanager.data.model.SuscripcionModel;
+import com.example.submanager.utils.NetworkUtils;
+import com.example.submanager.utils.SessionManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Repositorio de Suscripciones — offline-first.
+ *
+ * Las escrituras van siempre primero a Room.
+ * Si el usuario es Premium y hay red, se delega al RemoteSyncRepository
+ * para una sincronización completa tras cada operación de escritura.
+ */
 public class SuscripcionRepository {
 
     private final SuscripcionDao suscripcionDao;
@@ -20,27 +28,29 @@ public class SuscripcionRepository {
     private final LiveData<List<SuscripcionModel>> suscripcionesActivasOrdenadas;
     private final LiveData<List<SuscripcionModel>> suscripcionesProximas;
     private final LiveData<Double> montoTotalActivas;
-
-    // Usamos un ExecutorService para mandar las operaciones de escritura a un hilo secundario
-    // (Android prohíbe escribir en la base de datos en el hilo principal)
     private final ExecutorService executorService;
 
+    // Para sincronización remota
+    private final RemoteSyncRepository remoteSyncRepository;
+    private final SessionManager sessionManager;
+    private final Application application;
+
     public SuscripcionRepository(Application application) {
-        // Conectamos con nuestro "Gerente General" de la base de datos
+        this.application = application;
         AppDatabase database = AppDatabase.getInstance(application);
         suscripcionDao = database.suscripcionDao();
 
-        // Cargamos las listas reactivas desde el DAO
-        todasLasSuscripciones = suscripcionDao.getAllSuscripciones();
-        suscripcionesActivasOrdenadas = suscripcionDao.getSuscripcionesActivasOrdenadas();
-        suscripcionesProximas = suscripcionDao.getSuscripcionesProximas();
-        montoTotalActivas = suscripcionDao.getMontoTotalActivas();
+        todasLasSuscripciones          = suscripcionDao.getAllSuscripciones();
+        suscripcionesActivasOrdenadas   = suscripcionDao.getSuscripcionesActivasOrdenadas();
+        suscripcionesProximas           = suscripcionDao.getSuscripcionesProximas();
+        montoTotalActivas               = suscripcionDao.getMontoTotalActivas();
 
-        // Preparamos 2 hilos trabajadores en el fondo
-        executorService = Executors.newFixedThreadPool(2);
+        executorService         = Executors.newFixedThreadPool(2);
+        remoteSyncRepository    = new RemoteSyncRepository(application);
+        sessionManager          = new SessionManager(application);
     }
 
-    // ─── LECTURA (Van en el hilo principal porque LiveData ya es asíncrono) ───
+    // ─── LECTURA (LiveData — ya asíncronas) ───────────────────────────────────
 
     public LiveData<List<SuscripcionModel>> getTodasLasSuscripciones() {
         return todasLasSuscripciones;
@@ -58,11 +68,48 @@ public class SuscripcionRepository {
         return montoTotalActivas;
     }
 
-    // ─── ESCRITURA (Obligatorio mandarlas al hilo secundario) ───
+    // ─── ESCRITURA (hilo secundario + sync opcional) ──────────────────────────
 
+    /**
+     * Inserta una suscripción en Room y, si el usuario es Premium y hay red,
+     * dispara una sincronización completa con Supabase.
+     */
     public void insertar(SuscripcionModel suscripcion) {
-        executorService.execute(() -> suscripcionDao.insertarSuscripcion(suscripcion));
+        executorService.execute(() -> {
+            suscripcionDao.insertarSuscripcion(suscripcion);
+            triggerSyncIfNeeded();
+        });
     }
 
+    /**
+     * Actualiza una suscripción en Room y dispara sync si procede.
+     */
+    public void actualizar(SuscripcionModel suscripcion) {
+        executorService.execute(() -> {
+            suscripcionDao.updateSuscripcion(suscripcion);
+            triggerSyncIfNeeded();
+        });
+    }
 
+    /**
+     * Elimina una suscripción por ID de Room y dispara sync si procede.
+     */
+    public void eliminar(int id) {
+        executorService.execute(() -> {
+            suscripcionDao.deleteSuscripcionById(id);
+            triggerSyncIfNeeded();
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Si el usuario es Premium y hay conexión, dispara una sincronización
+     * completa silenciosa (sin callback de UI).
+     */
+    private void triggerSyncIfNeeded() {
+        if (sessionManager.isPremium() && NetworkUtils.isNetworkAvailable(application)) {
+            remoteSyncRepository.syncAll(null); // callback null = sincronización silenciosa
+        }
+    }
 }

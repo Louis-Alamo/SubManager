@@ -12,8 +12,9 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SUPABASE_URL", "\"https://vldcmehfryzztsnsyqgn.supabase.co\"")
+        buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_BxBq_SjBjU2mA2JMOQ8upw_TINKs-6x\"")
     }
 
     buildTypes {
@@ -25,12 +26,15 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -64,6 +68,12 @@ dependencies {
 
     // Shimmer Effect
     implementation(libs.shimmer)
+
+    // Network — Supabase REST via Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

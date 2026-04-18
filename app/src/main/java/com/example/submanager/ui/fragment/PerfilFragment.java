@@ -1,5 +1,6 @@
 package com.example.submanager.ui.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,10 +18,12 @@ import androidx.fragment.app.Fragment;
 import com.example.submanager.R;
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.data.model.UsuarioModel;
+import com.example.submanager.data.repository.RemoteSyncRepository;
 import com.example.submanager.ui.activity.AuthActivity;
 import com.example.submanager.ui.activity.PremiumActivity;
 import com.example.submanager.utils.CryptoUtils;
 import com.example.submanager.utils.SessionManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -57,6 +60,10 @@ public class PerfilFragment extends Fragment {
     // ── Estado notificaciones ─────────────────────────────────────────────────
     private boolean notificacionesActivas = true;
 
+    // ── Sincronización remota ─────────────────────────────────────────────────
+    private RemoteSyncRepository remoteSyncRepository;
+    private TextView tvUltimaSincronizacion;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -69,6 +76,7 @@ public class PerfilFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sessionManager = new SessionManager(requireContext());
+        remoteSyncRepository = new RemoteSyncRepository(requireContext());
         bindViews(view);
         setupListeners(view);
         updateAuthUI();
@@ -106,6 +114,9 @@ public class PerfilFragment extends Fragment {
 
         // Estado inicial del switch
         switchNotificaciones.setChecked(notificacionesActivas);
+
+        // Última sincronización
+        tvUltimaSincronizacion = root.findViewById(R.id.tvUltimaSincronizacion);
     }
 
     // ── Listeners ─────────────────────────────────────────────────────────────
@@ -128,7 +139,7 @@ public class PerfilFragment extends Fragment {
         // Respaldar ───────────────────────────────────────────────────────────
         rowBackup.setOnClickListener(v -> {
             if (sessionManager.isPremium()) {
-                showSnackbar(root, "☁️ Respaldo iniciado. Tus datos están seguros.");
+                iniciarBackup(root);
             } else {
                 startActivity(new Intent(requireContext(), PremiumActivity.class));
             }
@@ -137,7 +148,7 @@ public class PerfilFragment extends Fragment {
         // Restaurar ───────────────────────────────────────────────────────────
         rowRestore.setOnClickListener(v -> {
             if (sessionManager.isPremium()) {
-                showSnackbar(root, "✅ Restauración completada desde la nube.");
+                confirmarRestore(root);
             } else {
                 startActivity(new Intent(requireContext(), PremiumActivity.class));
             }
@@ -262,9 +273,101 @@ public class PerfilFragment extends Fragment {
         });
     }
 
+    // ── Sincronización real ───────────────────────────────────────────────────
+
+    @SuppressWarnings("deprecation")
+    private void iniciarBackup(View root) {
+        ProgressDialog progress = new ProgressDialog(requireContext());
+        progress.setMessage("Sincronizando con la nube…");
+        progress.setCancelable(false);
+        progress.show();
+
+        remoteSyncRepository.syncAll((status, message) -> {
+            if (!isAdded()) return;
+            progress.dismiss();
+            switch (status) {
+                case SUCCESS:
+                    sessionManager.saveUltimaSincronizacion(
+                            java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault())
+                                    .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy · HH:mm"))
+                    );
+                    actualizarUltimaSincronizacion();
+                    showSnackbar(root, "✅ " + message);
+                    break;
+                case NO_NETWORK:
+                    showSnackbar(root, "📶 Sin conexión a internet. Intenta más tarde.");
+                    break;
+                case NOT_PREMIUM:
+                    startActivity(new Intent(requireContext(), PremiumActivity.class));
+                    break;
+                case ERROR:
+                    // Mostrar error completo en Dialog (puede contener instrucciones largas)
+                    new MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("⚠️ Error al sincronizar")
+                            .setMessage(message)
+                            .setPositiveButton("Entendido", null)
+                            .show();
+                    break;
+            }
+        });
+    }
+
+
+    private void confirmarRestore(View root) {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Restaurar desde la nube")
+                .setMessage("¿Deseas sobrescribir todos los datos locales con los datos de tu cuenta en la nube?\n\nEsta acción no se puede deshacer.")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Restaurar", (dialog, which) -> iniciarRestore(root))
+                .show();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void iniciarRestore(View root) {
+        ProgressDialog progress = new ProgressDialog(requireContext());
+        progress.setMessage("Restaurando desde la nube…");
+        progress.setCancelable(false);
+        progress.show();
+
+        remoteSyncRepository.pullAll((status, message) -> {
+            if (!isAdded()) return;
+            progress.dismiss();
+            switch (status) {
+                case SUCCESS:
+                    sessionManager.saveUltimaSincronizacion(
+                            java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault())
+                                    .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy · HH:mm"))
+                    );
+                    actualizarUltimaSincronizacion();
+                    showSnackbar(root, "✅ " + message);
+                    break;
+                case NO_NETWORK:
+                    showSnackbar(root, "📶 Sin conexión. Intenta más tarde.");
+                    break;
+                case ERROR:
+                    showSnackbar(root, "⚠️ " + message);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    private void actualizarUltimaSincronizacion() {
+        if (tvUltimaSincronizacion == null) return;
+        String ts = sessionManager.getUltimaSincronizacion();
+        if (ts != null && !ts.isEmpty()) {
+            tvUltimaSincronizacion.setVisibility(View.VISIBLE);
+            tvUltimaSincronizacion.setText("Última sincronización: " + ts);
+        } else {
+            tvUltimaSincronizacion.setVisibility(View.GONE);
+        }
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void showSnackbar(View anchor, String message) {
         Snackbar.make(anchor, message, Snackbar.LENGTH_SHORT).show();
     }
 }
+
