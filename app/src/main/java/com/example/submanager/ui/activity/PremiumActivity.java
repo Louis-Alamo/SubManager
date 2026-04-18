@@ -26,8 +26,8 @@ public class PremiumActivity extends AppCompatActivity {
     private boolean planAnualSelected = true;
 
     // Border colors (as int)
-    private static final int COLOR_SELECTED_STROKE   = 0xFF2563EB; // primary
-    private static final int COLOR_UNSELECTED_STROKE  = 0xFFE5E7EB; // border
+    private static final int COLOR_SELECTED_STROKE = 0xFF2563EB; // primary
+    private static final int COLOR_UNSELECTED_STROKE = 0xFFE5E7EB; // border
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +45,13 @@ public class PremiumActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        btnBack          = findViewById(R.id.btnBack);
-        cardPlanMensual  = findViewById(R.id.cardPlanMensual);
-        cardPlanAnual    = findViewById(R.id.cardPlanAnual);
+        btnBack = findViewById(R.id.btnBack);
+        cardPlanMensual = findViewById(R.id.cardPlanMensual);
+        cardPlanAnual = findViewById(R.id.cardPlanAnual);
         radioPlanMensual = findViewById(R.id.radioPlanMensual);
-        radioPlanAnual   = findViewById(R.id.radioPlanAnual);
-        btnSuscribirse   = findViewById(R.id.btnSuscribirse);
-        tvRestaurar      = findViewById(R.id.tvRestaurar);
+        radioPlanAnual = findViewById(R.id.radioPlanAnual);
+        btnSuscribirse = findViewById(R.id.btnSuscribirse);
+        tvRestaurar = findViewById(R.id.tvRestaurar);
     }
 
     private void updatePlanUI() {
@@ -90,15 +90,15 @@ public class PremiumActivity extends AppCompatActivity {
         });
 
         btnSuscribirse.setOnClickListener(v -> {
-            String plan  = planAnualSelected ? "Premium Anual"   : "Premium Mensual";
+            String plan = planAnualSelected ? "Premium Anual" : "Premium Mensual";
             String monto = planAnualSelected ? "500.00" : "50.00";
 
             // Compute expiry
             Calendar cal = Calendar.getInstance();
             if (planAnualSelected) cal.add(Calendar.YEAR, 1);
             else cal.add(Calendar.MONTH, 1);
-            String[] months = {"Ene","Feb","Mar","Abr","May","Jun",
-                               "Jul","Ago","Sep","Oct","Nov","Dic"};
+            String[] months = {"Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                    "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
             String expiry = cal.get(Calendar.DAY_OF_MONTH)
                     + " " + months[cal.get(Calendar.MONTH)]
                     + " " + cal.get(Calendar.YEAR);
@@ -132,3 +132,4 @@ public class PremiumActivity extends AppCompatActivity {
         cardPlanMensual.setVisibility(View.GONE);
         cardPlanAnual.setVisibility(View.GONE);
     }
+}
