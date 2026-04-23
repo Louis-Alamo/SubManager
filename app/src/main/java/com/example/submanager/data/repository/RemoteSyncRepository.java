@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.data.model.ConfiguracionAppModel;
 import com.example.submanager.data.model.RegistrosPagoModel;
@@ -20,7 +19,6 @@ import com.example.submanager.data.remote.dto.SuscripcionDto;
 import com.example.submanager.data.remote.dto.TerceroCompartidoDto;
 import com.example.submanager.utils.NetworkUtils;
 import com.example.submanager.utils.SessionManager;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -51,7 +48,12 @@ public class RemoteSyncRepository {
     private static final String TAG = "RemoteSyncRepo";
 
     /** Resultado de una operación de sincronización */
-    public enum SyncStatus { SUCCESS, NO_NETWORK, NOT_PREMIUM, ERROR }
+    public enum SyncStatus {
+        SUCCESS,
+        NO_NETWORK,
+        NOT_PREMIUM,
+        ERROR,
+    }
 
     /** Callback para notificar el resultado en el hilo principal */
     public interface SyncCallback {
@@ -66,11 +68,11 @@ public class RemoteSyncRepository {
     private final Handler mainHandler;
 
     public RemoteSyncRepository(Context context) {
-        this.context    = context.getApplicationContext();
-        this.db         = AppDatabase.getInstance(this.context);
-        this.api        = SupabaseClient.getApi();
-        this.session    = new SessionManager(this.context);
-        this.executor   = Executors.newSingleThreadExecutor();
+        this.context = context.getApplicationContext();
+        this.db = AppDatabase.getInstance(this.context);
+        this.api = SupabaseClient.getApi();
+        this.session = new SessionManager(this.context);
+        this.executor = Executors.newSingleThreadExecutor();
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -86,11 +88,19 @@ public class RemoteSyncRepository {
      */
     public void syncAll(SyncCallback callback) {
         if (!session.isPremium()) {
-            notifyCallback(callback, SyncStatus.NOT_PREMIUM, "Se requiere cuenta Premium para sincronizar.");
+            notifyCallback(
+                callback,
+                SyncStatus.NOT_PREMIUM,
+                "Se requiere cuenta Premium para sincronizar."
+            );
             return;
         }
         if (!NetworkUtils.isNetworkAvailable(context)) {
-            notifyCallback(callback, SyncStatus.NO_NETWORK, "Sin conexión a internet. Intenta más tarde.");
+            notifyCallback(
+                callback,
+                SyncStatus.NO_NETWORK,
+                "Sin conexión a internet. Intenta más tarde."
+            );
             return;
         }
 
@@ -99,36 +109,55 @@ public class RemoteSyncRepository {
                 int total = 0;
 
                 // ── 1. Suscripciones ──────────────────────────────────────────
-                List<SuscripcionModel> suscripciones = db.suscripcionDao().getAllSuscripcionesSync();
+                List<SuscripcionModel> suscripciones = db
+                    .suscripcionDao()
+                    .getAllSuscripcionesSync();
                 Log.d(TAG, "Suscripciones en Room: " + suscripciones.size());
 
                 if (!suscripciones.isEmpty()) {
                     // Borrar remotas
-                    Response<Void> delResp = api.deleteAllSuscripciones("gte.0").execute();
+                    Response<Void> delResp = api
+                        .deleteAllSuscripciones("gte.0")
+                        .execute();
                     Log.d(TAG, "DELETE suscripciones → HTTP " + delResp.code());
 
                     // Subir locales
                     List<SuscripcionDto> dtos = new ArrayList<>();
                     for (SuscripcionModel m : suscripciones) dtos.add(toDto(m));
 
-                    Response<Void> insResp = api.insertSuscripciones(dtos).execute();
+                    Response<Void> insResp = api
+                        .insertSuscripciones(dtos)
+                        .execute();
                     Log.d(TAG, "INSERT suscripciones → HTTP " + insResp.code());
 
                     if (!insResp.isSuccessful()) {
-                        String errorBody = insResp.errorBody() != null ? insResp.errorBody().string() : "sin detalle";
+                        String errorBody =
+                            insResp.errorBody() != null
+                                ? insResp.errorBody().string()
+                                : "sin detalle";
                         String msg = errorBody;
 
                         // Mensajes de error amigables según código HTTP
                         if (insResp.code() == 401 || insResp.code() == 403) {
-                            msg = "Acceso denegado (HTTP " + insResp.code() + ").\n\n"
-                                + "Necesitas configurar las políticas RLS en Supabase.\n"
-                                + "Ve a: Supabase → Authentication → Policies → suscripciones → Nueva política para rol 'anon'.";
+                            msg =
+                                "Acceso denegado (HTTP " +
+                                insResp.code() +
+                                ").\n\n" +
+                                "Necesitas configurar las políticas RLS en Supabase.\n" +
+                                "Ve a: Supabase → Authentication → Policies → suscripciones → Nueva política para rol 'anon'.";
                         } else if (insResp.code() == 422) {
-                            msg = "Error de esquema (HTTP 422). Campos incompatibles con la tabla de Supabase:\n" + errorBody;
+                            msg =
+                                "Error de esquema (HTTP 422). Campos incompatibles con la tabla de Supabase:\n" +
+                                errorBody;
                         } else if (insResp.code() == 0) {
-                            msg = "Sin respuesta del servidor. Verifica tu conexión.";
+                            msg =
+                                "Sin respuesta del servidor. Verifica tu conexión.";
                         } else {
-                            msg = "Error HTTP " + insResp.code() + ": " + errorBody;
+                            msg =
+                                "Error HTTP " +
+                                insResp.code() +
+                                ": " +
+                                errorBody;
                         }
 
                         notifyCallback(callback, SyncStatus.ERROR, msg);
@@ -138,34 +167,47 @@ public class RemoteSyncRepository {
                 }
 
                 // ── 2. Servicios físicos ──────────────────────────────────────
-                List<ServicioFisicoModel> servicios = db.suscripcionDao().getAllServiciosFisicosSync();
+                List<ServicioFisicoModel> servicios = db
+                    .suscripcionDao()
+                    .getAllServiciosFisicosSync();
                 Log.d(TAG, "Servicios físicos en Room: " + servicios.size());
                 if (!servicios.isEmpty()) {
                     api.deleteAllServiciosFisicos("gte.0").execute();
                     List<ServicioFisicoDto> dtos = new ArrayList<>();
                     for (ServicioFisicoModel m : servicios) dtos.add(toDto(m));
-                    Response<Void> insResp = api.insertServiciosFisicos(dtos).execute();
+                    Response<Void> insResp = api
+                        .insertServiciosFisicos(dtos)
+                        .execute();
                     Log.d(TAG, "INSERT servicios → HTTP " + insResp.code());
                     if (insResp.isSuccessful()) total += dtos.size();
                 }
 
                 // ── 3. Terceros compartidos ───────────────────────────────────
-                List<TercerosCompartidosModel> terceros = db.suscripcionDao().getAllTercerosSync();
+                List<TercerosCompartidosModel> terceros = db
+                    .suscripcionDao()
+                    .getAllTercerosSync();
                 if (!terceros.isEmpty()) {
                     api.deleteAllTerceros("gte.0").execute();
                     List<TerceroCompartidoDto> dtos = new ArrayList<>();
-                    for (TercerosCompartidosModel m : terceros) dtos.add(toDto(m));
-                    Response<Void> insResp = api.insertTercerosCompartidos(dtos).execute();
+                    for (TercerosCompartidosModel m : terceros)
+                        dtos.add(toDto(m));
+                    Response<Void> insResp = api
+                        .insertTercerosCompartidos(dtos)
+                        .execute();
                     if (insResp.isSuccessful()) total += dtos.size();
                 }
 
                 // ── 4. Registros de pago ──────────────────────────────────────
-                List<RegistrosPagoModel> registros = db.suscripcionDao().getAllRegistrosPagoSync();
+                List<RegistrosPagoModel> registros = db
+                    .suscripcionDao()
+                    .getAllRegistrosPagoSync();
                 if (!registros.isEmpty()) {
                     api.deleteAllRegistrosPago("gte.0").execute();
                     List<RegistroPagoDto> dtos = new ArrayList<>();
                     for (RegistrosPagoModel m : registros) dtos.add(toDto(m));
-                    Response<Void> insResp = api.insertRegistrosPago(dtos).execute();
+                    Response<Void> insResp = api
+                        .insertRegistrosPago(dtos)
+                        .execute();
                     if (insResp.isSuccessful()) total += dtos.size();
                 }
 
@@ -175,20 +217,28 @@ public class RemoteSyncRepository {
 
                 final int totalFinal = total;
                 if (totalFinal == 0) {
-                    notifyCallback(callback, SyncStatus.SUCCESS,
-                        "Sincronización completada. No había datos nuevos que subir (Room vacío o sin suscripciones).");
+                    notifyCallback(
+                        callback,
+                        SyncStatus.SUCCESS,
+                        "Sincronización completada. No había datos nuevos que subir (Room vacío o sin suscripciones)."
+                    );
                 } else {
-                    notifyCallback(callback, SyncStatus.SUCCESS,
-                        totalFinal + " registros sincronizados correctamente.");
+                    notifyCallback(
+                        callback,
+                        SyncStatus.SUCCESS,
+                        totalFinal + " registros sincronizados correctamente."
+                    );
                 }
-
             } catch (Exception e) {
                 Log.e(TAG, "syncAll error", e);
-                notifyCallback(callback, SyncStatus.ERROR, "Error inesperado: " + e.getMessage());
+                notifyCallback(
+                    callback,
+                    SyncStatus.ERROR,
+                    "Error inesperado: " + e.getMessage()
+                );
             }
         });
     }
-
 
     // ─────────────────────────────────────────────────────────────────────────
     // PULL — Supabase → Local (Restaurar)
@@ -202,18 +252,28 @@ public class RemoteSyncRepository {
      */
     public void pullAll(SyncCallback callback) {
         if (!session.isPremium()) {
-            notifyCallback(callback, SyncStatus.NOT_PREMIUM, "Se requiere cuenta Premium.");
+            notifyCallback(
+                callback,
+                SyncStatus.NOT_PREMIUM,
+                "Se requiere cuenta Premium."
+            );
             return;
         }
         if (!NetworkUtils.isNetworkAvailable(context)) {
-            notifyCallback(callback, SyncStatus.NO_NETWORK, "Sin conexión a internet.");
+            notifyCallback(
+                callback,
+                SyncStatus.NO_NETWORK,
+                "Sin conexión a internet."
+            );
             return;
         }
 
         executor.execute(() -> {
             try {
                 // ── 1. Suscripciones ──────────────────────────────────────────
-                Response<List<SuscripcionDto>> susResp = api.getSuscripciones().execute();
+                Response<List<SuscripcionDto>> susResp = api
+                    .getSuscripciones()
+                    .execute();
                 if (susResp.isSuccessful() && susResp.body() != null) {
                     db.suscripcionDao().deleteAllSuscripciones();
                     List<SuscripcionModel> models = new ArrayList<>();
@@ -224,7 +284,9 @@ public class RemoteSyncRepository {
                 }
 
                 // ── 2. Servicios físicos ──────────────────────────────────────
-                Response<List<ServicioFisicoDto>> srvResp = api.getServiciosFisicos().execute();
+                Response<List<ServicioFisicoDto>> srvResp = api
+                    .getServiciosFisicos()
+                    .execute();
                 if (srvResp.isSuccessful() && srvResp.body() != null) {
                     db.suscripcionDao().deleteAllServiciosFisicos();
                     List<ServicioFisicoModel> models = new ArrayList<>();
@@ -235,7 +297,9 @@ public class RemoteSyncRepository {
                 }
 
                 // ── 3. Registros de pago ──────────────────────────────────────
-                Response<List<RegistroPagoDto>> regResp = api.getRegistrosPago().execute();
+                Response<List<RegistroPagoDto>> regResp = api
+                    .getRegistrosPago()
+                    .execute();
                 if (regResp.isSuccessful() && regResp.body() != null) {
                     db.suscripcionDao().deleteAllRegistrosPago();
                     List<RegistrosPagoModel> models = new ArrayList<>();
@@ -248,11 +312,18 @@ public class RemoteSyncRepository {
                 // ── 4. Actualizar timestamp ───────────────────────────────────
                 actualizarUltimaSincronizacion(Instant.now().toString());
 
-                notifyCallback(callback, SyncStatus.SUCCESS, "Datos restaurados correctamente desde la nube.");
-
+                notifyCallback(
+                    callback,
+                    SyncStatus.SUCCESS,
+                    "Datos restaurados correctamente desde la nube."
+                );
             } catch (Exception e) {
                 Log.e(TAG, "pullAll error", e);
-                notifyCallback(callback, SyncStatus.ERROR, "Error al restaurar: " + e.getMessage());
+                notifyCallback(
+                    callback,
+                    SyncStatus.ERROR,
+                    "Error al restaurar: " + e.getMessage()
+                );
             }
         });
     }
@@ -263,7 +334,9 @@ public class RemoteSyncRepository {
 
     private void actualizarUltimaSincronizacion(String timestamp) {
         // Room local
-        ConfiguracionAppModel config = db.suscripcionDao().getConfiguracionSync();
+        ConfiguracionAppModel config = db
+            .suscripcionDao()
+            .getConfiguracionSync();
         if (config == null) {
             config = new ConfiguracionAppModel();
         }
@@ -276,16 +349,26 @@ public class RemoteSyncRepository {
             dto.id = 1L;
             dto.ultimaSincronizacion = timestamp;
             // Intentar PATCH primero, si falla hacer POST
-            Response<Void> patchResp = api.updateConfiguracion("eq.1", dto).execute();
+            Response<Void> patchResp = api
+                .updateConfiguracion("eq.1", dto)
+                .execute();
             if (!patchResp.isSuccessful()) {
                 api.insertConfiguracion(dto).execute();
             }
         } catch (Exception e) {
-            Log.w(TAG, "No se pudo actualizar ultima_sincronizacion remota: " + e.getMessage());
+            Log.w(
+                TAG,
+                "No se pudo actualizar ultima_sincronizacion remota: " +
+                    e.getMessage()
+            );
         }
     }
 
-    private void notifyCallback(SyncCallback callback, SyncStatus status, String message) {
+    private void notifyCallback(
+        SyncCallback callback,
+        SyncStatus status,
+        String message
+    ) {
         if (callback == null) return;
         mainHandler.post(() -> callback.onResult(status, message));
     }
@@ -296,69 +379,77 @@ public class RemoteSyncRepository {
 
     private SuscripcionDto toDto(SuscripcionModel m) {
         SuscripcionDto dto = new SuscripcionDto();
-        dto.nombre                  = m.getNombre();
-        dto.monto                   = m.getMonto();
-        dto.cicloFacturacion        = m.getCicloFacturacion();
-        dto.color                   = m.getColor();
-        dto.categoria               = m.getCategoria();
-        dto.metodoPago              = m.getMetodoPago();
-        dto.fechaPrimerCobro        = m.getFechaPrimerCobro();
-        dto.fechaProximoCobro       = m.getFechaProximoCobro();
-        dto.fechaLimiteCancelacion  = m.getFechaLimiteCancelacion();
-        dto.recordatorioHabilitado  = m.isRecordatorioHabilitado();
-        dto.diasAnticipacion        = m.getDiasAnticipacion();
-        dto.notificacionSilenciada  = m.isNotificacionSilenciada();
-        dto.estaActiva              = m.isEstaActiva();
-        dto.iconoNombre             = m.getNombreIcono();
-        dto.creadoEn                = m.getCreadoEn();
-        dto.actualizadoEn           = m.getActualizadoEn();
+        long userId = session.getRemoteUserId();
+        if (userId != -1) {
+            dto.usuarioId = userId;
+        }
+        dto.nombre = m.getNombre();
+        dto.monto = m.getMonto();
+        dto.cicloFacturacion = m.getCicloFacturacion();
+        dto.color = m.getColor();
+        dto.categoria = m.getCategoria();
+        dto.metodoPago = m.getMetodoPago();
+        dto.fechaPrimerCobro = m.getFechaPrimerCobro();
+        dto.fechaProximoCobro = m.getFechaProximoCobro();
+        dto.fechaLimiteCancelacion = m.getFechaLimiteCancelacion();
+        dto.recordatorioHabilitado = m.isRecordatorioHabilitado();
+        dto.diasAnticipacion = m.getDiasAnticipacion();
+        dto.notificacionSilenciada = m.isNotificacionSilenciada();
+        dto.estaActiva = m.isEstaActiva();
+        dto.iconoNombre = m.getNombreIcono();
+        dto.creadoEn = m.getCreadoEn();
+        dto.actualizadoEn = m.getActualizadoEn();
         return dto;
     }
 
     private ServicioFisicoDto toDto(ServicioFisicoModel m) {
         ServicioFisicoDto dto = new ServicioFisicoDto();
-        dto.nombre                  = m.getNombre();
-        dto.montoEstimado           = m.getMontoEstimado();
-        dto.montoVariable           = m.isMontoVariable();
-        dto.cicloFacturacion        = m.getCicloFacturacion();
-        dto.fechaProximoCobro       = m.getFechaProximoCobro();
-        dto.esCompartido            = m.isEsCompartido();
-        dto.montoTotalRecibo        = m.getMontoTotalRecibo();
-        dto.montoParteUsuario       = m.getMontoParteUsuario();
-        dto.recordatorioHabilitado  = m.isRecordatorioHabilitado();
-        dto.diasAnticipacion        = m.getDiasAnticipacion();
-        dto.notificacionSilenciada  = m.isNotificacionSilenciada();
-        dto.rutaImagenComprobante   = m.getRutaImagenComprobante();
-        dto.estaActivo              = m.isEstaActivo();
-        dto.creadoEn                = m.getCreadoEn();
-        dto.actualizadoEn           = m.getActualizadoEn();
+        dto.nombre = m.getNombre();
+        dto.montoEstimado = m.getMontoEstimado();
+        dto.montoVariable = m.isMontoVariable();
+        dto.cicloFacturacion = m.getCicloFacturacion();
+        dto.fechaProximoCobro = m.getFechaProximoCobro();
+        dto.esCompartido = m.isEsCompartido();
+        dto.montoTotalRecibo = m.getMontoTotalRecibo();
+        dto.montoParteUsuario = m.getMontoParteUsuario();
+        dto.recordatorioHabilitado = m.isRecordatorioHabilitado();
+        dto.diasAnticipacion = m.getDiasAnticipacion();
+        dto.notificacionSilenciada = m.isNotificacionSilenciada();
+        dto.rutaImagenComprobante = m.getRutaImagenComprobante();
+        dto.estaActivo = m.isEstaActivo();
+        dto.creadoEn = m.getCreadoEn();
+        dto.actualizadoEn = m.getActualizadoEn();
         return dto;
     }
 
     private TerceroCompartidoDto toDto(TercerosCompartidosModel m) {
         TerceroCompartidoDto dto = new TerceroCompartidoDto();
-        dto.servicioId      = (long) m.getServicioId();
-        dto.nombreTercero   = m.getNombreTercero();
+        dto.servicioId = (long) m.getServicioId();
+        dto.nombreTercero = m.getNombreTercero();
         dto.montoAportacion = m.getMontoAportacion();
-        dto.creadoEn        = m.getCreadoEn();
+        dto.creadoEn = m.getCreadoEn();
         return dto;
     }
 
     private RegistroPagoDto toDto(RegistrosPagoModel m) {
         RegistroPagoDto dto = new RegistroPagoDto();
-        dto.suscripcionId   = m.getSuscripcionId() != null ? m.getSuscripcionId().longValue() : null;
-        dto.servicioId      = m.getServicioId() != null ? m.getServicioId().longValue() : null;
-        dto.nombreOrigen    = m.getNombreOrigen();
-        dto.colorOrigen     = m.getColorOrigen();
-        dto.categoria       = m.getCategoria();
-        dto.monto           = m.getMonto();
-        dto.estado          = m.getEstado();
+        dto.suscripcionId =
+            m.getSuscripcionId() != null
+                ? m.getSuscripcionId().longValue()
+                : null;
+        dto.servicioId =
+            m.getServicioId() != null ? m.getServicioId().longValue() : null;
+        dto.nombreOrigen = m.getNombreOrigen();
+        dto.colorOrigen = m.getColorOrigen();
+        dto.categoria = m.getCategoria();
+        dto.monto = m.getMonto();
+        dto.estado = m.getEstado();
         dto.fechaVencimiento = m.getFechaVencimiento();
-        dto.fechaPago       = m.getFechaPago();
-        dto.mesFacturacion  = m.getMesFacturacion();
+        dto.fechaPago = m.getFechaPago();
+        dto.mesFacturacion = m.getMesFacturacion();
         dto.anioFacturacion = m.getAnioFacturacion();
-        dto.creadoEn        = m.getCreadoEn();
-        dto.actualizadoEn   = m.getActualizadoEn();
+        dto.creadoEn = m.getCreadoEn();
+        dto.actualizadoEn = m.getActualizadoEn();
         return dto;
     }
 
@@ -370,16 +461,32 @@ public class RemoteSyncRepository {
         SuscripcionModel m = new SuscripcionModel();
         m.setNombre(dto.nombre != null ? dto.nombre : "");
         m.setMonto(dto.monto != null ? dto.monto : 0.0);
-        m.setCicloFacturacion(dto.cicloFacturacion != null ? dto.cicloFacturacion : "MENSUAL");
+        m.setCicloFacturacion(
+            dto.cicloFacturacion != null ? dto.cicloFacturacion : "MENSUAL"
+        );
         m.setColor(dto.color != null ? dto.color : "#2563EB");
         m.setCategoria(dto.categoria != null ? dto.categoria : "OTRO");
         m.setMetodoPago(dto.metodoPago != null ? dto.metodoPago : "TARJETA");
-        m.setFechaPrimerCobro(dto.fechaPrimerCobro != null ? dto.fechaPrimerCobro : "");
-        m.setFechaProximoCobro(dto.fechaProximoCobro != null ? dto.fechaProximoCobro : "");
+        m.setFechaPrimerCobro(
+            dto.fechaPrimerCobro != null ? dto.fechaPrimerCobro : ""
+        );
+        m.setFechaProximoCobro(
+            dto.fechaProximoCobro != null ? dto.fechaProximoCobro : ""
+        );
         m.setFechaLimiteCancelacion(dto.fechaLimiteCancelacion);
-        m.setRecordatorioHabilitado(dto.recordatorioHabilitado != null ? dto.recordatorioHabilitado : true);
-        m.setDiasAnticipacion(dto.diasAnticipacion != null ? dto.diasAnticipacion : 3);
-        m.setNotificacionSilenciada(dto.notificacionSilenciada != null ? dto.notificacionSilenciada : false);
+        m.setRecordatorioHabilitado(
+            dto.recordatorioHabilitado != null
+                ? dto.recordatorioHabilitado
+                : true
+        );
+        m.setDiasAnticipacion(
+            dto.diasAnticipacion != null ? dto.diasAnticipacion : 3
+        );
+        m.setNotificacionSilenciada(
+            dto.notificacionSilenciada != null
+                ? dto.notificacionSilenciada
+                : false
+        );
         m.setEstaActiva(dto.estaActiva != null ? dto.estaActiva : true);
         m.setNombreIcono(dto.iconoNombre != null ? dto.iconoNombre : "");
         m.setCreadoEn(dto.creadoEn != null ? dto.creadoEn : "");
@@ -391,15 +498,31 @@ public class RemoteSyncRepository {
         ServicioFisicoModel m = new ServicioFisicoModel();
         m.setNombre(dto.nombre != null ? dto.nombre : "");
         m.setMontoEstimado(dto.montoEstimado != null ? dto.montoEstimado : 0.0);
-        m.setMontoVariable(dto.montoVariable != null ? dto.montoVariable : false);
-        m.setCicloFacturacion(dto.cicloFacturacion != null ? dto.cicloFacturacion : "MENSUAL");
-        m.setFechaProximoCobro(dto.fechaProximoCobro != null ? dto.fechaProximoCobro : "");
+        m.setMontoVariable(
+            dto.montoVariable != null ? dto.montoVariable : false
+        );
+        m.setCicloFacturacion(
+            dto.cicloFacturacion != null ? dto.cicloFacturacion : "MENSUAL"
+        );
+        m.setFechaProximoCobro(
+            dto.fechaProximoCobro != null ? dto.fechaProximoCobro : ""
+        );
         m.setEsCompartido(dto.esCompartido != null ? dto.esCompartido : false);
         m.setMontoTotalRecibo(dto.montoTotalRecibo);
         m.setMontoParteUsuario(dto.montoParteUsuario);
-        m.setRecordatorioHabilitado(dto.recordatorioHabilitado != null ? dto.recordatorioHabilitado : true);
-        m.setDiasAnticipacion(dto.diasAnticipacion != null ? dto.diasAnticipacion : 3);
-        m.setNotificacionSilenciada(dto.notificacionSilenciada != null ? dto.notificacionSilenciada : false);
+        m.setRecordatorioHabilitado(
+            dto.recordatorioHabilitado != null
+                ? dto.recordatorioHabilitado
+                : true
+        );
+        m.setDiasAnticipacion(
+            dto.diasAnticipacion != null ? dto.diasAnticipacion : 3
+        );
+        m.setNotificacionSilenciada(
+            dto.notificacionSilenciada != null
+                ? dto.notificacionSilenciada
+                : false
+        );
         m.setRutaImagenComprobante(dto.rutaImagenComprobante);
         m.setEstaActivo(dto.estaActivo != null ? dto.estaActivo : true);
         m.setCreadoEn(dto.creadoEn != null ? dto.creadoEn : "");
@@ -409,17 +532,27 @@ public class RemoteSyncRepository {
 
     private RegistrosPagoModel toModel(RegistroPagoDto dto) {
         RegistrosPagoModel m = new RegistrosPagoModel();
-        m.setSuscripcionId(dto.suscripcionId != null ? dto.suscripcionId.intValue() : null);
-        m.setServicioId(dto.servicioId != null ? dto.servicioId.intValue() : null);
+        m.setSuscripcionId(
+            dto.suscripcionId != null ? dto.suscripcionId.intValue() : null
+        );
+        m.setServicioId(
+            dto.servicioId != null ? dto.servicioId.intValue() : null
+        );
         m.setNombreOrigen(dto.nombreOrigen != null ? dto.nombreOrigen : "");
         m.setColorOrigen(dto.colorOrigen != null ? dto.colorOrigen : "#000000");
         m.setCategoria(dto.categoria != null ? dto.categoria : "OTRO");
         m.setMonto(dto.monto != null ? dto.monto : 0.0);
         m.setEstado(dto.estado != null ? dto.estado : "PENDIENTE");
-        m.setFechaVencimiento(dto.fechaVencimiento != null ? dto.fechaVencimiento : "");
+        m.setFechaVencimiento(
+            dto.fechaVencimiento != null ? dto.fechaVencimiento : ""
+        );
         m.setFechaPago(dto.fechaPago);
-        m.setMesFacturacion(dto.mesFacturacion != null ? dto.mesFacturacion : 1);
-        m.setAnioFacturacion(dto.anioFacturacion != null ? dto.anioFacturacion : 2025);
+        m.setMesFacturacion(
+            dto.mesFacturacion != null ? dto.mesFacturacion : 1
+        );
+        m.setAnioFacturacion(
+            dto.anioFacturacion != null ? dto.anioFacturacion : 2025
+        );
         m.setCreadoEn(dto.creadoEn != null ? dto.creadoEn : "");
         m.setActualizadoEn(dto.actualizadoEn != null ? dto.actualizadoEn : "");
         return m;
