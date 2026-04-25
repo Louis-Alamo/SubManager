@@ -1,5 +1,6 @@
 package com.example.submanager.ui.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import com.example.submanager.data.remote.SupabaseClient;
 import com.example.submanager.data.remote.dto.UsuarioDto;
 import com.example.submanager.utils.CryptoUtils;
 import com.example.submanager.utils.SessionManager;
+import com.example.submanager.data.repository.RemoteSyncRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -283,17 +285,30 @@ public class AuthActivity extends AppCompatActivity {
 
                         handler.post(() -> {
                             btnIniciarSesion.setEnabled(true);
-                            String msg = sm.isPremium()
-                                ? "¡Bienvenido, " +
-                                  remoto.nombre +
-                                  "! 👑 Premium activo"
-                                : "¡Bienvenido, " + remoto.nombre + "!";
-                            Snackbar.make(
-                                btnIniciarSesion,
-                                msg,
-                                Snackbar.LENGTH_SHORT
-                            ).show();
-                            btnIniciarSesion.postDelayed(this::finish, 800);
+                            if (sm.isPremium()) {
+                                Snackbar.make(
+                                    btnIniciarSesion,
+                                    "¡Bienvenido, " + remoto.nombre + "! 👑 Premium activo\nDescargando tus datos...",
+                                    Snackbar.LENGTH_SHORT
+                                ).show();
+                                
+                                ProgressDialog progress = new ProgressDialog(AuthActivity.this);
+                                progress.setMessage("Restaurando desde la nube…");
+                                progress.setCancelable(false);
+                                progress.show();
+                                
+                                new RemoteSyncRepository(AuthActivity.this).pullAll((status, message) -> {
+                                    if (progress.isShowing()) progress.dismiss();
+                                    finish();
+                                });
+                            } else {
+                                Snackbar.make(
+                                    btnIniciarSesion,
+                                    "¡Bienvenido, " + remoto.nombre + "!",
+                                    Snackbar.LENGTH_SHORT
+                                ).show();
+                                btnIniciarSesion.postDelayed(this::finish, 800);
+                            }
                         });
                     } else {
                         String errBody =
