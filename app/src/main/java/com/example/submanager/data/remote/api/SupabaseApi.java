@@ -37,7 +37,7 @@ public interface SupabaseApi {
     // ─────────────────────────────────────────────────────────────────────────
 
     @GET("suscripciones")
-    Call<List<SuscripcionDto>> getSuscripciones();
+    Call<List<SuscripcionDto>> getSuscripciones(@Query("usuario_id") String filter);
 
     @POST("suscripciones")
     @Headers("Prefer: return=minimal")
@@ -52,14 +52,14 @@ public interface SupabaseApi {
 
     @DELETE("suscripciones")
     @Headers("Prefer: return=minimal")
-    Call<Void> deleteAllSuscripciones(@Query("id") String filter);
+    Call<Void> deleteAllSuscripciones(@Query("usuario_id") String filter);
 
     // ─────────────────────────────────────────────────────────────────────────
     // SERVICIOS FÍSICOS
     // ─────────────────────────────────────────────────────────────────────────
 
     @GET("servicios_fisicos")
-    Call<List<ServicioFisicoDto>> getServiciosFisicos();
+    Call<List<ServicioFisicoDto>> getServiciosFisicos(@Query("usuario_id") String filter);
 
     @POST("servicios_fisicos")
     @Headers("Prefer: return=minimal")
@@ -67,14 +67,14 @@ public interface SupabaseApi {
 
     @DELETE("servicios_fisicos")
     @Headers("Prefer: return=minimal")
-    Call<Void> deleteAllServiciosFisicos(@Query("id") String filter);
+    Call<Void> deleteAllServiciosFisicos(@Query("usuario_id") String filter);
 
     // ─────────────────────────────────────────────────────────────────────────
     // TERCEROS COMPARTIDOS
     // ─────────────────────────────────────────────────────────────────────────
 
     @GET("terceros_compartidos")
-    Call<List<TerceroCompartidoDto>> getTercerosCompartidos();
+    Call<List<TerceroCompartidoDto>> getTercerosCompartidos(@Query("usuario_id") String filter);
 
     @POST("terceros_compartidos")
     @Headers("Prefer: return=minimal")
@@ -82,14 +82,14 @@ public interface SupabaseApi {
 
     @DELETE("terceros_compartidos")
     @Headers("Prefer: return=minimal")
-    Call<Void> deleteAllTerceros(@Query("id") String filter);
+    Call<Void> deleteAllTerceros(@Query("usuario_id") String filter);
 
     // ─────────────────────────────────────────────────────────────────────────
     // REGISTROS DE PAGO
     // ─────────────────────────────────────────────────────────────────────────
 
     @GET("registros_pago")
-    Call<List<RegistroPagoDto>> getRegistrosPago();
+    Call<List<RegistroPagoDto>> getRegistrosPago(@Query("usuario_id") String filter);
 
     @POST("registros_pago")
     @Headers("Prefer: return=minimal")
@@ -97,7 +97,7 @@ public interface SupabaseApi {
 
     @DELETE("registros_pago")
     @Headers("Prefer: return=minimal")
-    Call<Void> deleteAllRegistrosPago(@Query("id") String filter);
+    Call<Void> deleteAllRegistrosPago(@Query("usuario_id") String filter);
 
     // ─────────────────────────────────────────────────────────────────────────
     // CONFIGURACIÓN APP
@@ -112,7 +112,7 @@ public interface SupabaseApi {
 
     @PATCH("configuracion_app")
     @Headers("Prefer: return=minimal")
-    Call<Void> updateConfiguracion(@Query("id") String filter, @Body ConfiguracionAppDto dto);
+    Call<Void> updateConfiguracion(@Query("usuario_id") String filter, @Body ConfiguracionAppDto dto);
 
     // ─────────────────────────────────────────────────────────────────────────
     // USUARIOS (solo Premium)

@@ -39,8 +39,8 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         holder.tvTitulo.setText(sub.getNombre());
         holder.tvCategoria.setText(sub.getCategoria());
         holder.tvPrecio.setText(String.format("-$%.2f", sub.getMonto()));
-        holder.tvEstado.setText(sub.getActualizadoEn());
-        holder.tvFecha.setText(sub.getFechaPrimerCobro());
+        holder.tvEstado.setText("Modificado: " + formatearFecha(sub.getActualizadoEn()));
+        holder.tvFecha.setText("Próximo cobro: " + formatearFecha(sub.getFechaProximoCobro()));
         android.content.Context context = holder.itemView.getContext();
         String nombreIcono = sub.getNombreIcono();
         int resId = context.getResources().getIdentifier(nombreIcono, "drawable", context.getPackageName());
@@ -53,11 +53,8 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         // Navigate to detail on tap
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetalleSuscripcionActivity.class);
-            intent.putExtra("nombre",    sub.getNombre());
-            intent.putExtra("monto",     String.format("%.2f", sub.getMonto()));
-            intent.putExtra("categoria", sub.getCategoria());
-            intent.putExtra("ciclo",     sub.getCicloFacturacion());
-            intent.putExtra("iconRes",   resId != 0 ? resId : R.mipmap.ic_launcher);
+            intent.putExtra("suscripcion_id", sub.getId());
+            intent.putExtra("iconRes", resId != 0 ? resId : R.mipmap.ic_launcher);
             context.startActivity(intent);
         });
     }
@@ -70,6 +67,19 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
     public void actualizarLista(List<SuscripcionModel> nuevaLista) {
         this.listaSuscripciones = nuevaLista;
         notifyDataSetChanged();
+    }
+
+    private String formatearFecha(String fechaStr) {
+        if (fechaStr == null || fechaStr.length() < 10) return fechaStr != null ? fechaStr : "";
+        try {
+            String datePart = fechaStr.substring(0, 10);
+            java.text.SimpleDateFormat sdfIn = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+            java.text.SimpleDateFormat sdfOut = new java.text.SimpleDateFormat("dd MMM yyyy", new java.util.Locale("es", "ES"));
+            java.util.Date date = sdfIn.parse(datePart);
+            return sdfOut.format(date);
+        } catch (Exception e) {
+            return fechaStr;
+        }
     }
 
     public static class SuscripcionViewHolder extends RecyclerView.ViewHolder {

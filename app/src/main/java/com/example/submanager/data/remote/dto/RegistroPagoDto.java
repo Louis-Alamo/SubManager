@@ -10,6 +10,9 @@ public class RegistroPagoDto {
     @SerializedName("id")
     public Long id;
 
+    @SerializedName("usuario_id")
+    public Long usuarioId;
+
     @SerializedName("suscripcion_id")
     public Long suscripcionId;
 

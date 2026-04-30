@@ -208,10 +208,25 @@ public class AuthActivity extends AppCompatActivity {
                     return;
                 }
                 // Login exitoso (local)
-                new SessionManager(this).saveSession(
-                    usuarioLocal.email,
-                    usuarioLocal.nombre
-                );
+                SessionManager sm = new SessionManager(this);
+                sm.saveSession(usuarioLocal.email, usuarioLocal.nombre);
+
+                // Intentar recuperar ID remoto y estado Premium silenciosamente si hay internet
+                try {
+                    Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                        .getUsuarioPorCorreo("eq." + email)
+                        .execute();
+                    if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                        UsuarioDto remoto = resp.body().get(0);
+                        sm.saveRemoteUserId(remoto.id);
+                        if (remoto.tipoPlan != null && remoto.estaActivo != null && remoto.estaActivo) {
+                            sm.savePremium(remoto.tipoPlan, remoto.fechaRenovacion != null ? remoto.fechaRenovacion : "");
+                        } else {
+                            sm.clearPremium();
+                        }
+                    }
+                } catch (Exception ignored) {}
+
                 handler.post(() -> {
                     btnIniciarSesion.setEnabled(true);
                     Snackbar.make(
@@ -463,20 +478,14 @@ public class AuthActivity extends AppCompatActivity {
                         !createResp.body().isEmpty()
                     ) {
                         remoteId = createResp.body().get(0).id;
-                        Log.i(
-                            TAG,
-                            "Usuario creado en Supabase con ID: " + remoteId
-                        );
+                        Log.i(TAG, "Usuario creado en Supabase con ID: " + remoteId);
                     } else {
-                        Log.w(
-                            TAG,
-                            "No se pudo crear usuario en Supabase: " +
-                                createResp.code() +
-                                (createResp.errorBody() != null
-                                    ? " " + createResp.errorBody().string()
-                                    : "")
-                        );
+                        Log.w(TAG, "No se pudo crear usuario en Supabase");
                     }
+                } else {
+                    // Ya existe remotamente, jalamos el ID para vincular cuenta
+                    remoteId = checkResp.body().get(0).id;
+                    Log.i(TAG, "Cuenta ya existía remotamente, vinculada con ID: " + remoteId);
                 }
             } catch (Exception e) {
                 // Sin red o error de Supabase → la cuenta local ya está creada, continuar

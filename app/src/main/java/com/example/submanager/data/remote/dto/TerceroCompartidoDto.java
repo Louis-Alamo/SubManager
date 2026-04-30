@@ -10,6 +10,9 @@ public class TerceroCompartidoDto {
     @SerializedName("id")
     public Long id;
 
+    @SerializedName("usuario_id")
+    public Long usuarioId;
+
     @SerializedName("servicio_id")
     public Long servicioId;
 

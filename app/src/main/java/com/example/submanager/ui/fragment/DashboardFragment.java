@@ -157,8 +157,8 @@ public class DashboardFragment extends Fragment {
             if (!s.isEstaActiva()) continue;
 
             long dias = getDiasRestantes(s.getFechaProximoCobro());
-            // Mostrar todo lo futuro para asegurar visibilidad real desde BD
-            if (dias >= 0) {
+            // Mostrar solo si vence en los próximos 7 días
+            if (dias >= 0 && dias <= 7) {
                 proximos.add(s);
             }
         }
@@ -170,13 +170,15 @@ public class DashboardFragment extends Fragment {
         });
 
         if (proximos.isEmpty()) {
-            if (sectionProximos != null) sectionProximos.setVisibility(View.GONE);
+            if (sectionProximos != null) sectionProximos.setVisibility(View.VISIBLE);
+            if (rvProximos != null) rvProximos.setVisibility(View.GONE);
             if (emptyUpcoming != null) emptyUpcoming.setVisibility(View.VISIBLE);
             if (adapter != null) adapter.setItems(new ArrayList<>());
             return;
         }
 
         if (sectionProximos != null) sectionProximos.setVisibility(View.VISIBLE);
+        if (rvProximos != null) rvProximos.setVisibility(View.VISIBLE);
         if (emptyUpcoming != null) emptyUpcoming.setVisibility(View.GONE);
 
         if (adapter == null) {

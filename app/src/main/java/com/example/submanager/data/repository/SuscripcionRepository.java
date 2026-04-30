@@ -68,6 +68,10 @@ public class SuscripcionRepository {
         return montoTotalActivas;
     }
 
+    public LiveData<SuscripcionModel> getSuscripcionById(int id) {
+        return suscripcionDao.getSuscripcionById(id);
+    }
+
     // ─── ESCRITURA (hilo secundario + sync opcional) ──────────────────────────
 
     /**

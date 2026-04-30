@@ -106,6 +106,12 @@ public class RemoteSyncRepository {
 
         executor.execute(() -> {
             try {
+                long userId = session.getRemoteUserId();
+                if (userId == -1) {
+                    notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
+                    return;
+                }
+                String userFilter = "eq." + userId;
                 int total = 0;
 
                 // ── 1. Suscripciones ──────────────────────────────────────────
@@ -117,7 +123,7 @@ public class RemoteSyncRepository {
                 if (!suscripciones.isEmpty()) {
                     // Borrar remotas
                     Response<Void> delResp = api
-                        .deleteAllSuscripciones("gte.0")
+                        .deleteAllSuscripciones(userFilter)
                         .execute();
                     Log.d(TAG, "DELETE suscripciones → HTTP " + delResp.code());
 
@@ -172,7 +178,7 @@ public class RemoteSyncRepository {
                     .getAllServiciosFisicosSync();
                 Log.d(TAG, "Servicios físicos en Room: " + servicios.size());
                 if (!servicios.isEmpty()) {
-                    api.deleteAllServiciosFisicos("gte.0").execute();
+                    api.deleteAllServiciosFisicos(userFilter).execute();
                     List<ServicioFisicoDto> dtos = new ArrayList<>();
                     for (ServicioFisicoModel m : servicios) dtos.add(toDto(m));
                     Response<Void> insResp = api
@@ -187,7 +193,7 @@ public class RemoteSyncRepository {
                     .suscripcionDao()
                     .getAllTercerosSync();
                 if (!terceros.isEmpty()) {
-                    api.deleteAllTerceros("gte.0").execute();
+                    api.deleteAllTerceros(userFilter).execute();
                     List<TerceroCompartidoDto> dtos = new ArrayList<>();
                     for (TercerosCompartidosModel m : terceros)
                         dtos.add(toDto(m));
@@ -202,7 +208,7 @@ public class RemoteSyncRepository {
                     .suscripcionDao()
                     .getAllRegistrosPagoSync();
                 if (!registros.isEmpty()) {
-                    api.deleteAllRegistrosPago("gte.0").execute();
+                    api.deleteAllRegistrosPago(userFilter).execute();
                     List<RegistroPagoDto> dtos = new ArrayList<>();
                     for (RegistrosPagoModel m : registros) dtos.add(toDto(m));
                     Response<Void> insResp = api
@@ -270,9 +276,16 @@ public class RemoteSyncRepository {
 
         executor.execute(() -> {
             try {
+                long userId = session.getRemoteUserId();
+                if (userId == -1) {
+                    notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
+                    return;
+                }
+                String userFilter = "eq." + userId;
+
                 // ── 1. Suscripciones ──────────────────────────────────────────
                 Response<List<SuscripcionDto>> susResp = api
-                    .getSuscripciones()
+                    .getSuscripciones(userFilter)
                     .execute();
                 if (susResp.isSuccessful() && susResp.body() != null) {
                     db.suscripcionDao().deleteAllSuscripciones();
@@ -285,7 +298,7 @@ public class RemoteSyncRepository {
 
                 // ── 2. Servicios físicos ──────────────────────────────────────
                 Response<List<ServicioFisicoDto>> srvResp = api
-                    .getServiciosFisicos()
+                    .getServiciosFisicos(userFilter)
                     .execute();
                 if (srvResp.isSuccessful() && srvResp.body() != null) {
                     db.suscripcionDao().deleteAllServiciosFisicos();
@@ -298,7 +311,7 @@ public class RemoteSyncRepository {
 
                 // ── 3. Registros de pago ──────────────────────────────────────
                 Response<List<RegistroPagoDto>> regResp = api
-                    .getRegistrosPago()
+                    .getRegistrosPago(userFilter)
                     .execute();
                 if (regResp.isSuccessful() && regResp.body() != null) {
                     db.suscripcionDao().deleteAllRegistrosPago();
@@ -345,12 +358,16 @@ public class RemoteSyncRepository {
 
         // Remoto Supabase
         try {
+            long userId = session.getRemoteUserId();
+            String userFilter = "eq." + userId;
+            
             ConfiguracionAppDto dto = new ConfiguracionAppDto();
-            dto.id = 1L;
+            if (userId != -1) dto.usuarioId = userId;
             dto.ultimaSincronizacion = timestamp;
+            
             // Intentar PATCH primero, si falla hacer POST
             Response<Void> patchResp = api
-                .updateConfiguracion("eq.1", dto)
+                .updateConfiguracion(userFilter, dto)
                 .execute();
             if (!patchResp.isSuccessful()) {
                 api.insertConfiguracion(dto).execute();
@@ -404,6 +421,8 @@ public class RemoteSyncRepository {
 
     private ServicioFisicoDto toDto(ServicioFisicoModel m) {
         ServicioFisicoDto dto = new ServicioFisicoDto();
+        long userId = session.getRemoteUserId();
+        if (userId != -1) dto.usuarioId = userId;
         dto.nombre = m.getNombre();
         dto.montoEstimado = m.getMontoEstimado();
         dto.montoVariable = m.isMontoVariable();
@@ -424,6 +443,8 @@ public class RemoteSyncRepository {
 
     private TerceroCompartidoDto toDto(TercerosCompartidosModel m) {
         TerceroCompartidoDto dto = new TerceroCompartidoDto();
+        long userId = session.getRemoteUserId();
+        if (userId != -1) dto.usuarioId = userId;
         dto.servicioId = (long) m.getServicioId();
         dto.nombreTercero = m.getNombreTercero();
         dto.montoAportacion = m.getMontoAportacion();
@@ -433,6 +454,8 @@ public class RemoteSyncRepository {
 
     private RegistroPagoDto toDto(RegistrosPagoModel m) {
         RegistroPagoDto dto = new RegistroPagoDto();
+        long userId = session.getRemoteUserId();
+        if (userId != -1) dto.usuarioId = userId;
         dto.suscripcionId =
             m.getSuscripcionId() != null
                 ? m.getSuscripcionId().longValue()

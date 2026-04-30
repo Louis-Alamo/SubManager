@@ -35,6 +35,9 @@ public interface SuscripcionDao {
     @Query("SELECT COALESCE(SUM(monto), 0) FROM suscripciones WHERE esta_activa = 1")
     LiveData<Double> getMontoTotalActivas();
 
+    @Query("SELECT * FROM suscripciones WHERE id = :id LIMIT 1")
+    LiveData<SuscripcionModel> getSuscripcionById(int id);
+
     // ─────────────────────────────────────────────────────────────────────────
     // SUSCRIPCIONES — Síncrono (para sincronización remota)
     // ─────────────────────────────────────────────────────────────────────────

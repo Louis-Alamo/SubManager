@@ -9,13 +9,27 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.submanager.R;
+import com.example.submanager.data.model.SuscripcionModel;
+import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class DetalleSuscripcionActivity extends AppCompatActivity {
+
+    private SuscripcionViewModel viewModel;
+    private int suscripcionId = -1;
 
     private ImageView ivDetalleIcon;
     private TextView tvDetalleName, tvDetalleCategoria, tvDetalleMonto;
@@ -32,9 +46,23 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle_suscripcion);
 
         bindViews();
-        loadData();
         setupListeners();
         setupHistorial();
+
+        suscripcionId = getIntent().getIntExtra("suscripcion_id", -1);
+        viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
+
+        if (suscripcionId != -1) {
+            viewModel.getSuscripcionById(suscripcionId).observe(this, model -> {
+                if (model != null) {
+                    loadData(model);
+                } else {
+                    finish(); // Si fue eliminada, el model será null
+                }
+            });
+        } else {
+            finish();
+        }
     }
 
     private void bindViews() {
@@ -57,39 +85,31 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         btnMarcarPagado = findViewById(R.id.btnMarcarPagado);
     }
 
-    private void loadData() {
-        // Receive data from Intent extras (name, monto, categoria, ciclo, etc.)
-        String nombre    = getIntent().getStringExtra("nombre");
-        String monto     = getIntent().getStringExtra("monto");
-        String categoria = getIntent().getStringExtra("categoria");
-        String ciclo     = getIntent().getStringExtra("ciclo");
-        int    iconRes   = getIntent().getIntExtra("iconRes", R.drawable.ic_app_netflix);
+    private void loadData(SuscripcionModel model) {
+        tvDetalleName.setText(model.getNombre());
+        tvDetalleCategoria.setText(model.getCategoria());
+        tvDetalleMonto.setText(String.format(Locale.getDefault(), "$%.2f", model.getMonto()));
+        tvDetalleCiclo.setText("por " + model.getCicloFacturacion().toLowerCase());
 
-        // Apply data to views (use mock defaults if extras are null)
-        tvDetalleName.setText(nombre != null ? nombre : "Netflix Premium");
-        tvDetalleCategoria.setText(categoria != null ? categoria : "Entretenimiento");
-        tvDetalleMonto.setText(monto != null ? "$" + monto : "$219.00");
-        tvDetalleCiclo.setText(ciclo != null ? "por " + ciclo.toLowerCase() : "por mes");
-        ivDetalleIcon.setImageResource(iconRes);
+        int iconRes = getIntent().getIntExtra("iconRes", 0);
+        if (iconRes != 0) {
+            ivDetalleIcon.setImageResource(iconRes);
+        } else {
+            ivDetalleIcon.setImageResource(R.mipmap.ic_launcher);
+        }
 
-        // Mock detail data
-        tvProximoCobro.setText("14 Abr 2026");
-        tvDiasParaVencer.setText("En 3 días");
-        tvCicloInfo.setText(ciclo != null ? ciclo : "Mensual");
-        tvMetodoPago.setText("Tarjeta de crédito");
-        tvRecordatorio.setText("3 días antes");
-        tvCancelDate.setText("11 Abr 2026 · 3 días");
+        tvProximoCobro.setText(formatearFecha(model.getFechaProximoCobro()));
+        tvDiasParaVencer.setText(obtenerTextoDias(model.getFechaProximoCobro()));
+        tvCicloInfo.setText(model.getCicloFacturacion());
+        tvMetodoPago.setText(model.getMetodoPago());
+        tvRecordatorio.setText(model.getDiasAnticipacion() + " días antes");
+        tvCancelDate.setText(formatearFechaCancelacion(model.getFechaProximoCobro(), model.getDiasAnticipacion()));
     }
 
     private void setupHistorial() {
-        // Simple mock list of last payments as TextViews inside a card via adapter
-        List<String[]> pagos = new ArrayList<>();
-        pagos.add(new String[]{"11 Mar 2026", "$219.00", "Pagado"});
-        pagos.add(new String[]{"11 Feb 2026", "$219.00", "Pagado"});
-        pagos.add(new String[]{"11 Ene 2026", "$219.00", "Pagado"});
-
-        rvUltimosPagos.setLayoutManager(new LinearLayoutManager(this));
-        rvUltimosPagos.setAdapter(new HistorialMockAdapter(pagos));
+        // En construcción: Ocultamos los últimos pagos falsos y el botón
+        rvUltimosPagos.setVisibility(View.GONE);
+        btnMarcarPagado.setVisibility(View.GONE);
     }
 
     private void setupListeners() {
@@ -111,45 +131,75 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
             .setTitle("Eliminar suscripción")
             .setMessage("¿Estás seguro de que deseas eliminar esta suscripción? Esta acción no se puede deshacer.")
             .setPositiveButton("Eliminar", (dialog, which) -> {
-                Snackbar.make(btnEliminar, "Suscripción eliminada", Snackbar.LENGTH_SHORT).show();
-                finish();
+                if (suscripcionId != -1) {
+                    viewModel.eliminar(suscripcionId);
+                }
             })
             .setNegativeButton("Cancelar", null)
             .show();
     }
 
-    // ─── Inner Adapter for mock payment history ────────────────────────────
-    static class HistorialMockAdapter extends RecyclerView.Adapter<HistorialMockAdapter.VH> {
-        private final List<String[]> items;
-        HistorialMockAdapter(List<String[]> items) { this.items = items; }
+    // ─── Utilidades de Fechas ───────────────────────────────────────────────
 
-        @Override
-        public VH onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
-            View v = android.view.LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_historial_pago, parent, false);
-            return new VH(v);
+    private String formatearFecha(String fechaStr) {
+        if (fechaStr == null || fechaStr.isEmpty()) return "N/A";
+        try {
+            java.text.SimpleDateFormat sdfIn = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+            java.text.SimpleDateFormat sdfOut = new java.text.SimpleDateFormat("dd MMM yyyy", new java.util.Locale("es", "ES"));
+            java.util.Date date = sdfIn.parse(fechaStr);
+            return sdfOut.format(date);
+        } catch (Exception e) {
+            return fechaStr;
         }
+    }
 
-        @Override
-        public void onBindViewHolder(VH h, int pos) {
-            String[] item = items.get(pos);
-            if (h.tvNombre  != null) h.tvNombre.setText("Netflix Premium");
-            if (h.tvFecha   != null) h.tvFecha.setText(item[0]);
-            if (h.tvMonto   != null) h.tvMonto.setText(item[1]);
-            if (h.tvEstado  != null) h.tvEstado.setText(item[2]);
+    private String obtenerTextoDias(String fechaStr) {
+        if (fechaStr == null || fechaStr.isEmpty()) return "";
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date targetDate = sdf.parse(fechaStr);
+            if (targetDate == null) return "";
+
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+            today.set(Calendar.MILLISECOND, 0);
+
+            Calendar target = Calendar.getInstance();
+            target.setTime(targetDate);
+            target.set(Calendar.HOUR_OF_DAY, 0);
+            target.set(Calendar.MINUTE, 0);
+            target.set(Calendar.SECOND, 0);
+            target.set(Calendar.MILLISECOND, 0);
+
+            long diff = target.getTimeInMillis() - today.getTimeInMillis();
+            long dias = TimeUnit.MILLISECONDS.toDays(diff);
+
+            if (dias == 0) return "Hoy";
+            else if (dias == 1) return "En 1 día";
+            else if (dias < 0) return "Vencido";
+            else return "En " + dias + " días";
+        } catch (ParseException e) {
+            return "";
         }
+    }
 
-        @Override public int getItemCount() { return items.size(); }
+    private String formatearFechaCancelacion(String fechaStr, int diasAnticipacion) {
+        if (fechaStr == null || fechaStr.isEmpty()) return "N/A";
+        try {
+            SimpleDateFormat sdfIn = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date baseDate = sdfIn.parse(fechaStr);
+            if (baseDate == null) return "N/A";
 
-        static class VH extends RecyclerView.ViewHolder {
-            TextView tvNombre, tvFecha, tvMonto, tvEstado;
-            VH(View v) {
-                super(v);
-                tvNombre = v.findViewById(R.id.tvNombre);
-                tvFecha  = v.findViewById(R.id.tvFechaCategoria);
-                tvMonto  = v.findViewById(R.id.tvMonto);
-                tvEstado = v.findViewById(R.id.tvBadgePagado);
-            }
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(baseDate);
+            cal.add(Calendar.DAY_OF_YEAR, -diasAnticipacion);
+
+            SimpleDateFormat sdfOut = new SimpleDateFormat("dd MMM yyyy", new Locale("es", "ES"));
+            return sdfOut.format(cal.getTime()) + " · " + diasAnticipacion + " días";
+        } catch (Exception e) {
+            return "N/A";
         }
     }
 }

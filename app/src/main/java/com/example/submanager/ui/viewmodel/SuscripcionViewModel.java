@@ -46,9 +46,16 @@ public class SuscripcionViewModel extends AndroidViewModel {
         return montoTotalActivas;
     }
 
+    public LiveData<SuscripcionModel> getSuscripcionById(int id) {
+        return repository.getSuscripcionById(id);
+    }
+
     public void insertar(SuscripcionModel suscripcion) {
         repository.insertar(suscripcion);
     }
 
+    public void eliminar(int id) {
+        repository.eliminar(id);
+    }
 
 }

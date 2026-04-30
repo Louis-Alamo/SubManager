@@ -97,6 +97,8 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                     imm.showSoftInput(autoCompleteCiclo,
                             android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
                 }
+            } else {
+                calcularFechaLimite();
             }
         });
     }
@@ -155,6 +157,7 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         datePicker.addOnPositiveButtonClickListener(selection -> {
             String fechaFormateada = sdf.format(new Date(selection));
             etFecha.setText(fechaFormateada);
+            calcularFechaLimite();
         });
 
         // Abrir el calendario al tocar el campo de texto
@@ -300,6 +303,7 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             AutoCompleteTextView autoCompletePago = findViewById(R.id.autoCompletePago);
             TextInputEditText etFecha = findViewById(R.id.etFecha);
             TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
+            TextInputEditText etDiasAnticipacion = findViewById(R.id.etDiasAnticipacion);
             ChipGroup chipGroupCategorias = findViewById(R.id.chipGroupCategorias);
 
             String nombre = etNombre.getText().toString().trim();
@@ -307,7 +311,8 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             String ciclo = autoCompleteCiclo.getText().toString().trim();
             String metodoPago = autoCompletePago.getText().toString().trim();
             String fechaPrimerCobro = etFecha.getText().toString().trim();
-            String fechaLimite = etFechaLimite.getText().toString().trim();
+            String fechaLimite = etFechaLimite.getText() != null ? etFechaLimite.getText().toString().trim() : "";
+            String diasStr = etDiasAnticipacion.getText() != null ? etDiasAnticipacion.getText().toString().trim() : "";
 
             if (nombre.isEmpty() || montoStr.isEmpty() || ciclo.isEmpty() || metodoPago.isEmpty() || fechaPrimerCobro.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa los campos obligatorios.", Toast.LENGTH_SHORT).show();
@@ -320,6 +325,15 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             } catch (NumberFormatException e) {
                 Toast.makeText(this, "Monto inválido", Toast.LENGTH_SHORT).show();
                 return;
+            }
+            
+            int diasAnticipacion = 3;
+            if (!diasStr.isEmpty()) {
+                try {
+                    diasAnticipacion = Integer.parseInt(diasStr);
+                } catch (NumberFormatException e) {
+                    diasAnticipacion = 3;
+                }
             }
 
             // Validar categoría seleccionada
@@ -350,7 +364,7 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                     fechaPrimerCobro, // Usamos la misma para proximo cobro inicial
                     fechaLimite.isEmpty() ? null : fechaLimite,
                     true, // recordatorio habilitado
-                    3,    // dias de anticipacion
+                    diasAnticipacion, // configurado por usuario
                     false, // notificacion no silenciada
                     true,  // activa por defecto
                     nombreIcono,
@@ -364,5 +378,47 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             Toast.makeText(this, "Suscripción guardada exitosamente", Toast.LENGTH_SHORT).show();
             finish();
         });
+    }
+
+    private void calcularFechaLimite() {
+        TextInputEditText etFecha = findViewById(R.id.etFecha);
+        TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
+        AutoCompleteTextView autoCompleteCiclo = findViewById(R.id.autoCompleteCiclo);
+        
+        String fechaStr = etFecha.getText() != null ? etFecha.getText().toString().trim() : "";
+        String ciclo = autoCompleteCiclo.getText() != null ? autoCompleteCiclo.getText().toString().trim() : "";
+        
+        if (fechaStr.isEmpty() || ciclo.isEmpty() || OPCION_PERSONALIZADO.equals(ciclo)) {
+            return; // No hay suficientes datos para calcular
+        }
+        
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+            Date firstDate = sdf.parse(fechaStr);
+            if (firstDate == null) return;
+            
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(firstDate);
+            
+            // Sumar el ciclo de facturación
+            switch (ciclo.toLowerCase()) {
+                case "diario": cal.add(java.util.Calendar.DAY_OF_YEAR, 1); break;
+                case "semanal": cal.add(java.util.Calendar.WEEK_OF_YEAR, 1); break;
+                case "quincenal": cal.add(java.util.Calendar.DAY_OF_YEAR, 15); break;
+                case "mensual": cal.add(java.util.Calendar.MONTH, 1); break;
+                case "bimestral": cal.add(java.util.Calendar.MONTH, 2); break;
+                case "trimestral": cal.add(java.util.Calendar.MONTH, 3); break;
+                case "semestral": cal.add(java.util.Calendar.MONTH, 6); break;
+                case "anual": cal.add(java.util.Calendar.YEAR, 1); break;
+                default: return; // No auto-calcular si no está mapeado
+            }
+            
+            // Restar un día
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+            
+            etFechaLimite.setText(sdf.format(cal.getTime()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

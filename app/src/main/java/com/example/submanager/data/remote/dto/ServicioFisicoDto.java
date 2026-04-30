@@ -10,6 +10,9 @@ public class ServicioFisicoDto {
     @SerializedName("id")
     public Long id;
 
+    @SerializedName("usuario_id")
+    public Long usuarioId;
+
     @SerializedName("nombre")
     public String nombre;
 
