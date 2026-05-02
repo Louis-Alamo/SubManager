@@ -48,7 +48,6 @@
                 android:paddingTop="24dp"
                 android:paddingBottom="16dp">
 
-                <!-- Textos de saludo -->
                 <LinearLayout
                     android:id="@+id/llGreeting"
                     android:layout_width="0dp"
@@ -71,7 +70,7 @@
                         android:id="@+id/tvGreeting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hola, Usuario 👋"
+                        android:text="Hola, Usuario"
                         android:textColor="@color/text_primary"
                         android:textSize="22sp"
                         android:textStyle="bold"
@@ -79,7 +78,6 @@
 
                 </LinearLayout>
 
-                <!-- Ícono de Ajustes -->
                 <ImageView
                     android:id="@+id/ivSettings"
                     android:layout_width="44dp"
@@ -97,216 +95,224 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- ─────────────────────────────────────────── -->
-            <!--  3 TARJETAS DE RESUMEN                      -->
+            <!--  HERO CARD — Resumen mensual (Gradiente)    -->
             <!-- ─────────────────────────────────────────── -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingBottom="4dp">
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/primary_dark">
 
-                <!-- TARJETA: PENDIENTE (roja) -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardPendiente"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/error_bg">
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
+                    <!-- Fila superior: label + mes -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
                         <TextView
-                            android:id="@+id/tvMontoPendiente"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="$0.00"
-                            android:textColor="@color/error"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:layout_weight="1"
+                            android:text="Gasto mensual total"
+                            android:textColor="#DDEAFF"
+                            android:textSize="13sp"
+                            android:letterSpacing="0.02" />
 
                         <TextView
+                            android:id="@+id/tvMesActual"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/dashboard_card_pending"
-                            android:textColor="@color/error"
-                            android:textSize="10sp"
-                            android:textAllCaps="true"
-                            android:letterSpacing="0.05"
-                            android:layout_marginTop="5dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dashboard_card_pending_subtitle"
-                            android:textColor="@color/error"
-                            android:textSize="10sp"
-                            android:alpha="0.7"
-                            android:layout_marginTop="2dp" />
-
+                            android:text="Este mes"
+                            android:textColor="#DDEAFF"
+                            android:textSize="11sp"
+                            android:background="@drawable/bg_status_badge"
+                            android:backgroundTint="#2D4F80"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
 
-                <!-- TARJETA: PAGADO (verde) -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardPagado"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="5dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/success_bg">
+                    <!-- Monto TOTAL grande -->
+                    <TextView
+                        android:id="@+id/tvMontoTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$0"
+                        android:textColor="#FFFFFF"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="20dp" />
 
+                    <!-- Separador -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#3A5A90"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Fila: Pendiente | Pagado -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tvMontoPagado"
-                            android:layout_width="wrap_content"
+                        <!-- Pendiente -->
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="$0.00"
-                            android:textColor="@color/success"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dashboard_card_paid"
-                            android:textColor="@color/success"
-                            android:textSize="10sp"
-                            android:textAllCaps="true"
-                            android:letterSpacing="0.05"
-                            android:layout_marginTop="5dp" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_status_badge"
+                                    android:backgroundTint="#FCA5A5"
+                                    android:layout_marginEnd="6dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="PENDIENTE"
+                                    android:textColor="#DDEAFF"
+                                    android:textSize="10sp"
+                                    android:letterSpacing="0.05" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvMontoPendiente"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="$0"
+                                android:textColor="#FCA5A5"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Por pagar este mes"
+                                android:textColor="#C8DCF8"
+                                android:textSize="11sp"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+
+                        <!-- Divider vertical -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#3A5A90"
+                            android:layout_marginHorizontal="16dp" />
+
+                        <!-- Pagado -->
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/dashboard_card_paid_subtitle"
-                            android:textColor="@color/success"
-                            android:textSize="10sp"
-                            android:alpha="0.7"
-                            android:layout_marginTop="2dp" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_status_badge"
+                                    android:backgroundTint="#86EFAC"
+                                    android:layout_marginEnd="6dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="PAGADO"
+                                    android:textColor="#DDEAFF"
+                                    android:textSize="10sp"
+                                    android:letterSpacing="0.05" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvMontoPagado"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="$0"
+                                android:textColor="#86EFAC"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Completado con exito"
+                                android:textColor="#C8DCF8"
+                                android:textSize="11sp"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
 
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- TARJETA: TOTAL (azul) -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardTotal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/selected_bg">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:id="@+id/tvMontoTotal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$0.00"
-                            android:textColor="@color/primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dashboard_card_total"
-                            android:textColor="@color/primary"
-                            android:textSize="10sp"
-                            android:textAllCaps="true"
-                            android:letterSpacing="0.05"
-                            android:layout_marginTop="5dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dashboard_card_total_subtitle"
-                            android:textColor="@color/primary"
-                            android:textSize="10sp"
-                            android:alpha="0.7"
-                            android:layout_marginTop="2dp" />
-
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-            </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- ─────────────────────────────────────────── -->
-            <!--  SECCIÓN: AÑADIR NUEVO                      -->
+            <!--  SECCIÓN: ACCIÓN PRINCIPAL                  -->
             <!-- ─────────────────────────────────────────── -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/dashboard_add_new_title"
+                android:text="ACCION RAPIDA"
                 android:textColor="@color/text_muted"
                 android:textSize="11sp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.1"
                 android:paddingHorizontal="20dp"
-                android:paddingTop="22dp"
                 android:paddingBottom="10dp" />
 
-            <!-- Card: Agregar Suscripción -->
+            <!-- Card: Agregar Suscripcion — prominente en azul -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardAgregarSuscripcion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="20dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:cardBackgroundColor="@color/surface">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/primary">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvIconSub"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="▶"
-                        android:textColor="@color/text_on_primary"
-                        android:textSize="17sp"
-                        android:gravity="center"
-                        android:background="@drawable/bg_status_badge"
-                        android:backgroundTint="@color/primary"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                    android:padding="20dp">
 
                     <LinearLayout
+                        android:id="@+id/llSubTexts"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginStart="14dp"
-                        app:layout_constraintStart_toEndOf="@id/tvIconSub"
-                        app:layout_constraintEnd_toStartOf="@id/tvArrowSub"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tvIconSub"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -314,27 +320,30 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/dashboard_add_subscription"
-                            android:textColor="@color/text_primary"
-                            android:textSize="15sp"
+                            android:textColor="@color/text_on_primary"
+                            android:textSize="17sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/dashboard_add_subscription_hint"
-                            android:textColor="@color/text_muted"
-                            android:textSize="12sp"
+                            android:textColor="#B0C4E8"
+                            android:textSize="13sp"
                             android:layout_marginTop="3dp" />
-
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvArrowSub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="@color/text_muted"
+                        android:id="@+id/tvIconSub"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:text="+"
+                        android:textColor="@color/primary"
                         android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:background="@drawable/bg_status_badge"
+                        android:backgroundTint="@color/text_on_primary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
@@ -342,7 +351,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Card: Pago Registrado / Servicio Físico -->
+            <!-- Card: Servicio Fisico — OCULTA, codigo preservado -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardAgregarServicio"
                 android:layout_width="match_parent"
@@ -351,6 +360,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="gone"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="1dp"
                 app:cardBackgroundColor="@color/surface">
@@ -364,7 +374,7 @@
                         android:id="@+id/tvIconServ"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
-                        android:text="✓"
+                        android:text="&#x2713;"
                         android:textColor="@color/text_on_primary"
                         android:textSize="17sp"
                         android:gravity="center"
@@ -406,7 +416,7 @@
                         android:id="@+id/tvArrowServ"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="›"
+                        android:text="&#x203a;"
                         android:textColor="@color/text_muted"
                         android:textSize="26sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -417,8 +427,108 @@
             </androidx.cardview.widget.CardView>
 
             <!-- ─────────────────────────────────────────── -->
-            <!--  SECCIÓN: PRÓXIMOS VENCIMIENTOS             -->
-            <!--  (se oculta con View.GONE si está vacía)    -->
+            <!--  ACCESOS RAPIDOS (nuevo contenido)          -->
+            <!-- ─────────────────────────────────────────── -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="EXPLORAR"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="20dp">
+
+                <!-- Chip: Mis Suscripciones -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardShortcutSubs"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/primary_tint">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="&#x1F4CB;"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mis Suscripciones"
+                            android:textColor="@color/primary_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Chip: Alertas de pago -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardShortcutAlertas"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/success_bg">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="&#x1F514;"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Alertas de pago"
+                            android:textColor="@color/success"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- ─────────────────────────────────────────── -->
+            <!--  SECCION: PROXIMOS VENCIMIENTOS             -->
             <!-- ─────────────────────────────────────────── -->
             <LinearLayout
                 android:id="@+id/sectionProximos"
@@ -427,12 +537,11 @@
                 android:orientation="vertical"
                 android:visibility="visible">
 
-                <!-- Header de sección -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="20dp"
-                    android:paddingTop="22dp"
+                    android:paddingTop="4dp"
                     android:paddingBottom="8dp">
 
                     <TextView
@@ -463,7 +572,6 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <!-- Ítems de vencimientos (mock visual) -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvProximos"
                     android:layout_width="match_parent"
@@ -471,7 +579,6 @@
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never" />
 
-                <!-- Empty state: sin vencimientos esta semana -->
                 <LinearLayout
                     android:id="@+id/emptyUpcoming"
                     android:layout_width="match_parent"
@@ -485,7 +592,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🎉"
+                        android:text="&#x1F389;"
                         android:textSize="40sp" />
 
                     <TextView

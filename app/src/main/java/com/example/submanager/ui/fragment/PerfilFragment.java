@@ -11,11 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.example.submanager.R;
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.data.model.ConfiguracionAppModel;
@@ -72,14 +70,19 @@ public class PerfilFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+        @NonNull LayoutInflater inflater,
+        @Nullable ViewGroup container,
+        @Nullable Bundle savedInstanceState
+    ) {
         return inflater.inflate(R.layout.fragment_perfil, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+        @NonNull View view,
+        @Nullable Bundle savedInstanceState
+    ) {
         super.onViewCreated(view, savedInstanceState);
         sessionManager = new SessionManager(requireContext());
         remoteSyncRepository = new RemoteSyncRepository(requireContext());
@@ -128,25 +131,26 @@ public class PerfilFragment extends Fragment {
     // ── Listeners ─────────────────────────────────────────────────────────────
 
     private void setupListeners(View root) {
-
         // Switch notificaciones ──────────────────────────────────────────────
         switchNotificaciones.setOnCheckedChangeListener((btn, checked) -> {
             notificacionesActivas = checked;
-            String msg = checked
-                    ? "Alertas activadas"
-                    : "Alertas desactivadas";
+            String msg = checked ? "Alertas activadas" : "Alertas desactivadas";
             showSnackbar(root, msg);
         });
 
         // Hora del recordatorio ──────────────────────────────────────────────
-        rowTime.setOnClickListener(v -> showSnackbar(root, "Selector de hora próximamente"));
+        rowTime.setOnClickListener(v ->
+            showSnackbar(root, "Selector de hora próximamente")
+        );
 
         // Respaldar ───────────────────────────────────────────────────────────
         rowBackup.setOnClickListener(v -> {
             if (sessionManager.isPremium()) {
                 iniciarBackup(root);
             } else {
-                startActivity(new Intent(requireContext(), PremiumActivity.class));
+                startActivity(
+                    new Intent(requireContext(), PremiumActivity.class)
+                );
             }
         });
 
@@ -155,22 +159,35 @@ public class PerfilFragment extends Fragment {
             if (sessionManager.isPremium()) {
                 confirmarRestore(root);
             } else {
-                startActivity(new Intent(requireContext(), PremiumActivity.class));
+                startActivity(
+                    new Intent(requireContext(), PremiumActivity.class)
+                );
             }
         });
 
         // Términos ────────────────────────────────────────────────────────────
-        rowTerms.setOnClickListener(v -> showSnackbar(root, "Abriendo Términos de Servicio…"));
+        rowTerms.setOnClickListener(v ->
+            showSnackbar(root, "Abriendo Términos de Servicio…")
+        );
 
         // Privacidad ──────────────────────────────────────────────────────────
-        rowPrivacy.setOnClickListener(v -> showSnackbar(root, "Abriendo Política de Privacidad…"));
+        rowPrivacy.setOnClickListener(v ->
+            showSnackbar(root, "Abriendo Política de Privacidad…")
+        );
 
         // Soporte ─────────────────────────────────────────────────────────────
-        rowSupport.setOnClickListener(v -> showSnackbar(root, "Abriendo Centro de Soporte…"));
+        rowSupport.setOnClickListener(v ->
+            showSnackbar(root, "Abriendo Centro de Soporte…")
+        );
 
         // Botón Ayuda (toolbar) ───────────────────────────────────────────────
         if (btnHelp != null) {
-            btnHelp.setOnClickListener(v -> showSnackbar(root, "¿Necesitas ayuda? Soporte disponible próximamente"));
+            btnHelp.setOnClickListener(v ->
+                showSnackbar(
+                    root,
+                    "¿Necesitas ayuda? Soporte disponible próximamente"
+                )
+            );
         }
 
         // Login inline (usar campos ya en el fragment) ──────────────────────
@@ -183,7 +200,10 @@ public class PerfilFragment extends Fragment {
         // "¿No tienes cuenta?" → abrir AuthActivity directo en tab Registro
         if (tvRegister != null) {
             tvRegister.setOnClickListener(v -> {
-                Intent intent = new Intent(requireContext(), AuthActivity.class);
+                Intent intent = new Intent(
+                    requireContext(),
+                    AuthActivity.class
+                );
                 intent.putExtra(AuthActivity.EXTRA_TAB, 1);
                 startActivity(intent);
             });
@@ -192,14 +212,18 @@ public class PerfilFragment extends Fragment {
         // Premium banner ──────────────────────────────────────────────────────
         View bannerPremium = root.findViewById(R.id.bannerPremium);
         if (bannerPremium != null) {
-            bannerPremium.setOnClickListener(v -> startActivity(new Intent(requireContext(), PremiumActivity.class)));
+            bannerPremium.setOnClickListener(v ->
+                startActivity(
+                    new Intent(requireContext(), PremiumActivity.class)
+                )
+            );
         }
         // Logout ──────────────────────────────────────────────────────────
         View btnLogout = root.findViewById(R.id.btnLogout);
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> {
                 sessionManager.clearSession();
-                
+
                 // Limpiar la base de datos local y resetear fecha de sincronización
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());
@@ -209,9 +233,11 @@ public class PerfilFragment extends Fragment {
                     db.suscripcionDao().deleteAllServiciosFisicos();
                     db.suscripcionDao().deleteAllTerceros();
                     db.suscripcionDao().deleteAllRegistrosPago();
-                    
+
                     // Resetear la fecha de sincronización local
-                    ConfiguracionAppModel config = db.suscripcionDao().getConfiguracionSync();
+                    ConfiguracionAppModel config = db
+                        .suscripcionDao()
+                        .getConfiguracionSync();
                     if (config != null) {
                         config.setUltimaSincronizacion(null);
                         db.suscripcionDao().upsertConfiguracion(config);
@@ -231,33 +257,41 @@ public class PerfilFragment extends Fragment {
     // ── Estado de sesión ──────────────────────────────────────────────────────
 
     private void updateAuthUI() {
-        if (!isAdded())
-            return;
+        if (!isAdded()) return;
         if (sessionManager.isLoggedIn()) {
-            if (tvUserName != null)
-                tvUserName.setText(sessionManager.getNombre());
-            if (tvUserEmail != null)
-                tvUserEmail.setText(sessionManager.getEmail());
-            if (loginSection != null)
-                loginSection.setVisibility(View.GONE);
-            if (loggedInSection != null)
-                loggedInSection.setVisibility(View.VISIBLE);
+            if (tvUserName != null) tvUserName.setText(
+                sessionManager.getNombre()
+            );
+            if (tvUserEmail != null) tvUserEmail.setText(
+                sessionManager.getEmail()
+            );
+            if (loginSection != null) loginSection.setVisibility(View.GONE);
+            if (loggedInSection != null) loggedInSection.setVisibility(
+                View.VISIBLE
+            );
         } else {
-            if (tvUserName != null)
-                tvUserName.setText(getString(R.string.settings_account_guest));
-            if (tvUserEmail != null)
-                tvUserEmail.setText(getString(R.string.settings_account_guest_subtitle));
-            if (loginSection != null)
-                loginSection.setVisibility(View.VISIBLE);
-            if (loggedInSection != null)
-                loggedInSection.setVisibility(View.GONE);
+            if (tvUserName != null) tvUserName.setText(
+                getString(R.string.settings_account_guest)
+            );
+            if (tvUserEmail != null) tvUserEmail.setText(
+                getString(R.string.settings_account_guest_subtitle)
+            );
+            if (loginSection != null) loginSection.setVisibility(View.VISIBLE);
+            if (loggedInSection != null) loggedInSection.setVisibility(
+                View.GONE
+            );
         }
 
         // Banner Premium — oculto si ya es suscriptor
-        View banner = getView() != null ? getView().findViewById(R.id.bannerPremium) : null;
+        View banner =
+            getView() != null
+                ? getView().findViewById(R.id.bannerPremium)
+                : null;
         View bannerCard = banner != null ? (View) banner.getParent() : null;
         if (bannerCard != null) {
-            bannerCard.setVisibility(sessionManager.isPremium() ? View.GONE : View.VISIBLE);
+            bannerCard.setVisibility(
+                sessionManager.isPremium() ? View.GONE : View.VISIBLE
+            );
         }
     }
 
@@ -266,14 +300,17 @@ public class PerfilFragment extends Fragment {
     private static final String TAG = "PerfilFragment";
 
     private void handleInlineLogin(View root) {
-        if (tilEmail == null || tilPassword == null)
-            return;
+        if (tilEmail == null || tilPassword == null) return;
         tilEmail.setError(null);
         tilPassword.setError(null);
 
-        String email = etEmail != null && etEmail.getText() != null ? etEmail.getText().toString().trim().toLowerCase()
+        String email =
+            etEmail != null && etEmail.getText() != null
+                ? etEmail.getText().toString().trim().toLowerCase()
                 : "";
-        String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim()
+        String password =
+            etPassword != null && etPassword.getText() != null
+                ? etPassword.getText().toString().trim()
                 : "";
 
         boolean valid = true;
@@ -285,38 +322,50 @@ public class PerfilFragment extends Fragment {
             tilPassword.setError("Ingresa tu contraseña");
             valid = false;
         }
-        if (!valid)
-            return;
+        if (!valid) return;
 
         View btnLogin = root.findViewById(R.id.btnLogin);
-        if (btnLogin != null)
-            btnLogin.setEnabled(false);
+        if (btnLogin != null) btnLogin.setEnabled(false);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
             // ── Paso 1: buscar en Room local ─────────────────────────────────
-            UsuarioModel usuarioLocal = AppDatabase.getInstance(requireContext())
-                    .usuarioDao().findByEmail(email);
-            Log.d(TAG, "Login inline → Room local para '" + email + "': " +
-                    (usuarioLocal != null ? "ENCONTRADO" : "NO encontrado"));
+            UsuarioModel usuarioLocal = AppDatabase.getInstance(
+                requireContext()
+            )
+                .usuarioDao()
+                .findByEmail(email);
+            Log.d(
+                TAG,
+                "Login inline → Room local para '" +
+                    email +
+                    "': " +
+                    (usuarioLocal != null ? "ENCONTRADO" : "NO encontrado")
+            );
 
             if (usuarioLocal != null) {
                 // Verificar contraseña local
-                boolean passOk = CryptoUtils.hashPassword(password, usuarioLocal.salt)
-                        .equals(usuarioLocal.passwordHash);
+                boolean passOk = CryptoUtils.hashPassword(
+                    password,
+                    usuarioLocal.salt
+                ).equals(usuarioLocal.passwordHash);
                 handler.post(() -> {
-                    if (!isAdded())
-                        return;
-                    if (btnLogin != null)
-                        btnLogin.setEnabled(true);
+                    if (!isAdded()) return;
+                    if (btnLogin != null) btnLogin.setEnabled(true);
                     if (!passOk) {
                         tilPassword.setError("Contraseña incorrecta");
                     } else {
-                        sessionManager.saveSession(usuarioLocal.email, usuarioLocal.nombre);
+                        sessionManager.saveSession(
+                            usuarioLocal.email,
+                            usuarioLocal.nombre
+                        );
                         updateAuthUI();
-                        showSnackbar(root, "✅ ¡Bienvenido, " + usuarioLocal.nombre + "!");
+                        showSnackbar(
+                            root,
+                            "✅ ¡Bienvenido, " + usuarioLocal.nombre + "!"
+                        );
                     }
                 });
                 return;
@@ -326,40 +375,70 @@ public class PerfilFragment extends Fragment {
             Log.d(TAG, "No está en Room → buscando en Supabase: " + email);
             try {
                 Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
-                        .getUsuarioPorCorreo("eq." + email)
-                        .execute();
+                    .getUsuarioPorCorreo("eq." + email)
+                    .execute();
 
-                Log.d(TAG, "Supabase respuesta: HTTP " + resp.code() +
-                        " | isSuccessful=" + resp.isSuccessful() +
-                        " | body=" + (resp.body() != null ? resp.body().size() + " registros" : "null"));
+                Log.d(
+                    TAG,
+                    "Supabase respuesta: HTTP " +
+                        resp.code() +
+                        " | isSuccessful=" +
+                        resp.isSuccessful() +
+                        " | body=" +
+                        (resp.body() != null
+                            ? resp.body().size() + " registros"
+                            : "null")
+                );
 
-                if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                if (
+                    resp.isSuccessful() &&
+                    resp.body() != null &&
+                    !resp.body().isEmpty()
+                ) {
                     UsuarioDto remoto = resp.body().get(0);
-                    Log.d(TAG, "Usuario remoto encontrado: nombre=" + remoto.nombre +
-                            " | correo=" + remoto.correo +
-                            " | hashContrasena=" + remoto.hashContrasena);
+                    Log.d(
+                        TAG,
+                        "Usuario remoto encontrado: nombre=" +
+                            remoto.nombre +
+                            " | correo=" +
+                            remoto.correo +
+                            " | hashContrasena=" +
+                            remoto.hashContrasena
+                    );
 
                     // Verificar contraseña con el mismo algoritmo que AuthActivity (salt = email)
-                    String hashIntento = CryptoUtils.hashPassword(password, remoto.correo);
-                    Log.d(TAG, "hashIntento=" + hashIntento +
-                            " | hashRemoto=" + remoto.hashContrasena);
+                    String hashIntento = CryptoUtils.hashPassword(
+                        password,
+                        remoto.correo
+                    );
+                    Log.d(
+                        TAG,
+                        "hashIntento=" +
+                            hashIntento +
+                            " | hashRemoto=" +
+                            remoto.hashContrasena
+                    );
 
                     if (!hashIntento.equals(remoto.hashContrasena)) {
                         handler.post(() -> {
-                            if (!isAdded())
-                                return;
-                            if (btnLogin != null)
-                                btnLogin.setEnabled(true);
+                            if (!isAdded()) return;
+                            if (btnLogin != null) btnLogin.setEnabled(true);
                             tilPassword.setError("Contraseña incorrecta");
                             // Dialog de diagnóstico para ver hashes
                             new MaterialAlertDialogBuilder(requireContext())
-                                    .setTitle("🔑 Debug: hash no coincide")
-                                    .setMessage(
-                                            "correo: " + remoto.correo + "\n\n" +
-                                                    "hash calculado:\n" + hashIntento + "\n\n" +
-                                                    "hash en Supabase:\n" + remoto.hashContrasena)
-                                    .setPositiveButton("Cerrar", null)
-                                    .show();
+                                .setTitle("🔑 Debug: hash no coincide")
+                                .setMessage(
+                                    "correo: " +
+                                        remoto.correo +
+                                        "\n\n" +
+                                        "hash calculado:\n" +
+                                        hashIntento +
+                                        "\n\n" +
+                                        "hash en Supabase:\n" +
+                                        remoto.hashContrasena
+                                )
+                                .setPositiveButton("Cerrar", null)
+                                .show();
                         });
                         return;
                     }
@@ -370,91 +449,111 @@ public class PerfilFragment extends Fragment {
                     nuevoLocal.email = remoto.correo;
                     nuevoLocal.salt = remoto.correo; // mismo salt usado al registrar
                     nuevoLocal.passwordHash = remoto.hashContrasena;
-                    nuevoLocal.creadoEn = remoto.creadoEn != null
+                    nuevoLocal.creadoEn =
+                        remoto.creadoEn != null
                             ? remoto.creadoEn
                             : String.valueOf(System.currentTimeMillis());
-                    AppDatabase.getInstance(requireContext()).usuarioDao().insertUsuario(nuevoLocal);
+                    AppDatabase.getInstance(requireContext())
+                        .usuarioDao()
+                        .insertUsuario(nuevoLocal);
 
                     sessionManager.saveSession(remoto.correo, remoto.nombre);
                     sessionManager.saveRemoteUserId(remoto.id);
-                    if (remoto.tipoPlan != null && remoto.estaActivo != null && remoto.estaActivo) {
+                    if (
+                        remoto.tipoPlan != null &&
+                        remoto.estaActivo != null &&
+                        remoto.estaActivo
+                    ) {
                         sessionManager.savePremium(
-                                remoto.tipoPlan,
-                                remoto.fechaRenovacion != null ? remoto.fechaRenovacion : "");
+                            remoto.tipoPlan,
+                            remoto.fechaRenovacion != null
+                                ? remoto.fechaRenovacion
+                                : ""
+                        );
                     }
 
                     handler.post(() -> {
-                        if (!isAdded())
-                            return;
-                        if (btnLogin != null)
-                            btnLogin.setEnabled(true);
+                        if (!isAdded()) return;
+                        if (btnLogin != null) btnLogin.setEnabled(true);
                         updateAuthUI();
                         String msg = sessionManager.isPremium()
-                                ? "✅ ¡Bienvenido, " + remoto.nombre + "! 👑 Premium activo\nDescargando tus datos..."
-                                : "✅ ¡Bienvenido, " + remoto.nombre + "!";
+                            ? "✅ ¡Bienvenido, " +
+                              remoto.nombre +
+                              "! 👑 Premium activo\nDescargando tus datos..."
+                            : "✅ ¡Bienvenido, " + remoto.nombre + "!";
                         showSnackbar(root, msg);
-                        
+
                         // Fase 3: Auto-Restaurar
                         if (sessionManager.isPremium()) {
                             iniciarRestore(root);
                         }
                     });
-
                 } else {
                     // Usuario no encontrado ni local ni en Supabase
                     String errBodyStr = "sin errorBody";
                     try {
-                        if (resp.errorBody() != null)
-                            errBodyStr = resp.errorBody().string();
-                    } catch (Exception ignored) {
-                    }
+                        if (resp.errorBody() != null) errBodyStr = resp
+                            .errorBody()
+                            .string();
+                    } catch (Exception ignored) {}
                     final String errDetail = errBodyStr;
                     final int httpCode = resp.code();
 
-                    Log.e(TAG, "Usuario no encontrado en Supabase. HTTP " + httpCode + " | body: " + errDetail);
+                    Log.e(
+                        TAG,
+                        "Usuario no encontrado en Supabase. HTTP " +
+                            httpCode +
+                            " | body: " +
+                            errDetail
+                    );
 
                     handler.post(() -> {
-                        if (!isAdded())
-                            return;
-                        if (btnLogin != null)
-                            btnLogin.setEnabled(true);
+                        if (!isAdded()) return;
+                        if (btnLogin != null) btnLogin.setEnabled(true);
                         tilEmail.setError("No existe cuenta con ese correo");
 
                         // Dialog con diagnóstico completo
                         new MaterialAlertDialogBuilder(requireContext())
-                                .setTitle("⚠️ Debug: usuario no encontrado")
-                                .setMessage(
-                                        "Correo buscado: " + email + "\n\n" +
-                                                "Respuesta Supabase:\n" +
-                                                "HTTP " + httpCode + "\n" +
-                                                "Body: " + errDetail + "\n\n" +
-                                                "Posibles causas:\n" +
-                                                "• El correo en Supabase tiene mayúsculas/espacios\n" +
-                                                "• La columna 'correo' tiene otro nombre\n" +
-                                                "• RLS (Row Level Security) bloquea la consulta\n" +
-                                                "• La URL/Key de Supabase es incorrecta")
-                                .setPositiveButton("Entendido", null)
-                                .show();
+                            .setTitle("⚠️ Debug: usuario no encontrado")
+                            .setMessage(
+                                "Correo buscado: " +
+                                    email +
+                                    "\n\n" +
+                                    "Respuesta Supabase:\n" +
+                                    "HTTP " +
+                                    httpCode +
+                                    "\n" +
+                                    "Body: " +
+                                    errDetail +
+                                    "\n\n" +
+                                    "Posibles causas:\n" +
+                                    "• El correo en Supabase tiene mayúsculas/espacios\n" +
+                                    "• La columna 'correo' tiene otro nombre\n" +
+                                    "• RLS (Row Level Security) bloquea la consulta\n" +
+                                    "• La URL/Key de Supabase es incorrecta"
+                            )
+                            .setPositiveButton("Entendido", null)
+                            .show();
                     });
                 }
-
             } catch (Exception e) {
                 Log.e(TAG, "Error al consultar Supabase en login inline", e);
                 handler.post(() -> {
-                    if (!isAdded())
-                        return;
-                    if (btnLogin != null)
-                        btnLogin.setEnabled(true);
+                    if (!isAdded()) return;
+                    if (btnLogin != null) btnLogin.setEnabled(true);
                     tilEmail.setError("Error de red al verificar cuenta");
 
                     new MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("❌ Error de conexión")
-                            .setMessage(
-                                    "No se pudo conectar a Supabase.\n\n" +
-                                            "Detalle: " + e.getClass().getSimpleName() + "\n" +
-                                            e.getMessage())
-                            .setPositiveButton("Cerrar", null)
-                            .show();
+                        .setTitle("❌ Error de conexión")
+                        .setMessage(
+                            "No se pudo conectar a Supabase.\n\n" +
+                                "Detalle: " +
+                                e.getClass().getSimpleName() +
+                                "\n" +
+                                e.getMessage()
+                        )
+                        .setPositiveButton("Cerrar", null)
+                        .show();
                 });
             }
         });
@@ -470,30 +569,40 @@ public class PerfilFragment extends Fragment {
         progress.show();
 
         remoteSyncRepository.syncAll((status, message) -> {
-            if (!isAdded())
-                return;
+            if (!isAdded()) return;
             progress.dismiss();
             switch (status) {
                 case SUCCESS:
                     sessionManager.saveUltimaSincronizacion(
-                            java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault())
-                                    .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy · HH:mm")));
+                        java.time.ZonedDateTime.now(
+                            java.time.ZoneId.systemDefault()
+                        ).format(
+                            java.time.format.DateTimeFormatter.ofPattern(
+                                "dd/MM/yyyy · HH:mm"
+                            )
+                        )
+                    );
                     actualizarUltimaSincronizacion();
                     showSnackbar(root, "✅ " + message);
                     break;
                 case NO_NETWORK:
-                    showSnackbar(root, "📶 Sin conexión a internet. Intenta más tarde.");
+                    showSnackbar(
+                        root,
+                        "📶 Sin conexión a internet. Intenta más tarde."
+                    );
                     break;
                 case NOT_PREMIUM:
-                    startActivity(new Intent(requireContext(), PremiumActivity.class));
+                    startActivity(
+                        new Intent(requireContext(), PremiumActivity.class)
+                    );
                     break;
                 case ERROR:
                     // Mostrar error completo en Dialog (puede contener instrucciones largas)
                     new MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("⚠️ Error al sincronizar")
-                            .setMessage(message)
-                            .setPositiveButton("Entendido", null)
-                            .show();
+                        .setTitle("⚠️ Error al sincronizar")
+                        .setMessage(message)
+                        .setPositiveButton("Entendido", null)
+                        .show();
                     break;
             }
         });
@@ -501,12 +610,15 @@ public class PerfilFragment extends Fragment {
 
     private void confirmarRestore(View root) {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Restaurar desde la nube")
-                .setMessage(
-                        "¿Deseas sobrescribir todos los datos locales con los datos de tu cuenta en la nube?\n\nEsta acción no se puede deshacer.")
-                .setNegativeButton("Cancelar", null)
-                .setPositiveButton("Restaurar", (dialog, which) -> iniciarRestore(root))
-                .show();
+            .setTitle("Restaurar desde la nube")
+            .setMessage(
+                "¿Deseas sobrescribir todos los datos locales con los datos de tu cuenta en la nube?\n\nEsta acción no se puede deshacer."
+            )
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Restaurar", (dialog, which) ->
+                iniciarRestore(root)
+            )
+            .show();
     }
 
     @SuppressWarnings("deprecation")
@@ -517,14 +629,19 @@ public class PerfilFragment extends Fragment {
         progress.show();
 
         remoteSyncRepository.pullAll((status, message) -> {
-            if (!isAdded())
-                return;
+            if (!isAdded()) return;
             progress.dismiss();
             switch (status) {
                 case SUCCESS:
                     sessionManager.saveUltimaSincronizacion(
-                            java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault())
-                                    .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy · HH:mm")));
+                        java.time.ZonedDateTime.now(
+                            java.time.ZoneId.systemDefault()
+                        ).format(
+                            java.time.format.DateTimeFormatter.ofPattern(
+                                "dd/MM/yyyy · HH:mm"
+                            )
+                        )
+                    );
                     actualizarUltimaSincronizacion();
                     showSnackbar(root, "✅ " + message);
                     break;
@@ -541,8 +658,7 @@ public class PerfilFragment extends Fragment {
     }
 
     private void actualizarUltimaSincronizacion() {
-        if (tvUltimaSincronizacion == null)
-            return;
+        if (tvUltimaSincronizacion == null) return;
         String ts = sessionManager.getUltimaSincronizacion();
         if (ts != null && !ts.isEmpty()) {
             tvUltimaSincronizacion.setVisibility(View.VISIBLE);

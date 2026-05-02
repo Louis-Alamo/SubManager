@@ -229,8 +229,23 @@ public class DashboardFragment extends Fragment {
         if (cardServ != null) cardServ.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), NuevoServicioActivity.class)));
 
+        // Chips de acceso rapido nuevos
+        View chipSubs   = root.findViewById(R.id.cardShortcutSubs);
+        View chipAlertas = root.findViewById(R.id.cardShortcutAlertas);
+        if (chipSubs != null)    chipSubs.setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
+        if (chipAlertas != null) chipAlertas.setOnClickListener(v -> navigateTo(R.id.nav_alertas));
+
         View tvSeeAll = root.findViewById(R.id.tvSeeAll);
         if (tvSeeAll != null) tvSeeAll.setOnClickListener(v -> navigateTo(R.id.nav_alertas));
+
+        // Rellenar label del mes en la Hero Card
+        TextView tvMes = root.findViewById(R.id.tvMesActual);
+        if (tvMes != null) {
+            java.text.SimpleDateFormat sdfMes = new java.text.SimpleDateFormat("MMMM yyyy", new java.util.Locale("es", "MX"));
+            String mesLabel = sdfMes.format(new java.util.Date());
+            String mesCapital = mesLabel.substring(0, 1).toUpperCase() + mesLabel.substring(1);
+            tvMes.setText(mesCapital);
+        }
     }
 
     private void navigateTo(int navItemId) {
