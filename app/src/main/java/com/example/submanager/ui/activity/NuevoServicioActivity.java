@@ -23,13 +23,11 @@ public class NuevoServicioActivity extends AppCompatActivity {
     private TextInputEditText etNombreServicio, etProveedor, etMontoServicio;
     private TextInputEditText etFechaCorte, etNotasServicio;
     private TextInputLayout tilMonto;
-    private LinearLayout containerPersonas, cardEscanear;
-    private MaterialButton btnGuardarServicio, btnEscanear, btnAgregarPersona;
+    private LinearLayout containerPersonas;
+    private MaterialButton btnGuardarServicio, btnAgregarPersona;
     private android.widget.TextView tvMontoVariableNote;
 
-    // Color constants for selected/unselected chips
-    private static final int COLOR_SELECTED_BG   = 0xFFEFF6FF;  // primary_tint
-    private static final int COLOR_UNSELECTED_BG = 0xFFF4F5F7;  // background
+      // background
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +58,7 @@ public class NuevoServicioActivity extends AppCompatActivity {
         etNotasServicio      = findViewById(R.id.etNotasServicio);
         tilMonto             = findViewById(R.id.tilMonto);
         containerPersonas    = findViewById(R.id.containerPersonas);
-        cardEscanear         = findViewById(R.id.cardEscanear);
         btnGuardarServicio   = findViewById(R.id.btnGuardarServicio);
-        btnEscanear          = findViewById(R.id.btnEscanear);
         btnAgregarPersona    = findViewById(R.id.btnAgregarPersona);
         tvMontoVariableNote  = findViewById(R.id.tvMontaVariableNote);
     }
@@ -83,17 +79,37 @@ public class NuevoServicioActivity extends AppCompatActivity {
         chipOtro.setOnClickListener(chipListener);
     }
 
-    private void selectChip(LinearLayout chip) {
+        private void selectChip(LinearLayout chip) {
         // Deselect previous
         if (selectedChip != null) {
             selectedChip.setBackgroundTintList(
-                android.content.res.ColorStateList.valueOf(COLOR_UNSELECTED_BG));
+                androidx.core.content.ContextCompat.getColorStateList(this, R.color.background));
+            
+            // Get inner views (assuming index 0 is ImageView, index 1 is TextView)
+            if (selectedChip.getChildCount() >= 2) {
+                android.widget.ImageView icon = (android.widget.ImageView) selectedChip.getChildAt(0);
+                android.widget.TextView text = (android.widget.TextView) selectedChip.getChildAt(1);
+                
+                icon.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(this, R.color.text_secondary));
+                text.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_secondary));
+            }
         }
+        
         // Select new
         selectedChip = chip;
         chip.setBackgroundTintList(
-            android.content.res.ColorStateList.valueOf(COLOR_SELECTED_BG));
+            androidx.core.content.ContextCompat.getColorStateList(this, R.color.primary_tint));
+            
+        if (chip.getChildCount() >= 2) {
+            android.widget.ImageView icon = (android.widget.ImageView) chip.getChildAt(0);
+            android.widget.TextView text = (android.widget.TextView) chip.getChildAt(1);
+            
+            icon.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(this, R.color.primary));
+            text.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.primary));
+        }
     }
+
+
 
     private void setupDatePicker() {
         etFechaCorte.setOnClickListener(v -> {
@@ -130,17 +146,7 @@ public class NuevoServicioActivity extends AppCompatActivity {
             );
         }
 
-        if (cardEscanear != null) {
-            cardEscanear.setOnClickListener(v ->
-                Snackbar.make(v, "📷 Escáner de recibos próximamente", Snackbar.LENGTH_SHORT).show()
-            );
-        }
 
-        if (btnEscanear != null) {
-            btnEscanear.setOnClickListener(v ->
-                Snackbar.make(v, "📷 Escáner de recibos próximamente", Snackbar.LENGTH_SHORT).show()
-            );
-        }
     }
 
     private void setupButtons() {
