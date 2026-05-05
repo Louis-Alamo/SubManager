@@ -19,6 +19,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import android.widget.GridLayout;
 import android.view.View;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
 
     private static final String OPCION_PERSONALIZADO = "Personalizado…";
     private int iconoSeleccionadoResId = R.drawable.ic_letter_s;
+    private int editSuscripcionId = -1;
+    private SuscripcionModel editSuscripcionModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,67 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
 
         // ── Guardar Suscripción ───────────────────────────────────────────────
         setupGuardarButton();
+
+        // ── Modo Edición ──────────────────────────────────────────────────────
+        checkEditMode();
+    }
+
+    private void checkEditMode() {
+        editSuscripcionId = getIntent().getIntExtra("suscripcion_id", -1);
+        if (editSuscripcionId != -1) {
+            MaterialButton btnSubmit = findViewById(R.id.btnSubmit);
+            btnSubmit.setText("Actualizar");
+
+            SuscripcionViewModel viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
+            viewModel.getSuscripcionById(editSuscripcionId).observe(this, model -> {
+                if (model != null && editSuscripcionModel == null) {
+                    editSuscripcionModel = model;
+                    prefillData(model);
+                }
+            });
+        }
+    }
+
+    private void prefillData(SuscripcionModel model) {
+        TextInputEditText etNombre = findViewById(R.id.etNombre);
+        TextInputEditText etMonto = findViewById(R.id.etMonto);
+        AutoCompleteTextView autoCompleteCiclo = findViewById(R.id.autoCompleteCiclo);
+        AutoCompleteTextView autoCompletePago = findViewById(R.id.autoCompletePago);
+        TextInputEditText etFecha = findViewById(R.id.etFecha);
+        TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
+        TextInputEditText etDiasAnticipacion = findViewById(R.id.etDiasAnticipacion);
+        ChipGroup chipGroupCategorias = findViewById(R.id.chipGroupCategorias);
+        ImageView ivAvatar = findViewById(R.id.ivSuscripcionAvatar);
+
+        etNombre.setText(model.getNombre());
+        etMonto.setText(String.valueOf(model.getMonto()));
+        autoCompleteCiclo.setText(model.getCicloFacturacion(), false);
+        autoCompletePago.setText(model.getMetodoPago(), false);
+        etFecha.setText(model.getFechaProximoCobro());
+        if (model.getFechaLimiteCancelacion() != null) {
+            etFechaLimite.setText(model.getFechaLimiteCancelacion());
+        }
+        etDiasAnticipacion.setText(String.valueOf(model.getDiasAnticipacion()));
+
+        // Seleccionar categoría
+        for (int i = 0; i < chipGroupCategorias.getChildCount(); i++) {
+            Chip chip = (Chip) chipGroupCategorias.getChildAt(i);
+            if (chip.getText().toString().equals(model.getCategoria())) {
+                chip.setChecked(true);
+                break;
+            }
+        }
+
+        // Color
+        colorSeleccionado = model.getColor();
+        ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
+
+        // Icono
+        int resId = getResources().getIdentifier(model.getNombreIcono(), "drawable", getPackageName());
+        if (resId != 0) {
+            iconoSeleccionadoResId = resId;
+            ivAvatar.setImageResource(resId);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -352,30 +416,31 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             // Fecha de creación ISO básica
             String timestampActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
-            // Instanciar modelo
-            SuscripcionModel nuevaSuscripcion = new SuscripcionModel(
-                    nombre,
-                    monto,
-                    ciclo,
-                    colorSeleccionado,
-                    categoria,
-                    metodoPago,
-                    fechaPrimerCobro,
-                    fechaPrimerCobro, // Usamos la misma para proximo cobro inicial
-                    fechaLimite.isEmpty() ? null : fechaLimite,
-                    true, // recordatorio habilitado
-                    diasAnticipacion, // configurado por usuario
-                    false, // notificacion no silenciada
-                    true,  // activa por defecto
-                    nombreIcono,
-                    timestampActual,
-                    timestampActual
-            );
+            // Instanciar o actualizar modelo
+            if (editSuscripcionId != -1 && editSuscripcionModel != null) {
+                editSuscripcionModel.setNombre(nombre);
+                editSuscripcionModel.setMonto(monto);
+                editSuscripcionModel.setCicloFacturacion(ciclo);
+                editSuscripcionModel.setColor(colorSeleccionado);
+                editSuscripcionModel.setCategoria(categoria);
+                editSuscripcionModel.setMetodoPago(metodoPago);
+                editSuscripcionModel.setFechaProximoCobro(fechaPrimerCobro);
+                editSuscripcionModel.setFechaLimiteCancelacion(fechaLimite.isEmpty() ? null : fechaLimite);
+                editSuscripcionModel.setDiasAnticipacion(diasAnticipacion);
+                editSuscripcionModel.setNombreIcono(nombreIcono);
+                editSuscripcionModel.setActualizadoEn(timestampActual);
 
-            // Guardar en Room usando ViewModel
-            viewModel.insertar(nuevaSuscripcion);
-
-            Toast.makeText(this, "Suscripción guardada exitosamente", Toast.LENGTH_SHORT).show();
+                viewModel.actualizar(editSuscripcionModel);
+                Toast.makeText(this, "Suscripción actualizada", Toast.LENGTH_SHORT).show();
+            } else {
+                SuscripcionModel nuevaSuscripcion = new SuscripcionModel(
+                        nombre, monto, ciclo, colorSeleccionado, categoria, metodoPago,
+                        fechaPrimerCobro, fechaPrimerCobro, fechaLimite.isEmpty() ? null : fechaLimite,
+                        true, diasAnticipacion, false, true, nombreIcono, timestampActual, timestampActual
+                );
+                viewModel.insertar(nuevaSuscripcion);
+                Toast.makeText(this, "Suscripción guardada exitosamente", Toast.LENGTH_SHORT).show();
+            }
             finish();
         });
     }

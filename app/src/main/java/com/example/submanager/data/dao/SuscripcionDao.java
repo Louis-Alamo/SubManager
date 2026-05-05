@@ -87,7 +87,7 @@ public interface SuscripcionDao {
     void deleteAllTerceros();
 
     // ─────────────────────────────────────────────────────────────────────────
-    // REGISTROS DE PAGO — Síncrono
+    // REGISTROS DE PAGO — Síncrono y Reactivo
     // ─────────────────────────────────────────────────────────────────────────
 
     @Query("SELECT * FROM registros_pago")
@@ -98,6 +98,12 @@ public interface SuscripcionDao {
 
     @Query("DELETE FROM registros_pago")
     void deleteAllRegistrosPago();
+
+    @Query("SELECT * FROM registros_pago WHERE suscripcion_id = :suscripcionId ORDER BY id DESC")
+    LiveData<List<RegistrosPagoModel>> getPagosBySuscripcion(int suscripcionId);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertRegistroPago(RegistrosPagoModel registro);
 
     // ─────────────────────────────────────────────────────────────────────────
     // CONFIGURACIÓN APP — Síncrono

@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.submanager.R;
 import com.example.submanager.data.model.SuscripcionModel;
+import com.example.submanager.ui.adapter.RegistrosPagoAdapter;
 import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+import android.content.Intent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +32,8 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
 
     private SuscripcionViewModel viewModel;
     private int suscripcionId = -1;
+    private SuscripcionModel currentModel;
+    private RegistrosPagoAdapter pagosAdapter;
 
     private ImageView ivDetalleIcon;
     private TextView tvDetalleName, tvDetalleCategoria, tvDetalleMonto;
@@ -55,9 +59,16 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         if (suscripcionId != -1) {
             viewModel.getSuscripcionById(suscripcionId).observe(this, model -> {
                 if (model != null) {
+                    currentModel = model;
                     loadData(model);
                 } else {
                     finish(); // Si fue eliminada, el model será null
+                }
+            });
+
+            viewModel.getPagosBySuscripcion(suscripcionId).observe(this, pagos -> {
+                if (pagos != null && pagosAdapter != null) {
+                    pagosAdapter.setPagos(pagos);
                 }
             });
         } else {
@@ -107,21 +118,31 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
     }
 
     private void setupHistorial() {
-        // En construcción: Ocultamos los últimos pagos falsos y el botón
-        rvUltimosPagos.setVisibility(View.GONE);
-        btnMarcarPagado.setVisibility(View.GONE);
+        pagosAdapter = new RegistrosPagoAdapter();
+        rvUltimosPagos.setLayoutManager(new LinearLayoutManager(this));
+        rvUltimosPagos.setAdapter(pagosAdapter);
+
+        rvUltimosPagos.setVisibility(View.VISIBLE);
+        btnMarcarPagado.setVisibility(View.VISIBLE);
     }
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
 
-        btnEdit.setOnClickListener(v ->
-            Snackbar.make(btnEdit, "Función de edición próximamente", Snackbar.LENGTH_SHORT).show()
-        );
+        btnEdit.setOnClickListener(v -> {
+            if (suscripcionId != -1) {
+                Intent intent = new Intent(this, NuevaSuscripcionActivity.class);
+                intent.putExtra("suscripcion_id", suscripcionId);
+                startActivity(intent);
+            }
+        });
 
-        btnMarcarPagado.setOnClickListener(v ->
-            Snackbar.make(btnMarcarPagado, "✅ Pago registrado correctamente", Snackbar.LENGTH_SHORT).show()
-        );
+        btnMarcarPagado.setOnClickListener(v -> {
+            if (currentModel != null) {
+                viewModel.marcarComoPagado(currentModel);
+                Snackbar.make(btnMarcarPagado, "✅ Pago registrado correctamente", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
         btnEliminar.setOnClickListener(v -> showDeleteDialog());
     }

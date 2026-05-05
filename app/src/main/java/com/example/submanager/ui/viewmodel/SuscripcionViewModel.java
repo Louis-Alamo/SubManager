@@ -54,8 +54,74 @@ public class SuscripcionViewModel extends AndroidViewModel {
         repository.insertar(suscripcion);
     }
 
+    public void actualizar(SuscripcionModel suscripcion) {
+        repository.actualizar(suscripcion);
+    }
+
     public void eliminar(int id) {
         repository.eliminar(id);
+    }
+
+    public LiveData<List<com.example.submanager.data.model.RegistrosPagoModel>> getPagosBySuscripcion(int suscripcionId) {
+        return repository.getPagosBySuscripcion(suscripcionId);
+    }
+
+    public void marcarComoPagado(SuscripcionModel suscripcion) {
+        String fechaPago = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date());
+        String timestampActual = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date());
+
+        com.example.submanager.data.model.RegistrosPagoModel pago = new com.example.submanager.data.model.RegistrosPagoModel(
+                suscripcion.getId(),
+                null,
+                suscripcion.getNombre(),
+                suscripcion.getColor(),
+                suscripcion.getCategoria(),
+                suscripcion.getMonto(),
+                "Pagado",
+                suscripcion.getFechaProximoCobro(),
+                fechaPago,
+                java.util.Calendar.getInstance().get(java.util.Calendar.MONTH) + 1,
+                java.util.Calendar.getInstance().get(java.util.Calendar.YEAR),
+                timestampActual,
+                timestampActual
+        );
+
+        repository.insertRegistroPago(pago);
+
+        // Avanzar la fecha de próximo cobro
+        String nuevaFecha = calcularProximaFecha(suscripcion.getFechaProximoCobro(), suscripcion.getCicloFacturacion());
+        if (!nuevaFecha.isEmpty()) {
+            suscripcion.setFechaProximoCobro(nuevaFecha);
+            repository.actualizar(suscripcion);
+        }
+    }
+
+    private String calcularProximaFecha(String fechaStr, String ciclo) {
+        if (fechaStr == null || fechaStr.isEmpty() || ciclo == null) return "";
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+            java.util.Date firstDate = sdf.parse(fechaStr);
+            if (firstDate == null) return "";
+
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(firstDate);
+
+            switch (ciclo.toLowerCase()) {
+                case "diario": cal.add(java.util.Calendar.DAY_OF_YEAR, 1); break;
+                case "semanal": cal.add(java.util.Calendar.WEEK_OF_YEAR, 1); break;
+                case "quincenal": cal.add(java.util.Calendar.DAY_OF_YEAR, 15); break;
+                case "mensual": cal.add(java.util.Calendar.MONTH, 1); break;
+                case "bimestral": cal.add(java.util.Calendar.MONTH, 2); break;
+                case "trimestral": cal.add(java.util.Calendar.MONTH, 3); break;
+                case "semestral": cal.add(java.util.Calendar.MONTH, 6); break;
+                case "anual": cal.add(java.util.Calendar.YEAR, 1); break;
+                default: return "";
+            }
+            return sdf.format(cal.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
 }

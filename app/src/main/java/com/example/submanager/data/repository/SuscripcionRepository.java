@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.data.dao.SuscripcionDao;
+import com.example.submanager.data.model.RegistrosPagoModel;
 import com.example.submanager.data.model.SuscripcionModel;
 import com.example.submanager.utils.NetworkUtils;
 import com.example.submanager.utils.SessionManager;
@@ -101,6 +102,19 @@ public class SuscripcionRepository {
     public void eliminar(int id) {
         executorService.execute(() -> {
             suscripcionDao.deleteSuscripcionById(id);
+            triggerSyncIfNeeded();
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public LiveData<List<RegistrosPagoModel>> getPagosBySuscripcion(int suscripcionId) {
+        return suscripcionDao.getPagosBySuscripcion(suscripcionId);
+    }
+
+    public void insertRegistroPago(RegistrosPagoModel pago) {
+        executorService.execute(() -> {
+            suscripcionDao.insertRegistroPago(pago);
             triggerSyncIfNeeded();
         });
     }
