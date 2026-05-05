@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="18dp"
+    android:paddingVertical="12dp">
+
+    <!-- Icono Check -->
+    <FrameLayout
+        android:layout_width="38dp"
+        android:layout_height="38dp">
+        <View
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_status_badge"
+            android:backgroundTint="@color/success_bg"/>
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_done"
+            android:tint="@color/success"
+            android:contentDescription="@null"/>
+    </FrameLayout>
+
+    <!-- Información de Fecha -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="14dp">
+
+        <TextView
+            android:id="@+id/tvFechaPago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="14 Abr 2026"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvMetodoPagoItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pago registrado"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp"/>
+    </LinearLayout>
+
+    <!-- Monto -->
+    <TextView
+        android:id="@+id/tvMontoPago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$219.00"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+</LinearLayout>
