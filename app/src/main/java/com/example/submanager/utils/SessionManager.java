@@ -63,7 +63,6 @@ public class SessionManager {
                 .remove(KEY_PREMIUM)
                 .remove(KEY_PREM_PLAN)
                 .remove(KEY_PREM_EXPIRY)
-                .remove(KEY_REMOTE_USER_ID)
                 .apply();
     }
 

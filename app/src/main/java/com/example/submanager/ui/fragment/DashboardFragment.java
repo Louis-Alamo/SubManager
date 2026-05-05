@@ -78,9 +78,17 @@ public class DashboardFragment extends Fragment {
         // Resumen general desde la tabla completa
         viewModel.getTodasLasSuscripciones().observe(getViewLifecycleOwner(), suscripciones -> {
             if (suscripciones != null) {
-                setupSummaryCards(suscripciones);
+                suscripcionesCache = suscripciones;
+                setupSummaryCards();
                 summaryLoaded = true;
                 maybeShowContent(shimmer, scroll);
+            }
+        });
+
+        viewModel.getAllRegistrosPagoLiveData().observe(getViewLifecycleOwner(), pagos -> {
+            if (pagos != null) {
+                pagosCache = pagos;
+                setupSummaryCards();
             }
         });
 
@@ -130,21 +138,40 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    private void setupSummaryCards(List<SuscripcionModel> todos) {
+    private List<SuscripcionModel> suscripcionesCache = new ArrayList<>();
+    private List<com.example.submanager.data.model.RegistrosPagoModel> pagosCache = new ArrayList<>();
+
+    private void setupSummaryCards() {
+        if (suscripcionesCache == null || pagosCache == null) return;
+
         double pendiente = 0, pagado = 0, total = 0;
 
-        for (SuscripcionModel s : todos) {
+        Calendar calActual = Calendar.getInstance();
+        int mesActual = calActual.get(Calendar.MONTH);
+        int anioActual = calActual.get(Calendar.YEAR);
+
+        for (SuscripcionModel s : suscripcionesCache) {
             if (!s.isEstaActiva()) continue;
-
             total += s.getMonto();
+        }
 
-            long dias = getDiasRestantes(s.getFechaProximoCobro());
-            if (dias >= 0) {
-                pendiente += s.getMonto();
-            } else {
-                pagado += s.getMonto();
+        SimpleDateFormat sdfDB = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        for (com.example.submanager.data.model.RegistrosPagoModel p : pagosCache) {
+            if ("Pagado".equalsIgnoreCase(p.getEstado()) && p.getFechaPago() != null) {
+                try {
+                    Date d = sdfDB.parse(p.getFechaPago());
+                    if (d != null) {
+                        Calendar c = Calendar.getInstance();
+                        c.setTime(d);
+                        if (c.get(Calendar.MONTH) == mesActual && c.get(Calendar.YEAR) == anioActual) {
+                            pagado += p.getMonto();
+                        }
+                    }
+                } catch (Exception ignored) {}
             }
         }
+
+        pendiente = Math.max(0, total - pagado);
 
         tvMontoPendiente.setText(String.format(Locale.getDefault(), "$%.0f", pendiente));
         tvMontoPagado.setText(String.format(Locale.getDefault(), "$%.0f", pagado));

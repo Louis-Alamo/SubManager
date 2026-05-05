@@ -407,19 +407,13 @@ public class PerfilFragment extends Fragment {
                     );
 
                     // Verificar contraseña con el mismo algoritmo que AuthActivity (salt = email)
-                    String hashIntento = CryptoUtils.hashPassword(
-                        password,
-                        remoto.correo
-                    );
-                    Log.d(
-                        TAG,
-                        "hashIntento=" +
-                            hashIntento +
-                            " | hashRemoto=" +
-                            remoto.hashContrasena
-                    );
+                    // Y también con el salt antiguo ("remote") por compatibilidad
+                    String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
+                    String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
 
-                    if (!hashIntento.equals(remoto.hashContrasena)) {
+                    Log.d(TAG, "hashIntentoNuevo=" + hashIntentoNuevo + " | hashIntentoViejo=" + hashIntentoViejo + " | hashRemoto=" + remoto.hashContrasena);
+
+                    if (!hashIntentoNuevo.equals(remoto.hashContrasena) && !hashIntentoViejo.equals(remoto.hashContrasena)) {
                         handler.post(() -> {
                             if (!isAdded()) return;
                             if (btnLogin != null) btnLogin.setEnabled(true);
@@ -428,14 +422,10 @@ public class PerfilFragment extends Fragment {
                             new MaterialAlertDialogBuilder(requireContext())
                                 .setTitle("🔑 Debug: hash no coincide")
                                 .setMessage(
-                                    "correo: " +
-                                        remoto.correo +
-                                        "\n\n" +
-                                        "hash calculado:\n" +
-                                        hashIntento +
-                                        "\n\n" +
-                                        "hash en Supabase:\n" +
-                                        remoto.hashContrasena
+                                    "correo: " + remoto.correo + "\n\n" +
+                                    "hash calculado (nuevo):\n" + hashIntentoNuevo + "\n\n" +
+                                    "hash calculado (viejo):\n" + hashIntentoViejo + "\n\n" +
+                                    "hash en Supabase:\n" + remoto.hashContrasena
                                 )
                                 .setPositiveButton("Cerrar", null)
                                 .show();

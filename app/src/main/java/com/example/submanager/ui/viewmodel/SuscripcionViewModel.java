@@ -66,6 +66,10 @@ public class SuscripcionViewModel extends AndroidViewModel {
         return repository.getPagosBySuscripcion(suscripcionId);
     }
 
+    public LiveData<List<com.example.submanager.data.model.RegistrosPagoModel>> getAllRegistrosPagoLiveData() {
+        return repository.getAllRegistrosPagoLiveData();
+    }
+
     public void marcarComoPagado(SuscripcionModel suscripcion) {
         String fechaPago = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date());
         String timestampActual = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date());

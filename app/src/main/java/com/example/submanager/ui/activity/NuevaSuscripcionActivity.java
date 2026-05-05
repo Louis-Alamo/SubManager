@@ -207,36 +207,36 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         TextInputLayout tilFecha = findViewById(R.id.tilFecha);
         TextInputEditText etFecha = findViewById(R.id.etFecha);
 
-        // Formato de fecha a mostrar en el campo
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
-        // Construir el date picker
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
-                .datePicker()
-                .setTitleText("Seleccionar fecha de cobro")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build();
-
-        // Al confirmar, escribir la fecha seleccionada en el campo
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            String fechaFormateada = sdf.format(new Date(selection));
-            etFecha.setText(fechaFormateada);
-            calcularFechaLimite();
-        });
-
-        // Abrir el calendario al tocar el campo de texto
-        etFecha.setOnClickListener(v -> {
-            if (!datePicker.isAdded()) {
-                datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+        View.OnClickListener showDatePicker = v -> {
+            long seleccionInicial = MaterialDatePicker.todayInUtcMilliseconds();
+            String campoActual = etFecha.getText() != null ? etFecha.getText().toString().trim() : "";
+            if (!campoActual.isEmpty()) {
+                try {
+                    Date d = sdf.parse(campoActual);
+                    if (d != null) seleccionInicial = d.getTime();
+                } catch (Exception ignored) {}
             }
-        });
 
-        // Abrir el calendario al tocar el ícono de calendario
-        tilFecha.setEndIconOnClickListener(v -> {
-            if (!datePicker.isAdded()) {
-                datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
-            }
-        });
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
+                    .datePicker()
+                    .setTitleText("Seleccionar fecha de cobro")
+                    .setSelection(seleccionInicial)
+                    .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                String fechaFormateada = sdf.format(new Date(selection));
+                etFecha.setText(fechaFormateada);
+                calcularFechaLimite();
+            });
+
+            datePicker.show(getSupportFragmentManager(), "DATE_PICKER_" + System.currentTimeMillis());
+        };
+
+        etFecha.setOnClickListener(showDatePicker);
+        tilFecha.setEndIconOnClickListener(showDatePicker);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -246,29 +246,35 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         TextInputLayout tilFechaLimite = findViewById(R.id.tilFechaLimite);
         TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
-                .datePicker()
-                .setTitleText("Seleccionar fecha límite")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            String fechaFormateada = sdf.format(new Date(selection));
-            etFechaLimite.setText(fechaFormateada);
-        });
-
-        etFechaLimite.setOnClickListener(v -> {
-            if (!datePicker.isAdded()) {
-                datePicker.show(getSupportFragmentManager(), "CANCEL_DATE_PICKER");
+        View.OnClickListener showDatePicker = v -> {
+            long seleccionInicial = MaterialDatePicker.todayInUtcMilliseconds();
+            String campoActual = etFechaLimite.getText() != null ? etFechaLimite.getText().toString().trim() : "";
+            if (!campoActual.isEmpty()) {
+                try {
+                    Date d = sdf.parse(campoActual);
+                    if (d != null) seleccionInicial = d.getTime();
+                } catch (Exception ignored) {}
             }
-        });
 
-        tilFechaLimite.setEndIconOnClickListener(v -> {
-            if (!datePicker.isAdded()) {
-                datePicker.show(getSupportFragmentManager(), "CANCEL_DATE_PICKER");
-            }
-        });
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
+                    .datePicker()
+                    .setTitleText("Seleccionar fecha límite")
+                    .setSelection(seleccionInicial)
+                    .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                String fechaFormateada = sdf.format(new Date(selection));
+                etFechaLimite.setText(fechaFormateada);
+            });
+
+            datePicker.show(getSupportFragmentManager(), "CANCEL_DATE_PICKER_" + System.currentTimeMillis());
+        };
+
+        etFechaLimite.setOnClickListener(showDatePicker);
+        tilFechaLimite.setEndIconOnClickListener(showDatePicker);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -458,15 +464,16 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         }
         
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
             Date firstDate = sdf.parse(fechaStr);
             if (firstDate == null) return;
             
-            java.util.Calendar cal = java.util.Calendar.getInstance();
+            java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
             cal.setTime(firstDate);
             
             // Sumar el ciclo de facturación
-            switch (ciclo.toLowerCase()) {
+            switch (ciclo.toLowerCase(Locale.ROOT)) {
                 case "diario": cal.add(java.util.Calendar.DAY_OF_YEAR, 1); break;
                 case "semanal": cal.add(java.util.Calendar.WEEK_OF_YEAR, 1); break;
                 case "quincenal": cal.add(java.util.Calendar.DAY_OF_YEAR, 15); break;

@@ -99,6 +99,9 @@ public interface SuscripcionDao {
     @Query("DELETE FROM registros_pago")
     void deleteAllRegistrosPago();
 
+    @Query("SELECT * FROM registros_pago ORDER BY id DESC")
+    LiveData<List<RegistrosPagoModel>> getAllRegistrosPagoLiveData();
+
     @Query("SELECT * FROM registros_pago WHERE suscripcion_id = :suscripcionId ORDER BY id DESC")
     LiveData<List<RegistrosPagoModel>> getPagosBySuscripcion(int suscripcionId);
 

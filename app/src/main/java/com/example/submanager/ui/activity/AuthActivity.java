@@ -250,14 +250,11 @@ public class AuthActivity extends AppCompatActivity {
                     ) {
                         UsuarioDto remoto = resp.body().get(0);
 
-                        // Verificar contraseña con el hash remoto
-                        String salt = "remote"; // Para cuentas remotas usamos hash diferente
-                        String hashIntento = CryptoUtils.hashPassword(
-                            password,
-                            remoto.correo
-                        );
+                        // Verificar contraseña con el hash remoto (soportando el algoritmo viejo y nuevo)
+                        String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
+                        String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
 
-                        if (!hashIntento.equals(remoto.hashContrasena)) {
+                        if (!hashIntentoNuevo.equals(remoto.hashContrasena) && !hashIntentoViejo.equals(remoto.hashContrasena)) {
                             handler.post(() -> {
                                 btnIniciarSesion.setEnabled(true);
                                 tilLoginPassword.setError(

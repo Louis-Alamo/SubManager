@@ -59,6 +59,9 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
+    // WorkManager
+    implementation("androidx.work:work-runtime:2.9.0")
+
     // Charts
     implementation(libs.mpandroidchart)
 

@@ -9,6 +9,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.ui.fragment.AlertasFragment;
@@ -16,7 +25,10 @@ import com.example.submanager.ui.fragment.DashboardFragment;
 import com.example.submanager.ui.fragment.PerfilFragment;
 import com.example.submanager.ui.fragment.HistorialFragment;
 import com.example.submanager.ui.fragment.SuscripcionesFragment;
+import com.example.submanager.worker.AlertWorker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +40,22 @@ public class MainActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         setContentView(R.layout.activity_main);
+
+        // Pedir permisos de notificaciones (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
+        // Programar WorkManager (cada 12 horas)
+        PeriodicWorkRequest alertWorkRequest = new PeriodicWorkRequest.Builder(AlertWorker.class, 12, TimeUnit.HOURS)
+                .build();
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "AlertWorker",
+                ExistingPeriodicWorkPolicy.KEEP,
+                alertWorkRequest
+        );
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 

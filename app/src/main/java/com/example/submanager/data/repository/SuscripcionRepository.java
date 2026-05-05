@@ -112,6 +112,10 @@ public class SuscripcionRepository {
         return suscripcionDao.getPagosBySuscripcion(suscripcionId);
     }
 
+    public LiveData<List<RegistrosPagoModel>> getAllRegistrosPagoLiveData() {
+        return suscripcionDao.getAllRegistrosPagoLiveData();
+    }
+
     public void insertRegistroPago(RegistrosPagoModel pago) {
         executorService.execute(() -> {
             suscripcionDao.insertRegistroPago(pago);

@@ -10,14 +10,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.submanager.R;
+import com.example.submanager.data.model.RegistrosPagoModel;
+import com.example.submanager.data.model.SuscripcionModel;
+import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class AlertasFragment extends Fragment {
 
@@ -26,19 +33,21 @@ public class AlertasFragment extends Fragment {
     static final String PAGADO    = "pagado";
     static final String VENCIDO   = "vencido";
 
-    // ─── Mock model ──────────────────────────────────────────────────────────
+    // ─── Model interno para la lista ─────────────────────────────────────────
     static class PagoAlerta {
         String nombre, fecha, monto, estado, colorHex;
         int iconRes;
+        SuscripcionModel suscripcionOriginal;
 
         PagoAlerta(String nombre, String fecha, String monto,
-                   String estado, String colorHex, int iconRes) {
+                   String estado, String colorHex, int iconRes, SuscripcionModel suscripcionOriginal) {
             this.nombre   = nombre;
             this.fecha    = fecha;
             this.monto    = monto;
             this.estado   = estado;
             this.colorHex = colorHex;
             this.iconRes  = iconRes;
+            this.suscripcionOriginal = suscripcionOriginal;
         }
     }
 
@@ -46,6 +55,10 @@ public class AlertasFragment extends Fragment {
     private RecyclerView rvPendiente, rvVencido, rvPagado;
     private View sectionPendiente, sectionVencido, sectionPagado, emptyState;
     private TextView tvTotalPendiente, tvTotalPagado, tvTotalVencido;
+
+    private SuscripcionViewModel viewModel;
+    private List<SuscripcionModel> cachedSuscripciones = new ArrayList<>();
+    private List<RegistrosPagoModel> cachedPagos = new ArrayList<>();
 
     @Nullable
     @Override
@@ -71,12 +84,77 @@ public class AlertasFragment extends Fragment {
         tvTotalPagado     = view.findViewById(R.id.tvTotalPagado);
         tvTotalVencido    = view.findViewById(R.id.tvTotalVencido);
 
-        setupSecciones();
+        viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
+
+        viewModel.getSuscripcionesActivasOrdenadas().observe(getViewLifecycleOwner(), suscripciones -> {
+            cachedSuscripciones = suscripciones != null ? suscripciones : new ArrayList<>();
+            actualizarUI();
+        });
+
+        viewModel.getAllRegistrosPagoLiveData().observe(getViewLifecycleOwner(), pagos -> {
+            cachedPagos = pagos != null ? pagos : new ArrayList<>();
+            actualizarUI();
+        });
     }
 
-    // ─── Construye las tres secciones ────────────────────────────────────────
-    private void setupSecciones() {
-        List<PagoAlerta> todos = getMockData();
+    private void actualizarUI() {
+        if (!isAdded()) return;
+
+        List<PagoAlerta> todos = new ArrayList<>();
+
+        SimpleDateFormat sdfDB = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat sdfUI = new SimpleDateFormat("dd MMM", Locale.getDefault());
+        Date today = new Date();
+        try { today = sdfDB.parse(sdfDB.format(today)); } catch (Exception ignored) {}
+
+        // 1. Procesar Suscripciones Activas (Vencidos y Pendientes)
+        for (SuscripcionModel s : cachedSuscripciones) {
+            if (s.getFechaProximoCobro() == null || s.getFechaProximoCobro().isEmpty()) continue;
+            
+            try {
+                Date fechaCobro = sdfDB.parse(s.getFechaProximoCobro());
+                if (fechaCobro == null) continue;
+
+                boolean isVencido = fechaCobro.before(today);
+                String estado = isVencido ? VENCIDO : PENDIENTE;
+                String prefix = isVencido ? "Venció " : "Vence ";
+                String fechaTexto = prefix + sdfUI.format(fechaCobro);
+                
+                int iconRes = getResources().getIdentifier(s.getNombreIcono(), "drawable", requireContext().getPackageName());
+                if (iconRes == 0) iconRes = R.drawable.ic_service_otro;
+
+                todos.add(new PagoAlerta(s.getNombre(), fechaTexto, String.format(Locale.getDefault(), "%.2f", s.getMonto()), estado, s.getColor(), iconRes, s));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 2. Procesar Pagos (Pagados)
+        for (RegistrosPagoModel p : cachedPagos) {
+            if ("Pagado".equalsIgnoreCase(p.getEstado())) {
+                String fechaTexto = "Pagado";
+                if (p.getFechaPago() != null && !p.getFechaPago().isEmpty()) {
+                    try {
+                        Date d = sdfDB.parse(p.getFechaPago());
+                        if (d != null) fechaTexto = "Pagado " + sdfUI.format(d);
+                    } catch (Exception ignored) {}
+                }
+                
+                // Tratar de buscar icon
+                int iconRes = R.drawable.ic_service_otro;
+                if (p.getSuscripcionId() != null) {
+                    for (SuscripcionModel s : cachedSuscripciones) {
+                        if (s.getId() == p.getSuscripcionId()) {
+                            iconRes = getResources().getIdentifier(s.getNombreIcono(), "drawable", requireContext().getPackageName());
+                            if (iconRes == 0) iconRes = R.drawable.ic_service_otro;
+                            break;
+                        }
+                    }
+                }
+
+                todos.add(new PagoAlerta(p.getNombreOrigen(), fechaTexto, String.format(Locale.getDefault(), "%.2f", p.getMonto()), PAGADO, p.getColorOrigen(), iconRes, null));
+            }
+        }
 
         List<PagoAlerta> pendientes = filtrar(todos, PENDIENTE);
         List<PagoAlerta> pagados    = filtrar(todos, PAGADO);
@@ -125,31 +203,7 @@ public class AlertasFragment extends Fragment {
             try { total += Double.parseDouble(p.monto.replace("$", "").replace(",", "")); }
             catch (NumberFormatException ignore) {}
         }
-        return String.format("$%.2f", total);
-    }
-
-    // ─── Mock data ───────────────────────────────────────────────────────────
-    private List<PagoAlerta> getMockData() {
-        List<PagoAlerta> lista = new ArrayList<>();
-
-        // 🔴 Vencidos (2)
-        lista.add(new PagoAlerta("Netflix",         "Venció 1 Mar",  "199.00", VENCIDO,   "#EF4444", R.drawable.ic_app_netflix));
-        lista.add(new PagoAlerta("Luz Eléctrica",   "Venció 4 Mar",  "640.00", VENCIDO,   "#F59E0B", R.drawable.ic_service_electricity));
-
-        // ⏳ Pendientes (5)
-        lista.add(new PagoAlerta("Spotify",         "Vence 12 Mar",  "129.00", PENDIENTE, "#22C55E", R.drawable.ic_app_spotify));
-        lista.add(new PagoAlerta("Internet",        "Vence 14 Mar",  "450.00", PENDIENTE, "#3B82F6", R.drawable.ic_service_internet));
-        lista.add(new PagoAlerta("Disney+",         "Vence 16 Mar",  "159.00", PENDIENTE, "#0064FF", R.drawable.ic_app_disneyplus));
-        lista.add(new PagoAlerta("Xbox Game Pass",  "Vence 18 Mar",  "249.00", PENDIENTE, "#107C10", R.drawable.ic_app_xbox));
-        lista.add(new PagoAlerta("Gas",             "Vence 20 Mar",  "320.00", PENDIENTE, "#F97316", R.drawable.ic_service_gas));
-
-        // ✅ Pagados (4)
-        lista.add(new PagoAlerta("YouTube Premium", "Pagado 2 Mar",  "139.00", PAGADO,    "#FF0000", R.drawable.ic_app_youtube));
-        lista.add(new PagoAlerta("Google One",      "Pagado 3 Mar",  "35.00",  PAGADO,    "#4285F4", R.drawable.ic_app_google));
-        lista.add(new PagoAlerta("Agua",            "Pagado 5 Mar",  "180.00", PAGADO,    "#0EA5E9", R.drawable.ic_service_water));
-        lista.add(new PagoAlerta("Mercado Libre +", "Pagado 8 Mar",  "99.00",  PAGADO,    "#FFE600", R.drawable.ic_app_mercadolibre));
-
-        return lista;
+        return String.format(Locale.getDefault(), "$%.2f", total);
     }
 
     // ─── Adapter ─────────────────────────────────────────────────────────────
@@ -173,7 +227,7 @@ public class AlertasFragment extends Fragment {
             h.tvFecha.setText(p.fecha);
             h.tvMonto.setText("$" + p.monto);
 
-            // Ícono (todos los items tienen iconRes)
+            // Ícono
             h.ivIcon.setBackground(null);
             h.ivIcon.setImageResource(p.iconRes);
 
@@ -204,16 +258,19 @@ public class AlertasFragment extends Fragment {
             }
 
             // Tap → snackbar de "Marcar pagado" para pendientes/vencidos
-            if (!PAGADO.equals(p.estado)) {
+            if (!PAGADO.equals(p.estado) && p.suscripcionOriginal != null) {
                 h.itemView.setOnClickListener(v ->
                         Snackbar.make(requireView(),
                                 getString(R.string.action_mark_paid_confirm, p.nombre),
                                 Snackbar.LENGTH_LONG)
-                                .setAction(getString(R.string.action_mark_paid), x ->
-                                        Snackbar.make(requireView(),
-                                                getString(R.string.toast_marked_as_paid, p.nombre),
-                                                Snackbar.LENGTH_SHORT).show())
-                                .show());
+                                .setAction(getString(R.string.action_mark_paid), x -> {
+                                    viewModel.marcarComoPagado(p.suscripcionOriginal);
+                                    Snackbar.make(requireView(),
+                                            getString(R.string.toast_marked_as_paid, p.nombre),
+                                            Snackbar.LENGTH_SHORT).show();
+                                }).show());
+            } else {
+                h.itemView.setOnClickListener(null);
             }
         }
 
