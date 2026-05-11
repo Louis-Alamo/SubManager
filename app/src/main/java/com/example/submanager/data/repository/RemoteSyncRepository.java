@@ -19,6 +19,7 @@ import com.example.submanager.data.remote.dto.SuscripcionDto;
 import com.example.submanager.data.remote.dto.TerceroCompartidoDto;
 import com.example.submanager.utils.NetworkUtils;
 import com.example.submanager.utils.SessionManager;
+import androidx.lifecycle.MutableLiveData;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,10 @@ public class RemoteSyncRepository {
     private final ExecutorService executor;
     private final Handler mainHandler;
 
+    // Estado global de sincronización para observar desde la UI
+    public static final MutableLiveData<Boolean> isSyncing = new MutableLiveData<>(false);
+    public static final MutableLiveData<String> syncResult = new MutableLiveData<>(null);
+
     public RemoteSyncRepository(Context context) {
         this.context = context.getApplicationContext();
         this.db = AppDatabase.getInstance(this.context);
@@ -105,6 +110,10 @@ public class RemoteSyncRepository {
         }
 
         executor.execute(() -> {
+            mainHandler.post(() -> {
+                isSyncing.setValue(true);
+                syncResult.setValue(null);
+            });
             try {
                 long userId = session.getRemoteUserId();
                 if (userId == -1) {
@@ -233,6 +242,11 @@ public class RemoteSyncRepository {
                 String ahora = Instant.now().toString();
                 actualizarUltimaSincronizacion(ahora);
 
+                mainHandler.post(() -> {
+                    isSyncing.setValue(false);
+                    syncResult.setValue("SUCCESS");
+                });
+
                 final int totalFinal = total;
                 if (totalFinal == 0) {
                     notifyCallback(
@@ -249,6 +263,10 @@ public class RemoteSyncRepository {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "syncAll error", e);
+                mainHandler.post(() -> {
+                    isSyncing.setValue(false);
+                    syncResult.setValue("ERROR");
+                });
                 notifyCallback(
                     callback,
                     SyncStatus.ERROR,
@@ -349,6 +367,11 @@ public class RemoteSyncRepository {
                 // ── 4. Actualizar timestamp ───────────────────────────────────
                 actualizarUltimaSincronizacion(Instant.now().toString());
 
+                mainHandler.post(() -> {
+                    isSyncing.setValue(false);
+                    syncResult.setValue("SUCCESS");
+                });
+
                 notifyCallback(
                     callback,
                     SyncStatus.SUCCESS,
@@ -420,6 +443,7 @@ public class RemoteSyncRepository {
 
     private SuscripcionDto toDto(SuscripcionModel m) {
         SuscripcionDto dto = new SuscripcionDto();
+        dto.id = (long) m.getId();
         long userId = session.getRemoteUserId();
         if (userId != -1) {
             dto.usuarioId = userId;
@@ -445,6 +469,7 @@ public class RemoteSyncRepository {
 
     private ServicioFisicoDto toDto(ServicioFisicoModel m) {
         ServicioFisicoDto dto = new ServicioFisicoDto();
+        dto.id = (long) m.getId();
         long userId = session.getRemoteUserId();
         if (userId != -1) dto.usuarioId = userId;
         dto.nombre = m.getNombre();
@@ -467,6 +492,7 @@ public class RemoteSyncRepository {
 
     private TerceroCompartidoDto toDto(TercerosCompartidosModel m) {
         TerceroCompartidoDto dto = new TerceroCompartidoDto();
+        dto.id = (long) m.getId();
         long userId = session.getRemoteUserId();
         if (userId != -1) dto.usuarioId = userId;
         dto.servicioId = (long) m.getServicioId();
@@ -478,6 +504,7 @@ public class RemoteSyncRepository {
 
     private RegistroPagoDto toDto(RegistrosPagoModel m) {
         RegistroPagoDto dto = new RegistroPagoDto();
+        dto.id = (long) m.getId();
         long userId = session.getRemoteUserId();
         if (userId != -1) dto.usuarioId = userId;
         dto.suscripcionId =
@@ -506,6 +533,7 @@ public class RemoteSyncRepository {
 
     private SuscripcionModel toModel(SuscripcionDto dto) {
         SuscripcionModel m = new SuscripcionModel();
+        if (dto.id != null) m.setId(dto.id.intValue());
         m.setNombre(dto.nombre != null ? dto.nombre : "");
         m.setMonto(dto.monto != null ? dto.monto : 0.0);
         m.setCicloFacturacion(
@@ -543,6 +571,7 @@ public class RemoteSyncRepository {
 
     private ServicioFisicoModel toModel(ServicioFisicoDto dto) {
         ServicioFisicoModel m = new ServicioFisicoModel();
+        if (dto.id != null) m.setId(dto.id.intValue());
         m.setNombre(dto.nombre != null ? dto.nombre : "");
         m.setMontoEstimado(dto.montoEstimado != null ? dto.montoEstimado : 0.0);
         m.setMontoVariable(
@@ -579,6 +608,7 @@ public class RemoteSyncRepository {
 
     private RegistrosPagoModel toModel(RegistroPagoDto dto) {
         RegistrosPagoModel m = new RegistrosPagoModel();
+        if (dto.id != null) m.setId(dto.id.intValue());
         m.setSuscripcionId(
             dto.suscripcionId != null ? dto.suscripcionId.intValue() : null
         );

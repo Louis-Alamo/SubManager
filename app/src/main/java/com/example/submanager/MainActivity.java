@@ -20,10 +20,16 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.example.submanager.data.AppDatabase;
+import com.example.submanager.data.repository.RemoteSyncRepository;
 import com.example.submanager.ui.fragment.AlertasFragment;
 import com.example.submanager.ui.fragment.DashboardFragment;
 import com.example.submanager.ui.fragment.PerfilFragment;
 import com.example.submanager.ui.fragment.HistorialFragment;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.os.Handler;
 import com.example.submanager.ui.fragment.SuscripcionesFragment;
 import com.example.submanager.worker.AlertWorker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -79,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
             lp.topMargin = statusBarHeight;
             v.setLayoutParams(lp);
-            return WindowInsetsCompat.CONSUMED;
+            return insets; // Permite que otros views (como llSyncIndicator) escuchen los insets
         });
 
         if (savedInstanceState == null) {
@@ -117,6 +123,58 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return false;
+        });
+
+        // Observar estado de sincronización global
+        setupSyncObserver();
+    }
+
+    private void setupSyncObserver() {
+        LinearLayout llSyncIndicator = findViewById(R.id.llSyncIndicator);
+        ProgressBar pbSync = findViewById(R.id.pbSync);
+        ImageView ivSyncDone = findViewById(R.id.ivSyncDone);
+        TextView tvSyncStatus = findViewById(R.id.tvSyncStatus);
+
+        // Asegurarse de que no quede oculto detrás de la barra de estado
+        ViewCompat.setOnApplyWindowInsetsListener(llSyncIndicator, (v, insets) -> {
+            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            lp.topMargin = statusBarHeight + 16; // 16px extra de margen
+            v.setLayoutParams(lp);
+            return insets; // no consumir para que fragmentContainer también lo reciba
+        });
+
+        RemoteSyncRepository.isSyncing.observe(this, isSyncing -> {
+            if (isSyncing != null && isSyncing) {
+                llSyncIndicator.setVisibility(View.VISIBLE);
+                pbSync.setVisibility(View.VISIBLE);
+                ivSyncDone.setVisibility(View.GONE);
+                tvSyncStatus.setText("Sincronizando...");
+            }
+        });
+
+        RemoteSyncRepository.syncResult.observe(this, result -> {
+            if (result != null && Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
+                pbSync.setVisibility(View.GONE);
+                ivSyncDone.setVisibility(View.VISIBLE);
+                
+                if (result.equals("SUCCESS")) {
+                    tvSyncStatus.setText("Sincronizado");
+                    ivSyncDone.setImageResource(R.drawable.ic_check_circle);
+                    ivSyncDone.setColorFilter(ContextCompat.getColor(this, R.color.premium));
+                } else {
+                    tvSyncStatus.setText("Error al sincronizar");
+                    ivSyncDone.setImageResource(R.drawable.ic_check_circle); // fallback, Ideally an X icon
+                    ivSyncDone.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                }
+
+                // Ocultar después de 3 segundos
+                new Handler().postDelayed(() -> {
+                    if (Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
+                        llSyncIndicator.setVisibility(View.GONE);
+                    }
+                }, 3000);
+            }
         });
     }
 }
