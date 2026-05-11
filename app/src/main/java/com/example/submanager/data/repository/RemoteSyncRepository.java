@@ -17,6 +17,7 @@ import com.example.submanager.data.remote.dto.RegistroPagoDto;
 import com.example.submanager.data.remote.dto.ServicioFisicoDto;
 import com.example.submanager.data.remote.dto.SuscripcionDto;
 import com.example.submanager.data.remote.dto.TerceroCompartidoDto;
+import com.example.submanager.data.remote.dto.UsuarioDto;
 import com.example.submanager.utils.NetworkUtils;
 import com.example.submanager.utils.SessionManager;
 import java.time.Instant;
@@ -107,6 +108,18 @@ public class RemoteSyncRepository {
         executor.execute(() -> {
             try {
                 long userId = session.getRemoteUserId();
+                if (userId == -1) {
+                    try {
+                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                            .getUsuarioPorCorreo("eq." + session.getEmail())
+                            .execute();
+                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                            userId = resp.body().get(0).id;
+                            session.saveRemoteUserId(userId);
+                        }
+                    } catch (Exception ignored) {}
+                }
+
                 if (userId == -1) {
                     notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
                     return;
@@ -277,6 +290,18 @@ public class RemoteSyncRepository {
         executor.execute(() -> {
             try {
                 long userId = session.getRemoteUserId();
+                if (userId == -1) {
+                    try {
+                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                            .getUsuarioPorCorreo("eq." + session.getEmail())
+                            .execute();
+                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                            userId = resp.body().get(0).id;
+                            session.saveRemoteUserId(userId);
+                        }
+                    } catch (Exception ignored) {}
+                }
+
                 if (userId == -1) {
                     notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
                     return;

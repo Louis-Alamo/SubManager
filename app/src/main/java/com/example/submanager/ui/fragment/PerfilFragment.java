@@ -293,6 +293,12 @@ public class PerfilFragment extends Fragment {
                 sessionManager.isPremium() ? View.GONE : View.VISIBLE
             );
         }
+
+        // Ocultar los pequeños badges de PREMIUM en los botones si ya es premium
+        View badgeBackup = getView() != null ? getView().findViewById(R.id.tvBadgeBackup) : null;
+        View badgeRestore = getView() != null ? getView().findViewById(R.id.tvBadgeRestore) : null;
+        if (badgeBackup != null) badgeBackup.setVisibility(sessionManager.isPremium() ? View.GONE : View.VISIBLE);
+        if (badgeRestore != null) badgeRestore.setVisibility(sessionManager.isPremium() ? View.GONE : View.VISIBLE);
     }
 
     // ── Login inline ──────────────────────────────────────────────────────────
@@ -351,6 +357,23 @@ public class PerfilFragment extends Fragment {
                     password,
                     usuarioLocal.salt
                 ).equals(usuarioLocal.passwordHash);
+
+                if (passOk) {
+                    // Recuperar silenciosamente el ID remoto y estado Premium
+                    try {
+                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                            .getUsuarioPorCorreo("eq." + email)
+                            .execute();
+                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                            UsuarioDto remoto = resp.body().get(0);
+                            sessionManager.saveRemoteUserId(remoto.id);
+                            if (remoto.tipoPlan != null && remoto.estaActivo != null && remoto.estaActivo) {
+                                sessionManager.savePremium(remoto.tipoPlan, remoto.fechaRenovacion != null ? remoto.fechaRenovacion : "");
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+
                 handler.post(() -> {
                     if (!isAdded()) return;
                     if (btnLogin != null) btnLogin.setEnabled(true);
@@ -366,6 +389,10 @@ public class PerfilFragment extends Fragment {
                             root,
                             "✅ ¡Bienvenido, " + usuarioLocal.nombre + "!"
                         );
+                        
+                        if (sessionManager.isPremium()) {
+                            iniciarRestore(root);
+                        }
                     }
                 });
                 return;
