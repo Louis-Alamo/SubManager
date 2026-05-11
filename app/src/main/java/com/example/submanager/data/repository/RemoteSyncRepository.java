@@ -108,6 +108,18 @@ public class RemoteSyncRepository {
             try {
                 long userId = session.getRemoteUserId();
                 if (userId == -1) {
+                    try {
+                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                            .getUsuarioPorCorreo("eq." + session.getEmail())
+                            .execute();
+                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                            userId = resp.body().get(0).id;
+                            session.saveRemoteUserId(userId);
+                        }
+                    } catch (Exception ignored) {}
+                }
+
+                if (userId == -1) {
                     notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
                     return;
                 }
@@ -277,6 +289,18 @@ public class RemoteSyncRepository {
         executor.execute(() -> {
             try {
                 long userId = session.getRemoteUserId();
+                if (userId == -1) {
+                    try {
+                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                            .getUsuarioPorCorreo("eq." + session.getEmail())
+                            .execute();
+                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
+                            userId = resp.body().get(0).id;
+                            session.saveRemoteUserId(userId);
+                        }
+                    } catch (Exception ignored) {}
+                }
+
                 if (userId == -1) {
                     notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
                     return;
