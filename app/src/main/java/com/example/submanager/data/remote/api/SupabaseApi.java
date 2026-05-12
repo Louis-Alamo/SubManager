@@ -43,8 +43,11 @@ public interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     Call<Void> insertSuscripcion(@Body SuscripcionDto dto);
 
-    @POST("suscripciones")
-    @Headers("Prefer: return=minimal")
+    @POST("suscripciones?on_conflict=id")
+    @Headers({
+        "Prefer: return=minimal",
+        "Prefer: resolution=merge-duplicates"
+    })
     Call<Void> insertSuscripciones(@Body List<SuscripcionDto> dtos);
 
     @DELETE("suscripciones")
@@ -61,8 +64,11 @@ public interface SupabaseApi {
     @GET("servicios_fisicos")
     Call<List<ServicioFisicoDto>> getServiciosFisicos(@Query("usuario_id") String filter);
 
-    @POST("servicios_fisicos")
-    @Headers("Prefer: return=minimal")
+    @POST("servicios_fisicos?on_conflict=id")
+    @Headers({
+        "Prefer: return=minimal",
+        "Prefer: resolution=merge-duplicates"
+    })
     Call<Void> insertServiciosFisicos(@Body List<ServicioFisicoDto> dtos);
 
     @DELETE("servicios_fisicos")
@@ -76,8 +82,11 @@ public interface SupabaseApi {
     @GET("terceros_compartidos")
     Call<List<TerceroCompartidoDto>> getTercerosCompartidos(@Query("usuario_id") String filter);
 
-    @POST("terceros_compartidos")
-    @Headers("Prefer: return=minimal")
+    @POST("terceros_compartidos?on_conflict=id")
+    @Headers({
+        "Prefer: return=minimal",
+        "Prefer: resolution=merge-duplicates"
+    })
     Call<Void> insertTercerosCompartidos(@Body List<TerceroCompartidoDto> dtos);
 
     @DELETE("terceros_compartidos")
@@ -91,8 +100,11 @@ public interface SupabaseApi {
     @GET("registros_pago")
     Call<List<RegistroPagoDto>> getRegistrosPago(@Query("usuario_id") String filter);
 
-    @POST("registros_pago")
-    @Headers("Prefer: return=minimal")
+    @POST("registros_pago?on_conflict=id")
+    @Headers({
+        "Prefer: return=minimal",
+        "Prefer: resolution=merge-duplicates"
+    })
     Call<Void> insertRegistrosPago(@Body List<RegistroPagoDto> dtos);
 
     @DELETE("registros_pago")

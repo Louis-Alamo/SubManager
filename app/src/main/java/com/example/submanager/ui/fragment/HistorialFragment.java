@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -154,10 +155,14 @@ public class HistorialFragment extends Fragment {
         List<PagoHistorial> pagosDelMes = new ArrayList<>();
         
         for (RegistrosPagoModel pago : pagosCache) {
-            if (!"Pagado".equalsIgnoreCase(pago.getEstado()) || pago.getFechaPago() == null) continue;
+            // Usamos la fecha de vencimiento (para qué mes era el pago) en lugar del día físico en que se apretó el botón
+            String fechaBase = pago.getFechaVencimiento() != null && !pago.getFechaVencimiento().isEmpty() ? 
+                               pago.getFechaVencimiento() : pago.getFechaPago();
+            
+            if (!"Pagado".equalsIgnoreCase(pago.getEstado()) || fechaBase == null) continue;
             
             try {
-                Date d = sdfDB.parse(pago.getFechaPago());
+                Date d = sdfDB.parse(fechaBase);
                 if (d == null) continue;
                 
                 Calendar c = Calendar.getInstance();
@@ -174,20 +179,21 @@ public class HistorialFragment extends Fragment {
                         }
                     }
                     
-                    if (sub != null) {
-                        String fechaTxt = sdfUI.format(d) + " · " + sub.getCategoria();
-                        int iconRes = getResources().getIdentifier(sub.getNombreIcono(), "drawable", requireContext().getPackageName());
+                    String fechaTxt = sdfUI.format(d) + " · " + pago.getCategoria();
+                    int iconRes = R.drawable.ic_service_otro;
+                    if (sub != null && sub.getNombreIcono() != null) {
+                        iconRes = getResources().getIdentifier(sub.getNombreIcono(), "drawable", requireContext().getPackageName());
                         if (iconRes == 0) iconRes = R.drawable.ic_service_otro;
-                        
-                        pagosDelMes.add(new PagoHistorial(
-                                sub.getNombre(),
-                                fechaTxt,
-                                pago.getMonto(),
-                                sub.getColor(),
-                                iconRes,
-                                sub.getCategoria()
-                        ));
                     }
+                    
+                    pagosDelMes.add(new PagoHistorial(
+                            pago.getNombreOrigen(),
+                            fechaTxt,
+                            pago.getMonto(),
+                            pago.getColorOrigen(),
+                            iconRes,
+                            pago.getCategoria()
+                    ));
                 }
             } catch (Exception ignored) {}
         }
@@ -201,8 +207,9 @@ public class HistorialFragment extends Fragment {
     private void generarGraficaDona(List<PagoHistorial> listaPagos) {
         if (listaPagos.isEmpty()) {
             pieChart.clear();
-            pieChart.setCenterText("Sin\\ndatos");
+            pieChart.setCenterText("Sin\ndatos");
             pieChart.invalidate();
+            updateLegend(new ArrayList<>(), new ArrayList<>());
             return;
         }
 
@@ -274,6 +281,46 @@ public class HistorialFragment extends Fragment {
         pieChart.setDrawEntryLabels(false);
         pieChart.animateY(800);
         pieChart.invalidate();
+        
+        // Actualizar la leyenda visual debajo de la dona
+        updateLegend(entradas, colores);
+    }
+    
+    private void updateLegend(List<PieEntry> entradas, List<Integer> colores) {
+        View view = getView();
+        if (view == null) return;
+        
+        LinearLayout llLegend1 = view.findViewById(R.id.llLegend1);
+        View vColor1 = view.findViewById(R.id.vLegendColor1);
+        TextView tvText1 = view.findViewById(R.id.tvLegendText1);
+        
+        LinearLayout llLegend2 = view.findViewById(R.id.llLegend2);
+        View vColor2 = view.findViewById(R.id.vLegendColor2);
+        TextView tvText2 = view.findViewById(R.id.tvLegendText2);
+        
+        LinearLayout llLegend3 = view.findViewById(R.id.llLegend3);
+        View vColor3 = view.findViewById(R.id.vLegendColor3);
+        TextView tvText3 = view.findViewById(R.id.tvLegendText3);
+
+        if (llLegend1 != null) llLegend1.setVisibility(View.GONE);
+        if (llLegend2 != null) llLegend2.setVisibility(View.GONE);
+        if (llLegend3 != null) llLegend3.setVisibility(View.GONE);
+        
+        if (entradas.size() > 0 && llLegend1 != null) {
+            llLegend1.setVisibility(View.VISIBLE);
+            tvText1.setText(entradas.get(0).getLabel());
+            vColor1.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colores.get(0)));
+        }
+        if (entradas.size() > 1 && llLegend2 != null) {
+            llLegend2.setVisibility(View.VISIBLE);
+            tvText2.setText(entradas.get(1).getLabel());
+            vColor2.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colores.get(1)));
+        }
+        if (entradas.size() > 2 && llLegend3 != null) {
+            llLegend3.setVisibility(View.VISIBLE);
+            tvText3.setText(entradas.get(2).getLabel());
+            vColor3.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colores.get(2)));
+        }
     }
     
     private String capitalize(String str) {

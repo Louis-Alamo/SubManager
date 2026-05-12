@@ -42,7 +42,9 @@ public class SupabaseClient {
                             .header("apikey", BuildConfig.SUPABASE_KEY)
                             .header("Authorization", "Bearer " + BuildConfig.SUPABASE_KEY)
                             .header("Content-Type", "application/json")
-                            .header("Prefer", "return=representation")
+                            // No se fuerza un Prefer global: cada endpoint en SupabaseApi
+                            // define su propio @Headers("Prefer: ...") para controlar
+                            // return=minimal o resolution=merge-duplicates según necesite.
                             .method(original.method(), original.body())
                             .build();
                     return chain.proceed(request);

@@ -93,6 +93,16 @@ public interface SuscripcionDao {
     @Query("SELECT * FROM registros_pago")
     List<RegistrosPagoModel> getAllRegistrosPagoSync();
 
+    /**
+     * Solo registros que tienen al menos un origen válido (suscripcion_id o servicio_id no nulo).
+     * Usar esta query para el push remoto a Supabase, ya que la tabla tiene:
+     *   CHECK CONSTRAINT chk_un_origen:
+     *     (suscripcion_id IS NOT NULL OR servicio_id IS NOT NULL)
+     * Los registros huérfanos (ambos null, causados por ForeignKey.SET_NULL) se excluyen.
+     */
+    @Query("SELECT * FROM registros_pago WHERE suscripcion_id IS NOT NULL OR servicio_id IS NOT NULL")
+    List<RegistrosPagoModel> getAllRegistrosPagoSyncValidos();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllRegistrosPago(List<RegistrosPagoModel> registros);
 

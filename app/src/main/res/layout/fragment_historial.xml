@@ -137,82 +137,86 @@
 
                     <!-- Leyenda: 3 ítems en fila -->
                     <LinearLayout
+                        android:id="@+id/llLeyendaContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center"
                         android:layout_marginTop="12dp">
 
-                        <!-- Suscripciones -->
+                        <!-- Item 1 -->
                         <LinearLayout
+                            android:id="@+id/llLegend1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:visibility="gone">
 
                             <View
+                                android:id="@+id/vLegendColor1"
                                 android:layout_width="12dp"
                                 android:layout_height="12dp"
-                                android:background="@drawable/bg_status_badge"
-                                android:backgroundTint="@color/primary" />
+                                android:background="@drawable/bg_status_badge" />
 
                             <TextView
+                                android:id="@+id/tvLegendText1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/history_chart_subscriptions"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginStart="6dp" />
-
                         </LinearLayout>
 
-                        <!-- Servicios -->
+                        <!-- Item 2 -->
                         <LinearLayout
+                            android:id="@+id/llLegend2"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:visibility="gone">
 
                             <View
+                                android:id="@+id/vLegendColor2"
                                 android:layout_width="12dp"
                                 android:layout_height="12dp"
-                                android:background="@drawable/bg_status_badge"
-                                android:backgroundTint="@color/primary_light" />
+                                android:background="@drawable/bg_status_badge" />
 
                             <TextView
+                                android:id="@+id/tvLegendText2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/history_chart_services"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginStart="6dp" />
-
                         </LinearLayout>
 
-                        <!-- Otros -->
+                        <!-- Item 3 -->
                         <LinearLayout
+                            android:id="@+id/llLegend3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:visibility="gone">
 
                             <View
+                                android:id="@+id/vLegendColor3"
                                 android:layout_width="12dp"
                                 android:layout_height="12dp"
-                                android:background="@drawable/bg_status_badge"
-                                android:backgroundTint="@color/primary_tint" />
+                                android:background="@drawable/bg_status_badge" />
 
                             <TextView
+                                android:id="@+id/tvLegendText3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/history_chart_others"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp"
                                 android:layout_marginStart="6dp" />
-
                         </LinearLayout>
 
                     </LinearLayout>

@@ -17,30 +17,15 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/btnFiltro"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="12dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_filter"
-        android:padding="12dp"
-        android:scaleType="fitCenter"
-        app:tint="@color/text_secondary" app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/svBuscar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:queryHint="Buscar suscripción..."
+        app:iconifiedByDefault="true"
+        app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvTituloSuscripciones" />
-
-    <ImageButton
-        android:id="@+id/btnBuscar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_search"
-        android:padding="12dp"
-        android:scaleType="fitCenter"
-        app:tint="@color/text_secondary" app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
-        app:layout_constraintEnd_toStartOf="@id/btnFiltro"
         app:layout_constraintTop_toTopOf="@id/tvTituloSuscripciones" />
 
     <HorizontalScrollView

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.example.submanager.ui.activity.NuevaSuscripcionActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,8 @@ public class SuscripcionesFragment extends Fragment {
     private RecyclerView rvSuscripciones;
     private SuscripcionAdapter adaptador;
     private ChipGroup cgCategorias;
+    private SearchView svBuscar;
+    private String currentQuery = "";
 
     // El cerebro de nuestra pantalla
     private SuscripcionViewModel viewModel;
@@ -58,6 +61,23 @@ public class SuscripcionesFragment extends Fragment {
         fabAgregar.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), NuevaSuscripcionActivity.class);
             startActivity(intent);
+        });
+
+        // Configurar el buscador
+        svBuscar = view.findViewById(R.id.svBuscar);
+        svBuscar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                svBuscar.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                currentQuery = newText == null ? "" : newText.trim();
+                aplicarFiltroActual();
+                return true;
+            }
         });
 
         return view;
@@ -107,11 +127,17 @@ public class SuscripcionesFragment extends Fragment {
         List<SuscripcionModel> listaFiltrada = new ArrayList<>();
 
         if ("Todas".equals(categoriaSeleccionada)) {
-            listaFiltrada.addAll(listaMaestra);
+            for (SuscripcionModel sub : listaMaestra) {
+                if (currentQuery.isEmpty() || sub.getNombre().toLowerCase().contains(currentQuery.toLowerCase())) {
+                    listaFiltrada.add(sub);
+                }
+            }
         } else {
             for (SuscripcionModel sub : listaMaestra) {
                 if (sub.getCategoria().equals(categoriaSeleccionada)) {
-                    listaFiltrada.add(sub);
+                    if (currentQuery.isEmpty() || sub.getNombre().toLowerCase().contains(currentQuery.toLowerCase())) {
+                        listaFiltrada.add(sub);
+                    }
                 }
             }
         }

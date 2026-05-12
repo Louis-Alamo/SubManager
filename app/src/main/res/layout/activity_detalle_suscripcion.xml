@@ -423,4 +423,46 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Indicador de Sincronización en Segundo Plano -->
+    <LinearLayout
+        android:id="@+id/llSyncIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_sync_indicator"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        android:layout_gravity="top|end"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pbSync"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:indeterminateTint="@color/premium"
+            android:layout_marginEnd="8dp"/>
+
+        <ImageView
+            android:id="@+id/ivSyncDone"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/ic_check_circle"
+            app:tint="@color/premium"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tvSyncStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sincronizando..."
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

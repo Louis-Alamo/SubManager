@@ -46,7 +46,10 @@ public class SuscripcionRepository {
         suscripcionesProximas           = suscripcionDao.getSuscripcionesProximas();
         montoTotalActivas               = suscripcionDao.getMontoTotalActivas();
 
-        executorService         = Executors.newFixedThreadPool(2);
+        // Un único hilo para operaciones Room → evita concurrencia en DB
+        // y reduce los sync triggers simultáneos cuando el usuario hace
+        // varias operaciones rápidas (p.ej. insertar + actualizar en marcarComoPagado).
+        executorService         = Executors.newSingleThreadExecutor();
         remoteSyncRepository    = new RemoteSyncRepository(application);
         sessionManager          = new SessionManager(application);
     }
@@ -128,10 +131,16 @@ public class SuscripcionRepository {
     /**
      * Si el usuario es Premium y hay conexión, dispara una sincronización
      * completa silenciosa (sin callback de UI).
+     *
+     * Se usa un Handler para agregar un pequeño delay (300ms) sin bloquear
+     * el hilo de la base de datos. Esto agrupa operaciones rápidas
+     * consecutivas en un único sync.
      */
     private void triggerSyncIfNeeded() {
         if (sessionManager.isPremium() && NetworkUtils.isNetworkAvailable(application)) {
-            remoteSyncRepository.syncAll(null); // callback null = sincronización silenciosa
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                remoteSyncRepository.syncAll(null); // callback null = sincronización silenciosa
+            }, 300);
         }
     }
 }

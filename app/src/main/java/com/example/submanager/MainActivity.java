@@ -145,14 +145,44 @@ public class MainActivity extends AppCompatActivity {
         });
 
         RemoteSyncRepository.isSyncing.observe(this, isSyncing -> {
-            if (isSyncing != null && isSyncing) {
-                llSyncIndicator.setVisibility(View.VISIBLE);
-                pbSync.setVisibility(View.VISIBLE);
-                ivSyncDone.setVisibility(View.GONE);
-                tvSyncStatus.setText("Sincronizando...");
+            if (isSyncing != null) {
+                if (isSyncing) {
+                    llSyncIndicator.setVisibility(View.VISIBLE);
+                    pbSync.setVisibility(View.VISIBLE);
+                    ivSyncDone.setVisibility(View.GONE);
+                    tvSyncStatus.setText("Sincronizando...");
+                } else {
+                    // La sincronización acaba de terminar. Mostrar el resultado.
+                    String result = RemoteSyncRepository.syncResult.getValue();
+                    if (result != null) {
+                        pbSync.setVisibility(View.GONE);
+                        ivSyncDone.setVisibility(View.VISIBLE);
+                        
+                        if (result.equals("SUCCESS")) {
+                            tvSyncStatus.setText("Sincronizado");
+                            ivSyncDone.setImageResource(R.drawable.ic_check_circle);
+                            ivSyncDone.setColorFilter(ContextCompat.getColor(this, R.color.premium));
+                        } else {
+                            tvSyncStatus.setText("Error al sincronizar");
+                            ivSyncDone.setImageResource(R.drawable.ic_check_circle); // fallback, Ideally an X icon
+                            ivSyncDone.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                        }
+
+                        // Ocultar después de 3 segundos
+                        new Handler().postDelayed(() -> {
+                            if (Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
+                                llSyncIndicator.setVisibility(View.GONE);
+                            }
+                        }, 3000);
+                    } else {
+                        // Si por alguna razón es false y no hay resultado, simplemente ocultamos
+                        llSyncIndicator.setVisibility(View.GONE);
+                    }
+                }
             }
         });
 
+        // Este observador actúa como respaldo por si syncResult se actualiza mucho después
         RemoteSyncRepository.syncResult.observe(this, result -> {
             if (result != null && Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
                 pbSync.setVisibility(View.GONE);
@@ -164,11 +194,10 @@ public class MainActivity extends AppCompatActivity {
                     ivSyncDone.setColorFilter(ContextCompat.getColor(this, R.color.premium));
                 } else {
                     tvSyncStatus.setText("Error al sincronizar");
-                    ivSyncDone.setImageResource(R.drawable.ic_check_circle); // fallback, Ideally an X icon
+                    ivSyncDone.setImageResource(R.drawable.ic_check_circle);
                     ivSyncDone.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_dark));
                 }
 
-                // Ocultar después de 3 segundos
                 new Handler().postDelayed(() -> {
                     if (Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
                         llSyncIndicator.setVisibility(View.GONE);

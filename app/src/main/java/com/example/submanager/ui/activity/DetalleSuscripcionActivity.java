@@ -18,6 +18,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import android.content.Intent;
+import android.os.Handler;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.content.ContextCompat;
+
+import com.example.submanager.data.repository.RemoteSyncRepository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,6 +83,8 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         } else {
             finish();
         }
+
+        setupSyncObserver();
     }
 
     private void bindViews() {
@@ -172,6 +183,81 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         } catch (Exception e) {
             return fechaStr;
         }
+    }
+
+    private void setupSyncObserver() {
+        LinearLayout llSyncIndicator = findViewById(R.id.llSyncIndicator);
+        ProgressBar pbSync = findViewById(R.id.pbSync);
+        ImageView ivSyncDone = findViewById(R.id.ivSyncDone);
+        TextView tvSyncStatus = findViewById(R.id.tvSyncStatus);
+
+        if (llSyncIndicator == null) return; // Por precaución
+
+        ViewCompat.setOnApplyWindowInsetsListener(llSyncIndicator, (v, insets) -> {
+            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            lp.topMargin = statusBarHeight + 16;
+            v.setLayoutParams(lp);
+            return insets;
+        });
+
+        RemoteSyncRepository.isSyncing.observe(this, isSyncing -> {
+            if (isSyncing != null) {
+                if (isSyncing) {
+                    llSyncIndicator.setVisibility(View.VISIBLE);
+                    pbSync.setVisibility(View.VISIBLE);
+                    ivSyncDone.setVisibility(View.GONE);
+                    tvSyncStatus.setText("Sincronizando...");
+                } else {
+                    String result = RemoteSyncRepository.syncResult.getValue();
+                    if (result != null) {
+                        pbSync.setVisibility(View.GONE);
+                        ivSyncDone.setVisibility(View.VISIBLE);
+                        
+                        if (result.equals("SUCCESS")) {
+                            tvSyncStatus.setText("Sincronizado");
+                            ivSyncDone.setImageResource(R.drawable.ic_check_circle);
+                            ivSyncDone.setColorFilter(ContextCompat.getColor(this, R.color.premium));
+                        } else {
+                            tvSyncStatus.setText("Error al sincronizar");
+                            ivSyncDone.setImageResource(R.drawable.ic_check_circle);
+                            ivSyncDone.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                        }
+
+                        new Handler().postDelayed(() -> {
+                            if (Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
+                                llSyncIndicator.setVisibility(View.GONE);
+                            }
+                        }, 3000);
+                    } else {
+                        llSyncIndicator.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
+        RemoteSyncRepository.syncResult.observe(this, result -> {
+            if (result != null && Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
+                pbSync.setVisibility(View.GONE);
+                ivSyncDone.setVisibility(View.VISIBLE);
+                
+                if (result.equals("SUCCESS")) {
+                    tvSyncStatus.setText("Sincronizado");
+                    ivSyncDone.setImageResource(R.drawable.ic_check_circle);
+                    ivSyncDone.setColorFilter(ContextCompat.getColor(this, R.color.premium));
+                } else {
+                    tvSyncStatus.setText("Error al sincronizar");
+                    ivSyncDone.setImageResource(R.drawable.ic_check_circle);
+                    ivSyncDone.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                }
+
+                new Handler().postDelayed(() -> {
+                    if (Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
+                        llSyncIndicator.setVisibility(View.GONE);
+                    }
+                }, 3000);
+            }
+        });
     }
 
     private String obtenerTextoDias(String fechaStr) {

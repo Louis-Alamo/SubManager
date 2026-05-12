@@ -50,7 +50,7 @@ public class NotificationHelper {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher_round) // Asegurar que exista este icono
+                .setSmallIcon(R.drawable.ic_notifications) // Icono vectorial válido para notificaciones
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

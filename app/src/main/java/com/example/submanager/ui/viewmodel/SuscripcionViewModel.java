@@ -71,8 +71,12 @@ public class SuscripcionViewModel extends AndroidViewModel {
     }
 
     public void marcarComoPagado(SuscripcionModel suscripcion) {
-        String fechaPago = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date());
-        String timestampActual = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(new java.util.Date());
+        java.text.SimpleDateFormat sdfDate = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        String fechaPago = sdfDate.format(new java.util.Date());
+        
+        java.text.SimpleDateFormat sdfFull = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US);
+        sdfFull.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        String timestampActual = sdfFull.format(new java.util.Date());
 
         com.example.submanager.data.model.RegistrosPagoModel pago = new com.example.submanager.data.model.RegistrosPagoModel(
                 suscripcion.getId(),
@@ -81,7 +85,7 @@ public class SuscripcionViewModel extends AndroidViewModel {
                 suscripcion.getColor(),
                 suscripcion.getCategoria(),
                 suscripcion.getMonto(),
-                "Pagado",
+                "PAGADO",
                 suscripcion.getFechaProximoCobro(),
                 fechaPago,
                 java.util.Calendar.getInstance().get(java.util.Calendar.MONTH) + 1,

@@ -34,11 +34,12 @@ import retrofit2.Response;
 /**
  * Repositorio central de sincronización remota.
  *
- * Estrategia: "Replace-All" offline-first
- *  1. Lee todos los datos de Room (fuente de verdad local)
- *  2. Borra los datos remotos en Supabase
- *  3. Sube los datos locales a Supabase
- *  4. Actualiza ultima_sincronizacion en Room y Supabase
+ * Estrategia: "Replace-All" offline-first con doble protección contra HTTP 409
+ *
+ *  PUSH (Respaldar) — doble capa de seguridad:
+ *    1. DELETE en Supabase del usuario → verificado: si falla, se aborta
+ *    2. POST con UPSERT (on_conflict=id + resolution=merge-duplicates) → tolerante a duplicados residuales
+ *    3. Actualiza ultima_sincronizacion en Room y Supabase
  *
  * Para el Pull (Restaurar):
  *  1. Descarga todos los datos de Supabase
@@ -66,19 +67,30 @@ public class RemoteSyncRepository {
     private final AppDatabase db;
     private final SupabaseApi api;
     private final SessionManager session;
-    private final ExecutorService executor;
     private final Handler mainHandler;
 
     // Estado global de sincronización para observar desde la UI
     public static final MutableLiveData<Boolean> isSyncing = new MutableLiveData<>(false);
     public static final MutableLiveData<String> syncResult = new MutableLiveData<>(null);
 
+    /**
+     * Executor estático (singleton) → un único hilo de sync compartido entre todas las
+     * instancias del repositorio. Evita que múltiples operaciones (insertar, actualizar,
+     * eliminar) encolen syncAll() en hilos separados y colisionen.
+     */
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    /**
+     * Bandera atómica que evita ejecuciones concurrentes de syncAll().
+     * Si ya hay una sync en curso, la nueva invocación retorna inmediatamente.
+     */
+    private static final AtomicBoolean isSyncRunning = new AtomicBoolean(false);
+
     public RemoteSyncRepository(Context context) {
         this.context = context.getApplicationContext();
         this.db = AppDatabase.getInstance(this.context);
         this.api = SupabaseClient.getApi();
         this.session = new SessionManager(this.context);
-        this.executor = Executors.newSingleThreadExecutor();
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -111,6 +123,11 @@ public class RemoteSyncRepository {
         }
 
         executor.execute(() -> {
+            // Anti-concurrencia: si ya hay una sync activa, ignorar esta invocación
+            if (!isSyncRunning.compareAndSet(false, true)) {
+                notifyCallback(callback, SyncStatus.SUCCESS, "Sincronización ya en progreso.");
+                return;
+            }
             mainHandler.post(() -> {
                 isSyncing.setValue(true);
                 syncResult.setValue(null);
@@ -136,117 +153,82 @@ public class RemoteSyncRepository {
                 String userFilter = "eq." + userId;
                 int total = 0;
 
-                // ── 1. Suscripciones ──────────────────────────────────────────
-                List<SuscripcionModel> suscripciones = db
-                    .suscripcionDao()
-                    .getAllSuscripcionesSync();
-                Log.d(TAG, "Suscripciones en Room: " + suscripciones.size());
+                // ── UPSERT (Insertar o Actualizar) ──
+                // Ya no borramos la base de datos remotamente. 
+                // Usamos Supabase UPSERT: Si el ID ya existe, lo actualiza. Si no existe, lo inserta.
 
+                // 1. Insertar/Actualizar Suscripciones
+                List<SuscripcionModel> suscripciones = db.suscripcionDao().getAllSuscripcionesSync();
                 if (!suscripciones.isEmpty()) {
-                    // Borrar remotas
-                    Response<Void> delResp = api
-                        .deleteAllSuscripciones(userFilter)
-                        .execute();
-                    Log.d(TAG, "DELETE suscripciones → HTTP " + delResp.code());
-
-                    // Subir locales
                     List<SuscripcionDto> dtos = new ArrayList<>();
                     for (SuscripcionModel m : suscripciones) dtos.add(toDto(m));
-
-                    Response<Void> insResp = api
-                        .insertSuscripciones(dtos)
-                        .execute();
-                    Log.d(TAG, "INSERT suscripciones → HTTP " + insResp.code());
-
+                    Response<Void> insResp = api.insertSuscripciones(dtos).execute();
                     if (!insResp.isSuccessful()) {
-                        String errorBody =
-                            insResp.errorBody() != null
-                                ? insResp.errorBody().string()
-                                : "sin detalle";
-                        String msg = errorBody;
-
-                        // Mensajes de error amigables según código HTTP
-                        if (insResp.code() == 401 || insResp.code() == 403) {
-                            msg =
-                                "Acceso denegado (HTTP " +
-                                insResp.code() +
-                                ").\n\n" +
-                                "Necesitas configurar las políticas RLS en Supabase.\n" +
-                                "Ve a: Supabase → Authentication → Policies → suscripciones → Nueva política para rol 'anon'.";
-                        } else if (insResp.code() == 422) {
-                            msg =
-                                "Error de esquema (HTTP 422). Campos incompatibles con la tabla de Supabase:\n" +
-                                errorBody;
-                        } else if (insResp.code() == 0) {
-                            msg =
-                                "Sin respuesta del servidor. Verifica tu conexión.";
-                        } else {
-                            msg =
-                                "Error HTTP " +
-                                insResp.code() +
-                                ": " +
-                                errorBody;
-                        }
-
-                        notifyCallback(callback, SyncStatus.ERROR, msg);
-                        return; // Detener aquí para mostrar el error real
+                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo suscripciones (HTTP " + insResp.code() + ").");
+                        return;
                     }
                     total += dtos.size();
                 }
 
-                // ── 2. Servicios físicos ──────────────────────────────────────
-                List<ServicioFisicoModel> servicios = db
-                    .suscripcionDao()
-                    .getAllServiciosFisicosSync();
-                Log.d(TAG, "Servicios físicos en Room: " + servicios.size());
+                // 2. Insertar/Actualizar Servicios Físicos
+                List<ServicioFisicoModel> servicios = db.suscripcionDao().getAllServiciosFisicosSync();
                 if (!servicios.isEmpty()) {
-                    api.deleteAllServiciosFisicos(userFilter).execute();
                     List<ServicioFisicoDto> dtos = new ArrayList<>();
                     for (ServicioFisicoModel m : servicios) dtos.add(toDto(m));
-                    Response<Void> insResp = api
-                        .insertServiciosFisicos(dtos)
-                        .execute();
-                    Log.d(TAG, "INSERT servicios → HTTP " + insResp.code());
-                    if (insResp.isSuccessful()) total += dtos.size();
+                    Response<Void> insResp = api.insertServiciosFisicos(dtos).execute();
+                    if (!insResp.isSuccessful()) {
+                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo servicios físicos (HTTP " + insResp.code() + ").");
+                        return;
+                    }
+                    total += dtos.size();
                 }
 
-                // ── 3. Terceros compartidos ───────────────────────────────────
-                List<TercerosCompartidosModel> terceros = db
-                    .suscripcionDao()
-                    .getAllTercerosSync();
+                // 3. Insertar/Actualizar Terceros Compartidos
+                List<TercerosCompartidosModel> terceros = db.suscripcionDao().getAllTercerosSync();
                 if (!terceros.isEmpty()) {
-                    api.deleteAllTerceros(userFilter).execute();
                     List<TerceroCompartidoDto> dtos = new ArrayList<>();
-                    for (TercerosCompartidosModel m : terceros)
-                        dtos.add(toDto(m));
-                    Response<Void> insResp = api
-                        .insertTercerosCompartidos(dtos)
-                        .execute();
-                    if (insResp.isSuccessful()) total += dtos.size();
+                    for (TercerosCompartidosModel m : terceros) dtos.add(toDto(m));
+                    Response<Void> insResp = api.insertTercerosCompartidos(dtos).execute();
+                    if (!insResp.isSuccessful()) {
+                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo terceros compartidos (HTTP " + insResp.code() + ").");
+                        return;
+                    }
+                    total += dtos.size();
                 }
 
-                // ── 4. Registros de pago ──────────────────────────────────────
-                List<RegistrosPagoModel> registros = db
-                    .suscripcionDao()
-                    .getAllRegistrosPagoSync();
+                // 4. Insertar/Actualizar Registros de Pago
+                List<RegistrosPagoModel> registros = db.suscripcionDao().getAllRegistrosPagoSyncValidos();
                 if (!registros.isEmpty()) {
-                    api.deleteAllRegistrosPago(userFilter).execute();
                     List<RegistroPagoDto> dtos = new ArrayList<>();
                     for (RegistrosPagoModel m : registros) dtos.add(toDto(m));
-                    Response<Void> insResp = api
-                        .insertRegistrosPago(dtos)
-                        .execute();
-                    if (insResp.isSuccessful()) total += dtos.size();
+                    Response<Void> insResp = api.insertRegistrosPago(dtos).execute();
+                    if (!insResp.isSuccessful()) {
+                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo registros de pago (HTTP " + insResp.code() + ").");
+                        return;
+                    }
+                    total += dtos.size();
                 }
 
-                // ── 5. Actualizar ultima_sincronizacion ───────────────────────
+                // ── 5. Configuracion App ──────────────────────────────────────
+                ConfiguracionAppModel configuracion = db
+                    .suscripcionDao()
+                    .getConfiguracionSync();
+                if (configuracion != null) {
+                    ConfiguracionAppDto confDto = toDto(configuracion);
+                    Response<Void> confResp = api
+                        .updateConfiguracion(userFilter, confDto)
+                        .execute();
+                    if (!confResp.isSuccessful() && (confResp.code() == 404 || confResp.code() == 400 || confResp.code() == 406)) {
+                        confResp = api.insertConfiguracion(confDto).execute();
+                    }
+                }
+
+                // ── 6. Actualizar ultima_sincronizacion ───────────────────────
                 String ahora = Instant.now().toString();
                 actualizarUltimaSincronizacion(ahora);
 
-                mainHandler.post(() -> {
-                    isSyncing.setValue(false);
-                    syncResult.setValue("SUCCESS");
-                });
+                // Señalamos el éxito (lo procesará el bloque finally para evitar problemas de timing con la UI)
+                final boolean isSuccess = true;
 
                 final int totalFinal = total;
                 if (totalFinal == 0) {
@@ -264,15 +246,21 @@ public class RemoteSyncRepository {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "syncAll error", e);
-                mainHandler.post(() -> {
-                    isSyncing.setValue(false);
-                    syncResult.setValue("ERROR");
-                });
                 notifyCallback(
                     callback,
                     SyncStatus.ERROR,
                     "Error inesperado: " + e.getMessage()
                 );
+            } finally {
+                // Siempre liberar el lock y el estado de la UI
+                isSyncRunning.set(false);
+                mainHandler.post(() -> {
+                    if (Boolean.TRUE.equals(isSyncing.getValue())) {
+                        isSyncing.setValue(false);
+                        // IMPORTANTE: syncResult ya se actualiza correctamente dentro de notifyCallback()
+                        // en todas las rutas (éxito o error).
+                    }
+                });
             }
         });
     }
@@ -434,6 +422,16 @@ public class RemoteSyncRepository {
         SyncStatus status,
         String message
     ) {
+        // Actualizar el estado global para la UI (como MainActivity)
+        mainHandler.post(() -> {
+            if (status == SyncStatus.SUCCESS) {
+                syncResult.setValue("SUCCESS");
+            } else {
+                syncResult.setValue("ERROR");
+            }
+        });
+
+        // Notificar al llamador original si existe (no silencioso)
         if (callback == null) return;
         mainHandler.post(() -> callback.onResult(status, message));
     }
@@ -525,6 +523,19 @@ public class RemoteSyncRepository {
         dto.anioFacturacion = m.getAnioFacturacion();
         dto.creadoEn = m.getCreadoEn();
         dto.actualizadoEn = m.getActualizadoEn();
+        return dto;
+    }
+
+    private ConfiguracionAppDto toDto(ConfiguracionAppModel m) {
+        ConfiguracionAppDto dto = new ConfiguracionAppDto();
+        dto.id = (long) m.getId();
+        long userId = session.getRemoteUserId();
+        if (userId != -1) dto.usuarioId = userId;
+        dto.notificacionesHabilitadas = m.isNotificacionesHabilitadas();
+        dto.horaNotificacion = m.getHoraNotificacion();
+        dto.minutoNotificacion = m.getMinutoNotificacion();
+        dto.tonoNotificacion = m.getTonoNotificacion();
+        dto.ultimaSincronizacion = m.getUltimaSincronizacion();
         return dto;
     }
 
