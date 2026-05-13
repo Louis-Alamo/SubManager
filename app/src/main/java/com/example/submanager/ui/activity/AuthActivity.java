@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import android.util.Patterns;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ import retrofit2.Response;
 public class AuthActivity extends AppCompatActivity {
 
     public static final String EXTRA_TAB = "extra_tab";
+    public static final String RESULT_NOMBRE = "result_nombre";
     private static final String TAG = "AuthActivity";
 
     private ImageView btnBack;
@@ -176,9 +178,15 @@ public class AuthActivity extends AppCompatActivity {
         if (email.isEmpty()) {
             tilLoginEmail.setError("Ingresa tu correo");
             valid = false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            tilLoginEmail.setError("Correo inválido");
+            valid = false;
         }
         if (password.isEmpty()) {
             tilLoginPassword.setError("Ingresa tu contraseña");
+            valid = false;
+        } else if (password.length() < 8) {
+            tilLoginPassword.setError("La contraseña debe tener al menos 8 dígitos");
             valid = false;
         }
         if (!valid) return;
@@ -229,12 +237,10 @@ public class AuthActivity extends AppCompatActivity {
 
                 handler.post(() -> {
                     btnIniciarSesion.setEnabled(true);
-                    Snackbar.make(
-                        btnIniciarSesion,
-                        "¡Bienvenido, " + usuarioLocal.nombre + "!",
-                        Snackbar.LENGTH_SHORT
-                    ).show();
-                    btnIniciarSesion.postDelayed(this::finish, 800);
+                    android.content.Intent result = new android.content.Intent();
+                    result.putExtra(RESULT_NOMBRE, usuarioLocal.nombre);
+                    setResult(RESULT_OK, result);
+                    finish();
                 });
             } else {
                 // 2. No encontrado localmente → buscar en Supabase
@@ -297,30 +303,13 @@ public class AuthActivity extends AppCompatActivity {
 
                         handler.post(() -> {
                             btnIniciarSesion.setEnabled(true);
+                            android.content.Intent result = new android.content.Intent();
+                            result.putExtra(RESULT_NOMBRE, remoto.nombre);
                             if (sm.isPremium()) {
-                                Snackbar.make(
-                                    btnIniciarSesion,
-                                    "¡Bienvenido, " + remoto.nombre + "! 👑 Premium activo\nDescargando tus datos...",
-                                    Snackbar.LENGTH_SHORT
-                                ).show();
-                                
-                                ProgressDialog progress = new ProgressDialog(AuthActivity.this);
-                                progress.setMessage("Restaurando desde la nube…");
-                                progress.setCancelable(false);
-                                progress.show();
-                                
-                                new RemoteSyncRepository(AuthActivity.this).pullAll((status, message) -> {
-                                    if (progress.isShowing()) progress.dismiss();
-                                    finish();
-                                });
-                            } else {
-                                Snackbar.make(
-                                    btnIniciarSesion,
-                                    "¡Bienvenido, " + remoto.nombre + "!",
-                                    Snackbar.LENGTH_SHORT
-                                ).show();
-                                btnIniciarSesion.postDelayed(this::finish, 800);
+                                result.putExtra("result_premium", true);
                             }
+                            setResult(RESULT_OK, result);
+                            finish();
                         });
                     } else {
                         String errBody =
@@ -385,12 +374,15 @@ public class AuthActivity extends AppCompatActivity {
         if (email.isEmpty()) {
             tilRegEmail.setError("Ingresa tu correo");
             valid = false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            tilRegEmail.setError("Correo inválido");
+            valid = false;
         }
         if (password.isEmpty()) {
             tilRegPassword.setError("Ingresa una contraseña");
             valid = false;
-        } else if (password.length() < 6) {
-            tilRegPassword.setError("Mínimo 6 caracteres");
+        } else if (password.length() < 8) {
+            tilRegPassword.setError("La contraseña debe tener al menos 8 dígitos");
             valid = false;
         }
         if (confirm.isEmpty()) {

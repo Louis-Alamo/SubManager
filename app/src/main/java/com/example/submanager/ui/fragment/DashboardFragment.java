@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.submanager.R;
 import com.example.submanager.data.model.SuscripcionModel;
+import com.example.submanager.ui.activity.NuevaSuscripcionActivity;
 import com.example.submanager.ui.activity.NuevoServicioActivity;
 import com.example.submanager.ui.viewmodel.SuscripcionViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -252,7 +253,8 @@ public class DashboardFragment extends Fragment {
 
         View cardSub  = root.findViewById(R.id.cardAgregarSuscripcion);
         View cardServ = root.findViewById(R.id.cardAgregarServicio);
-        if (cardSub != null) cardSub.setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
+        if (cardSub != null) cardSub.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), NuevaSuscripcionActivity.class)));
         if (cardServ != null) cardServ.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), NuevoServicioActivity.class)));
 

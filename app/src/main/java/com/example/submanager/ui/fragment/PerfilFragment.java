@@ -200,12 +200,13 @@ public class PerfilFragment extends Fragment {
         // "¿No tienes cuenta?" → abrir AuthActivity directo en tab Registro
         if (tvRegister != null) {
             tvRegister.setOnClickListener(v -> {
-                Intent intent = new Intent(
-                    requireContext(),
-                    AuthActivity.class
-                );
-                intent.putExtra(AuthActivity.EXTRA_TAB, 1);
-                startActivity(intent);
+                if (getActivity() instanceof com.example.submanager.MainActivity) {
+                    ((com.example.submanager.MainActivity) getActivity()).launchAuthActivity(1);
+                } else {
+                    Intent intent = new Intent(requireContext(), AuthActivity.class);
+                    intent.putExtra(AuthActivity.EXTRA_TAB, 1);
+                    startActivity(intent);
+                }
             });
         }
 
@@ -323,9 +324,15 @@ public class PerfilFragment extends Fragment {
         if (email.isEmpty()) {
             tilEmail.setError("Ingresa tu correo");
             valid = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            tilEmail.setError("Correo inválido");
+            valid = false;
         }
         if (password.isEmpty()) {
             tilPassword.setError("Ingresa tu contraseña");
+            valid = false;
+        } else if (password.length() < 8) {
+            tilPassword.setError("La contraseña debe tener al menos 8 dígitos");
             valid = false;
         }
         if (!valid) return;
@@ -343,13 +350,6 @@ public class PerfilFragment extends Fragment {
             )
                 .usuarioDao()
                 .findByEmail(email);
-            Log.d(
-                TAG,
-                "Login inline → Room local para '" +
-                    email +
-                    "': " +
-                    (usuarioLocal != null ? "ENCONTRADO" : "NO encontrado")
-            );
 
             if (usuarioLocal != null) {
                 // Verificar contraseña local
@@ -384,14 +384,12 @@ public class PerfilFragment extends Fragment {
                             usuarioLocal.email,
                             usuarioLocal.nombre
                         );
-                        updateAuthUI();
-                        showSnackbar(
-                            root,
-                            "✅ ¡Bienvenido, " + usuarioLocal.nombre + "!"
-                        );
-                        
+                        String bienvenida = "¡Bienvenido, " + usuarioLocal.nombre + "!";
                         if (sessionManager.isPremium()) {
-                            iniciarRestore(root);
+                            // Restaurar datos y navegar al Dashboard al terminar
+                            iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
+                        } else {
+                            navigateToDashboard(bienvenida);
                         }
                     }
                 });
@@ -399,23 +397,10 @@ public class PerfilFragment extends Fragment {
             }
 
             // ── Paso 2: no está local → consultar Supabase ───────────────────
-            Log.d(TAG, "No está en Room → buscando en Supabase: " + email);
             try {
                 Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
                     .getUsuarioPorCorreo("eq." + email)
                     .execute();
-
-                Log.d(
-                    TAG,
-                    "Supabase respuesta: HTTP " +
-                        resp.code() +
-                        " | isSuccessful=" +
-                        resp.isSuccessful() +
-                        " | body=" +
-                        (resp.body() != null
-                            ? resp.body().size() + " registros"
-                            : "null")
-                );
 
                 if (
                     resp.isSuccessful() &&
@@ -423,39 +408,16 @@ public class PerfilFragment extends Fragment {
                     !resp.body().isEmpty()
                 ) {
                     UsuarioDto remoto = resp.body().get(0);
-                    Log.d(
-                        TAG,
-                        "Usuario remoto encontrado: nombre=" +
-                            remoto.nombre +
-                            " | correo=" +
-                            remoto.correo +
-                            " | hashContrasena=" +
-                            remoto.hashContrasena
-                    );
 
-                    // Verificar contraseña con el mismo algoritmo que AuthActivity (salt = email)
-                    // Y también con el salt antiguo ("remote") por compatibilidad
+                    // Verificar contraseña (salt = correo para cuentas nuevas, "remote" para compatibilidad)
                     String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
                     String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
-
-                    Log.d(TAG, "hashIntentoNuevo=" + hashIntentoNuevo + " | hashIntentoViejo=" + hashIntentoViejo + " | hashRemoto=" + remoto.hashContrasena);
 
                     if (!hashIntentoNuevo.equals(remoto.hashContrasena) && !hashIntentoViejo.equals(remoto.hashContrasena)) {
                         handler.post(() -> {
                             if (!isAdded()) return;
                             if (btnLogin != null) btnLogin.setEnabled(true);
                             tilPassword.setError("Contraseña incorrecta");
-                            // Dialog de diagnóstico para ver hashes
-                            new MaterialAlertDialogBuilder(requireContext())
-                                .setTitle("🔑 Debug: hash no coincide")
-                                .setMessage(
-                                    "correo: " + remoto.correo + "\n\n" +
-                                    "hash calculado (nuevo):\n" + hashIntentoNuevo + "\n\n" +
-                                    "hash calculado (viejo):\n" + hashIntentoViejo + "\n\n" +
-                                    "hash en Supabase:\n" + remoto.hashContrasena
-                                )
-                                .setPositiveButton("Cerrar", null)
-                                .show();
                         });
                         return;
                     }
@@ -492,85 +454,27 @@ public class PerfilFragment extends Fragment {
                     handler.post(() -> {
                         if (!isAdded()) return;
                         if (btnLogin != null) btnLogin.setEnabled(true);
-                        updateAuthUI();
-                        String msg = sessionManager.isPremium()
-                            ? "✅ ¡Bienvenido, " +
-                              remoto.nombre +
-                              "! 👑 Premium activo\nDescargando tus datos..."
-                            : "✅ ¡Bienvenido, " + remoto.nombre + "!";
-                        showSnackbar(root, msg);
-
-                        // Fase 3: Auto-Restaurar
+                        String bienvenida = "¡Bienvenido, " + remoto.nombre + "!";
                         if (sessionManager.isPremium()) {
-                            iniciarRestore(root);
+                            // Restaurar datos y navegar al Dashboard al terminar
+                            iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
+                        } else {
+                            navigateToDashboard(bienvenida);
                         }
                     });
                 } else {
-                    // Usuario no encontrado ni local ni en Supabase
-                    String errBodyStr = "sin errorBody";
-                    try {
-                        if (resp.errorBody() != null) errBodyStr = resp
-                            .errorBody()
-                            .string();
-                    } catch (Exception ignored) {}
-                    final String errDetail = errBodyStr;
-                    final int httpCode = resp.code();
-
-                    Log.e(
-                        TAG,
-                        "Usuario no encontrado en Supabase. HTTP " +
-                            httpCode +
-                            " | body: " +
-                            errDetail
-                    );
-
                     handler.post(() -> {
                         if (!isAdded()) return;
                         if (btnLogin != null) btnLogin.setEnabled(true);
                         tilEmail.setError("No existe cuenta con ese correo");
-
-                        // Dialog con diagnóstico completo
-                        new MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("⚠️ Debug: usuario no encontrado")
-                            .setMessage(
-                                "Correo buscado: " +
-                                    email +
-                                    "\n\n" +
-                                    "Respuesta Supabase:\n" +
-                                    "HTTP " +
-                                    httpCode +
-                                    "\n" +
-                                    "Body: " +
-                                    errDetail +
-                                    "\n\n" +
-                                    "Posibles causas:\n" +
-                                    "• El correo en Supabase tiene mayúsculas/espacios\n" +
-                                    "• La columna 'correo' tiene otro nombre\n" +
-                                    "• RLS (Row Level Security) bloquea la consulta\n" +
-                                    "• La URL/Key de Supabase es incorrecta"
-                            )
-                            .setPositiveButton("Entendido", null)
-                            .show();
                     });
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error al consultar Supabase en login inline", e);
+                Log.e(TAG, "Error login", e);
                 handler.post(() -> {
                     if (!isAdded()) return;
                     if (btnLogin != null) btnLogin.setEnabled(true);
-                    tilEmail.setError("Error de red al verificar cuenta");
-
-                    new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("❌ Error de conexión")
-                        .setMessage(
-                            "No se pudo conectar a Supabase.\n\n" +
-                                "Detalle: " +
-                                e.getClass().getSimpleName() +
-                                "\n" +
-                                e.getMessage()
-                        )
-                        .setPositiveButton("Cerrar", null)
-                        .show();
+                    tilEmail.setError("Error de red. Intenta de nuevo.");
                 });
             }
         });
@@ -689,5 +593,66 @@ public class PerfilFragment extends Fragment {
 
     private void showSnackbar(View anchor, String message) {
         Snackbar.make(anchor, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Navega al tab Dashboard y muestra el mensaje de bienvenida una vez
+     * que la transacción del fragmento se ha completado.
+     */
+    private void navigateToDashboard(String welcomeMessage) {
+        if (getActivity() == null) return;
+        com.google.android.material.bottomnavigation.BottomNavigationView nav =
+            getActivity().findViewById(R.id.bottom_navigation);
+        if (nav != null) {
+            nav.setSelectedItemId(R.id.nav_inicio);
+        }
+        // Mostrar el Snackbar después de que el fragment transaction termine
+        View rootView = getActivity().findViewById(android.R.id.content);
+        if (rootView != null && welcomeMessage != null) {
+            rootView.post(() ->
+                Snackbar.make(rootView, welcomeMessage, Snackbar.LENGTH_LONG).show()
+            );
+        }
+    }
+
+    /**
+     * Muestra ProgressDialog de restauración y, al terminar con éxito,
+     * navega al Dashboard con el mensaje de bienvenida.
+     */
+    @SuppressWarnings("deprecation")
+    private void iniciarRestoreConNavegacion(String welcomeMessage) {
+        if (!isAdded()) return;
+        ProgressDialog progress = new ProgressDialog(requireContext());
+        progress.setMessage("Restaurando tus datos…");
+        progress.setCancelable(false);
+        progress.show();
+
+        remoteSyncRepository.pullAll((status, message) -> {
+            if (!isAdded()) return;
+            if (progress.isShowing()) progress.dismiss();
+            switch (status) {
+                case SUCCESS:
+                    sessionManager.saveUltimaSincronizacion(
+                        java.time.ZonedDateTime.now(
+                            java.time.ZoneId.systemDefault()
+                        ).format(
+                            java.time.format.DateTimeFormatter.ofPattern(
+                                "dd/MM/yyyy · HH:mm"
+                            )
+                        )
+                    );
+                    navigateToDashboard(welcomeMessage);
+                    break;
+                case NO_NETWORK:
+                    // Sin red: navegar igual pero sin datos actualizados
+                    navigateToDashboard(welcomeMessage);
+                    break;
+                case ERROR:
+                default:
+                    // Error: navegar de todas formas para no quedar atascado
+                    navigateToDashboard(welcomeMessage);
+                    break;
+            }
+        });
     }
 }
