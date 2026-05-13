@@ -11,16 +11,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import android.content.Intent;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.example.submanager.data.AppDatabase;
 import com.example.submanager.data.repository.RemoteSyncRepository;
+import com.example.submanager.ui.activity.AuthActivity;
 import com.example.submanager.ui.fragment.AlertasFragment;
 import com.example.submanager.ui.fragment.DashboardFragment;
 import com.example.submanager.ui.fragment.PerfilFragment;
@@ -38,9 +43,50 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ActivityResultLauncher<Intent> authLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Registrar lanzador para AuthActivity y mostrar bienvenida al volver
+        authLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String nombre = result.getData().getStringExtra(AuthActivity.RESULT_NOMBRE);
+                    boolean esPremium = result.getData().getBooleanExtra("result_premium", false);
+
+                    // Asegurarse de que el Dashboard esté visible
+                    Fragment current = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                    if (!(current instanceof com.example.submanager.ui.fragment.DashboardFragment)) {
+                        getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.nav_host_fragment, new com.example.submanager.ui.fragment.DashboardFragment())
+                            .commit();
+                        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+                        if (bottomNav != null) bottomNav.setSelectedItemId(R.id.nav_inicio);
+                    }
+
+                    // Mostrar mensaje de bienvenida en la pantalla del Dashboard
+                    View anchor = findViewById(R.id.nav_host_fragment);
+                    if (anchor != null && nombre != null && !nombre.isEmpty()) {
+                        String mensaje = esPremium
+                            ? "¡Bienvenido, " + nombre + "! 👑 Premium activo"
+                            : "¡Bienvenido, " + nombre + "!";
+                        com.google.android.material.snackbar.Snackbar
+                            .make(anchor, mensaje, com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+                            .show();
+                    }
+
+                    // Si es premium, iniciar restauración silenciosa en background
+                    if (esPremium) {
+                        new RemoteSyncRepository(this).pullAll((status, message) -> {
+                            // sincronización manejada por el indicador en MainActivity
+                        });
+                    }
+                }
+            }
+        );
 
         // Edge-to-edge: el contenido se dibuja detrás de las barras del sistema
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
@@ -127,6 +173,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Observar estado de sincronización global
         setupSyncObserver();
+    }
+
+    /** Lanza AuthActivity usando el launcher registrado para recibir el resultado. */
+    public void launchAuthActivity(int startTab) {
+        Intent intent = new Intent(this, AuthActivity.class);
+        intent.putExtra(AuthActivity.EXTRA_TAB, startTab);
+        authLauncher.launch(intent);
     }
 
     private void setupSyncObserver() {

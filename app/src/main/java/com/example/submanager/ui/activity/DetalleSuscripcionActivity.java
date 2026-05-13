@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -159,15 +159,16 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
     }
 
     private void showDeleteDialog() {
-        new AlertDialog.Builder(this)
+        String nombre = currentModel != null ? currentModel.getNombre() : "esta suscripción";
+        new MaterialAlertDialogBuilder(this)
             .setTitle("Eliminar suscripción")
-            .setMessage("¿Estás seguro de que deseas eliminar esta suscripción? Esta acción no se puede deshacer.")
+            .setMessage("¿Deseas eliminar \"" + nombre + "\"?\n\nEsta acción no se puede deshacer.")
+            .setNegativeButton("Cancelar", null)
             .setPositiveButton("Eliminar", (dialog, which) -> {
                 if (suscripcionId != -1) {
                     viewModel.eliminar(suscripcionId);
                 }
             })
-            .setNegativeButton("Cancelar", null)
             .show();
     }
 
