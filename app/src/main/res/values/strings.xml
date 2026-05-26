@@ -22,7 +22,7 @@
 
 
     <string name="dashboard_welcome">Bienvenido de nuevo</string>
-    <string name="dashboard_greeting">Hola, %1$s 👋</string>
+    <string name="dashboard_greeting">Hola, %1$s</string>
 
 
     <string name="dashboard_card_pending">PENDIENTE</string>
@@ -214,7 +214,7 @@
     <string name="settings_account_register">¿No tienes cuenta? Regístrate</string>
 
 
-    <string name="settings_premium_banner_title">Conviértete en Premium 👑</string>
+    <string name="settings_premium_banner_title">Conviértete en Premium</string>
     <string name="settings_premium_banner_subtitle">Sincroniza y elimina anuncios</string>
     <string name="settings_premium_feature_sync">Sincronización en la nube</string>
     <string name="settings_premium_feature_multiplatform">Acceso multiplataforma</string>
@@ -266,7 +266,7 @@
 
 
 
-    <string name="purchase_success_title">¡Ya eres Premium! 👑</string>
+    <string name="purchase_success_title">¡Ya eres Premium!</string>
     <string name="purchase_success_subtitle">Ahora tienes acceso ilimitado a sincronización en la nube y alertas avanzadas.</string>
     <string name="purchase_success_plan_label">Suscripción</string>
     <string name="purchase_success_amount_label">Monto</string>

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.submanager.R;
-import com.example.submanager.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.Calendar;
@@ -59,8 +58,6 @@ public class CompraExitosaActivity extends AppCompatActivity {
         }
         tvCompraRenovacion.setText(expiry);
 
-
-        new SessionManager(this).savePremium(plan, expiry);
     }
 
     private void setupListeners() {

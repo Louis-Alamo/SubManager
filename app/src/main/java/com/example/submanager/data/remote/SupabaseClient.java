@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -36,6 +37,10 @@ public class SupabaseClient {
 
     private static Retrofit buildRetrofit() {
         OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .callTimeout(20, TimeUnit.SECONDS)
                 .addInterceptor(chain -> {
                     okhttp3.Request original = chain.request();
                     okhttp3.Request request = original.newBuilder()

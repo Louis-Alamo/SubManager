@@ -49,6 +49,10 @@ import retrofit2.Response;
 public class RemoteSyncRepository {
 
     private static final String TAG = "RemoteSyncRepo";
+    private static final String SERVER_CONNECTION_ERROR =
+        "No se pudo establecer conexión con el servidor. Intenta más tarde.";
+    private static final String ACCOUNT_NOT_REGISTERED_ERROR =
+        "Esta cuenta no está registrada correctamente en el servidor. Vuelve a iniciar sesión o regístrate nuevamente.";
 
 
     public enum SyncStatus {
@@ -61,6 +65,22 @@ public class RemoteSyncRepository {
 
     public interface SyncCallback {
         void onResult(SyncStatus status, String message);
+    }
+
+    private static class RemoteUserResolution {
+        final long userId;
+        final SyncStatus status;
+        final String message;
+
+        RemoteUserResolution(long userId, SyncStatus status, String message) {
+            this.userId = userId;
+            this.status = status;
+            this.message = message;
+        }
+
+        boolean isSuccess() {
+            return userId != -1L;
+        }
     }
 
     private final Context context;
@@ -104,6 +124,94 @@ public class RemoteSyncRepository {
 
 
 
+    private RemoteUserResolution resolveRemoteUserId() {
+        long currentUserId = session.getRemoteUserId();
+        if (currentUserId != -1L) {
+            return new RemoteUserResolution(currentUserId, SyncStatus.SUCCESS, "");
+        }
+
+        String email = session.getEmail();
+        if (email == null || email.trim().isEmpty()) {
+            return new RemoteUserResolution(-1L, SyncStatus.ERROR, ACCOUNT_NOT_REGISTERED_ERROR);
+        }
+
+        try {
+            Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                .getUsuarioPorCorreo("eq." + email)
+                .execute();
+
+            if (!resp.isSuccessful() || resp.body() == null) {
+                return new RemoteUserResolution(-1L, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+            }
+
+            if (resp.body().isEmpty() || resp.body().get(0).id == null || resp.body().get(0).id <= 0) {
+                session.clearRemoteUserId();
+                return new RemoteUserResolution(-1L, SyncStatus.ERROR, ACCOUNT_NOT_REGISTERED_ERROR);
+            }
+
+            long resolvedUserId = resp.body().get(0).id;
+            session.saveRemoteUserId(resolvedUserId);
+            return new RemoteUserResolution(resolvedUserId, SyncStatus.SUCCESS, "");
+        } catch (Exception e) {
+            Log.e(TAG, "No se pudo resolver remoteUserId", e);
+            return new RemoteUserResolution(-1L, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+        }
+    }
+
+    private RemoteUserResolution verifyRemotePremium() {
+        String email = session.getEmail();
+        if (email == null || email.trim().isEmpty()) {
+            return new RemoteUserResolution(-1L, SyncStatus.ERROR, ACCOUNT_NOT_REGISTERED_ERROR);
+        }
+
+        try {
+            Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                .getUsuarioPorCorreo("eq." + email)
+                .execute();
+
+            if (!resp.isSuccessful() || resp.body() == null) {
+                return new RemoteUserResolution(-1L, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+            }
+
+            if (resp.body().isEmpty() || resp.body().get(0).id == null || resp.body().get(0).id <= 0) {
+                session.clearRemoteUserId();
+                session.clearPremium();
+                return new RemoteUserResolution(-1L, SyncStatus.ERROR, ACCOUNT_NOT_REGISTERED_ERROR);
+            }
+
+            UsuarioDto usuario = resp.body().get(0);
+            session.saveRemoteUserId(usuario.id);
+            if (isPremiumPlanActive(usuario)) {
+                session.savePremium(
+                    usuario.tipoPlan,
+                    usuario.fechaRenovacion != null ? usuario.fechaRenovacion : ""
+                );
+                return new RemoteUserResolution(usuario.id, SyncStatus.SUCCESS, "");
+            }
+
+            session.clearPremium();
+            return new RemoteUserResolution(
+                -1L,
+                SyncStatus.NOT_PREMIUM,
+                "Se requiere cuenta Premium para sincronizar."
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "No se pudo validar Premium remoto", e);
+            return new RemoteUserResolution(-1L, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+        }
+    }
+
+    private boolean isPremiumPlanActive(UsuarioDto usuario) {
+        return usuario.tipoPlan != null &&
+            !"GRATIS".equalsIgnoreCase(usuario.tipoPlan) &&
+            usuario.estaActivo != null &&
+            usuario.estaActivo;
+    }
+
+
+
+
+
     public void syncAll(SyncCallback callback) {
         if (!session.isPremium()) {
             notifyCallback(
@@ -133,23 +241,17 @@ public class RemoteSyncRepository {
                 syncResult.setValue(null);
             });
             try {
-                long userId = session.getRemoteUserId();
-                if (userId == -1) {
-                    try {
-                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
-                            .getUsuarioPorCorreo("eq." + session.getEmail())
-                            .execute();
-                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
-                            userId = resp.body().get(0).id;
-                            session.saveRemoteUserId(userId);
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-                if (userId == -1) {
-                    notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
+                RemoteUserResolution resolution = resolveRemoteUserId();
+                if (!resolution.isSuccess()) {
+                    notifyCallback(callback, resolution.status, resolution.message);
                     return;
                 }
+                RemoteUserResolution premiumResolution = verifyRemotePremium();
+                if (!premiumResolution.isSuccess()) {
+                    notifyCallback(callback, premiumResolution.status, premiumResolution.message);
+                    return;
+                }
+                long userId = premiumResolution.userId;
                 String userFilter = "eq." + userId;
                 int total = 0;
 
@@ -164,7 +266,7 @@ public class RemoteSyncRepository {
                     for (SuscripcionModel m : suscripciones) dtos.add(toDto(m));
                     Response<Void> insResp = api.insertSuscripciones(dtos).execute();
                     if (!insResp.isSuccessful()) {
-                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo suscripciones (HTTP " + insResp.code() + ").");
+                        notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
                         return;
                     }
                     total += dtos.size();
@@ -177,7 +279,7 @@ public class RemoteSyncRepository {
                     for (ServicioFisicoModel m : servicios) dtos.add(toDto(m));
                     Response<Void> insResp = api.insertServiciosFisicos(dtos).execute();
                     if (!insResp.isSuccessful()) {
-                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo servicios físicos (HTTP " + insResp.code() + ").");
+                        notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
                         return;
                     }
                     total += dtos.size();
@@ -190,7 +292,7 @@ public class RemoteSyncRepository {
                     for (TercerosCompartidosModel m : terceros) dtos.add(toDto(m));
                     Response<Void> insResp = api.insertTercerosCompartidos(dtos).execute();
                     if (!insResp.isSuccessful()) {
-                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo terceros compartidos (HTTP " + insResp.code() + ").");
+                        notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
                         return;
                     }
                     total += dtos.size();
@@ -203,7 +305,7 @@ public class RemoteSyncRepository {
                     for (RegistrosPagoModel m : registros) dtos.add(toDto(m));
                     Response<Void> insResp = api.insertRegistrosPago(dtos).execute();
                     if (!insResp.isSuccessful()) {
-                        notifyCallback(callback, SyncStatus.ERROR, "Error subiendo registros de pago (HTTP " + insResp.code() + ").");
+                        notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
                         return;
                     }
                     total += dtos.size();
@@ -249,7 +351,7 @@ public class RemoteSyncRepository {
                 notifyCallback(
                     callback,
                     SyncStatus.ERROR,
-                    "Error inesperado: " + e.getMessage()
+                    SERVER_CONNECTION_ERROR
                 );
             } finally {
 
@@ -294,65 +396,87 @@ public class RemoteSyncRepository {
         }
 
         executor.execute(() -> {
+            mainHandler.post(() -> {
+                isSyncing.setValue(true);
+                syncResult.setValue(null);
+            });
             try {
-                long userId = session.getRemoteUserId();
-                if (userId == -1) {
-                    try {
-                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
-                            .getUsuarioPorCorreo("eq." + session.getEmail())
-                            .execute();
-                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
-                            userId = resp.body().get(0).id;
-                            session.saveRemoteUserId(userId);
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-                if (userId == -1) {
-                    notifyCallback(callback, SyncStatus.ERROR, "Tu cuenta ('" + session.getEmail() + "') solo existe en este teléfono y nunca se registró en Supabase (o fue borrada en la nube). \n\nSugerencia: Desinstala la app, vuelve a instalarla y REGÍSTRATE para sincronizarla correctamente.");
+                RemoteUserResolution resolution = resolveRemoteUserId();
+                if (!resolution.isSuccess()) {
+                    notifyCallback(callback, resolution.status, resolution.message);
                     return;
                 }
+                RemoteUserResolution premiumResolution = verifyRemotePremium();
+                if (!premiumResolution.isSuccess()) {
+                    notifyCallback(callback, premiumResolution.status, premiumResolution.message);
+                    return;
+                }
+                long userId = premiumResolution.userId;
                 String userFilter = "eq." + userId;
 
 
                 Response<List<SuscripcionDto>> susResp = api
                     .getSuscripciones(userFilter)
                     .execute();
-                if (susResp.isSuccessful() && susResp.body() != null) {
-                    db.suscripcionDao().deleteAllSuscripciones();
-                    List<SuscripcionModel> models = new ArrayList<>();
-                    for (SuscripcionDto dto : susResp.body()) {
-                        models.add(toModel(dto));
-                    }
-                    db.suscripcionDao().insertAllSuscripciones(models);
+                if (!susResp.isSuccessful() || susResp.body() == null) {
+                    notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+                    return;
                 }
 
 
                 Response<List<ServicioFisicoDto>> srvResp = api
                     .getServiciosFisicos(userFilter)
                     .execute();
-                if (srvResp.isSuccessful() && srvResp.body() != null) {
-                    db.suscripcionDao().deleteAllServiciosFisicos();
-                    List<ServicioFisicoModel> models = new ArrayList<>();
-                    for (ServicioFisicoDto dto : srvResp.body()) {
-                        models.add(toModel(dto));
-                    }
-                    db.suscripcionDao().insertAllServiciosFisicos(models);
+                if (!srvResp.isSuccessful() || srvResp.body() == null) {
+                    notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+                    return;
                 }
 
+                Response<List<TerceroCompartidoDto>> terResp = api
+                    .getTercerosCompartidos(userFilter)
+                    .execute();
+                if (!terResp.isSuccessful() || terResp.body() == null) {
+                    notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+                    return;
+                }
 
                 Response<List<RegistroPagoDto>> regResp = api
                     .getRegistrosPago(userFilter)
                     .execute();
-                if (regResp.isSuccessful() && regResp.body() != null) {
-                    db.suscripcionDao().deleteAllRegistrosPago();
-                    List<RegistrosPagoModel> models = new ArrayList<>();
-                    for (RegistroPagoDto dto : regResp.body()) {
-                        models.add(toModel(dto));
-                    }
-                    db.suscripcionDao().insertAllRegistrosPago(models);
+                if (!regResp.isSuccessful() || regResp.body() == null) {
+                    notifyCallback(callback, SyncStatus.ERROR, SERVER_CONNECTION_ERROR);
+                    return;
                 }
 
+                List<SuscripcionModel> suscripciones = new ArrayList<>();
+                for (SuscripcionDto dto : susResp.body()) {
+                    suscripciones.add(toModel(dto));
+                }
+
+                List<ServicioFisicoModel> servicios = new ArrayList<>();
+                for (ServicioFisicoDto dto : srvResp.body()) {
+                    servicios.add(toModel(dto));
+                }
+
+                List<TercerosCompartidosModel> terceros = new ArrayList<>();
+                for (TerceroCompartidoDto dto : terResp.body()) {
+                    terceros.add(toModel(dto));
+                }
+
+                List<RegistrosPagoModel> registros = new ArrayList<>();
+                for (RegistroPagoDto dto : regResp.body()) {
+                    registros.add(toModel(dto));
+                }
+
+                db.suscripcionDao().deleteAllRegistrosPago();
+                db.suscripcionDao().deleteAllTerceros();
+                db.suscripcionDao().deleteAllServiciosFisicos();
+                db.suscripcionDao().deleteAllSuscripciones();
+
+                db.suscripcionDao().insertAllSuscripciones(suscripciones);
+                db.suscripcionDao().insertAllServiciosFisicos(servicios);
+                db.suscripcionDao().insertAllTerceros(terceros);
+                db.suscripcionDao().insertAllRegistrosPago(registros);
 
                 actualizarUltimaSincronizacion(Instant.now().toString());
 
@@ -371,8 +495,14 @@ public class RemoteSyncRepository {
                 notifyCallback(
                     callback,
                     SyncStatus.ERROR,
-                    "Error al restaurar: " + e.getMessage()
+                    SERVER_CONNECTION_ERROR
                 );
+            } finally {
+                mainHandler.post(() -> {
+                    if (Boolean.TRUE.equals(isSyncing.getValue())) {
+                        isSyncing.setValue(false);
+                    }
+                });
             }
         });
     }
@@ -615,6 +745,16 @@ public class RemoteSyncRepository {
         m.setEstaActivo(dto.estaActivo != null ? dto.estaActivo : true);
         m.setCreadoEn(dto.creadoEn != null ? dto.creadoEn : "");
         m.setActualizadoEn(dto.actualizadoEn != null ? dto.actualizadoEn : "");
+        return m;
+    }
+
+    private TercerosCompartidosModel toModel(TerceroCompartidoDto dto) {
+        TercerosCompartidosModel m = new TercerosCompartidosModel();
+        if (dto.id != null) m.setId(dto.id.intValue());
+        m.setServicioId(dto.servicioId != null ? dto.servicioId.intValue() : 0);
+        m.setNombreTercero(dto.nombreTercero != null ? dto.nombreTercero : "");
+        m.setMontoAportacion(dto.montoAportacion != null ? dto.montoAportacion : 0.0);
+        m.setCreadoEn(dto.creadoEn != null ? dto.creadoEn : "");
         return m;
     }
 

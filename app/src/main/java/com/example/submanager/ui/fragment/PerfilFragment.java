@@ -24,6 +24,7 @@ import com.example.submanager.data.repository.RemoteSyncRepository;
 import com.example.submanager.ui.activity.AuthActivity;
 import com.example.submanager.ui.activity.PremiumActivity;
 import com.example.submanager.utils.CryptoUtils;
+import com.example.submanager.utils.NetworkUtils;
 import com.example.submanager.utils.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -337,6 +338,11 @@ public class PerfilFragment extends Fragment {
         }
         if (!valid) return;
 
+        if (!NetworkUtils.isNetworkAvailable(requireContext())) {
+            showSnackbar(root, "Para iniciar sesión necesitas conexión a internet. Intenta más tarde.");
+            return;
+        }
+
         View btnLogin = root.findViewById(R.id.btnLogin);
         if (btnLogin != null) btnLogin.setEnabled(false);
 
@@ -344,140 +350,129 @@ public class PerfilFragment extends Fragment {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-
-            UsuarioModel usuarioLocal = AppDatabase.getInstance(
-                requireContext()
-            )
-                .usuarioDao()
-                .findByEmail(email);
-
-            if (usuarioLocal != null) {
-
-                boolean passOk = CryptoUtils.hashPassword(
-                    password,
-                    usuarioLocal.salt
-                ).equals(usuarioLocal.passwordHash);
-
-                if (passOk) {
-
-                    try {
-                        Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
-                            .getUsuarioPorCorreo("eq." + email)
-                            .execute();
-                        if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
-                            UsuarioDto remoto = resp.body().get(0);
-                            sessionManager.saveRemoteUserId(remoto.id);
-                            if (remoto.tipoPlan != null && remoto.estaActivo != null && remoto.estaActivo) {
-                                sessionManager.savePremium(remoto.tipoPlan, remoto.fechaRenovacion != null ? remoto.fechaRenovacion : "");
-                            }
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-                handler.post(() -> {
-                    if (!isAdded()) return;
-                    if (btnLogin != null) btnLogin.setEnabled(true);
-                    if (!passOk) {
-                        tilPassword.setError("Contraseña incorrecta");
-                    } else {
-                        sessionManager.saveSession(
-                            usuarioLocal.email,
-                            usuarioLocal.nombre
-                        );
-                        String bienvenida = "¡Bienvenido, " + usuarioLocal.nombre + "!";
-                        if (sessionManager.isPremium()) {
-
-                            iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
-                        } else {
-                            navigateToDashboard(bienvenida);
-                        }
-                    }
-                });
-                return;
-            }
-
-
             try {
                 Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
                     .getUsuarioPorCorreo("eq." + email)
                     .execute();
 
-                if (
-                    resp.isSuccessful() &&
-                    resp.body() != null &&
-                    !resp.body().isEmpty()
-                ) {
-                    UsuarioDto remoto = resp.body().get(0);
-
-
-                    String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
-                    String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
-
-                    if (!hashIntentoNuevo.equals(remoto.hashContrasena) && !hashIntentoViejo.equals(remoto.hashContrasena)) {
-                        handler.post(() -> {
-                            if (!isAdded()) return;
-                            if (btnLogin != null) btnLogin.setEnabled(true);
-                            tilPassword.setError("Contraseña incorrecta");
-                        });
-                        return;
-                    }
-
-
-                    UsuarioModel nuevoLocal = new UsuarioModel();
-                    nuevoLocal.nombre = remoto.nombre;
-                    nuevoLocal.email = remoto.correo;
-                    nuevoLocal.salt = remoto.correo;
-                    nuevoLocal.passwordHash = remoto.hashContrasena;
-                    nuevoLocal.creadoEn =
-                        remoto.creadoEn != null
-                            ? remoto.creadoEn
-                            : String.valueOf(System.currentTimeMillis());
-                    AppDatabase.getInstance(requireContext())
-                        .usuarioDao()
-                        .insertUsuario(nuevoLocal);
-
-                    sessionManager.saveSession(remoto.correo, remoto.nombre);
-                    sessionManager.saveRemoteUserId(remoto.id);
-                    if (
-                        remoto.tipoPlan != null &&
-                        remoto.estaActivo != null &&
-                        remoto.estaActivo
-                    ) {
-                        sessionManager.savePremium(
-                            remoto.tipoPlan,
-                            remoto.fechaRenovacion != null
-                                ? remoto.fechaRenovacion
-                                : ""
-                        );
-                    }
-
+                if (!resp.isSuccessful() || resp.body() == null) {
                     handler.post(() -> {
                         if (!isAdded()) return;
                         if (btnLogin != null) btnLogin.setEnabled(true);
-                        String bienvenida = "¡Bienvenido, " + remoto.nombre + "!";
-                        if (sessionManager.isPremium()) {
-
-                            iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
-                        } else {
-                            navigateToDashboard(bienvenida);
-                        }
+                        tilEmail.setError("No se pudo establecer conexión con el servidor. Intenta más tarde.");
                     });
-                } else {
-                    handler.post(() -> {
-                        if (!isAdded()) return;
-                        if (btnLogin != null) btnLogin.setEnabled(true);
-                        tilEmail.setError("No existe cuenta con ese correo");
-                    });
+                    return;
                 }
+
+                if (resp.body().isEmpty()) {
+                    UsuarioModel usuarioLocal = AppDatabase.getInstance(requireContext())
+                        .usuarioDao()
+                        .findByEmail(email);
+                    handler.post(() -> {
+                        if (!isAdded()) return;
+                        if (btnLogin != null) btnLogin.setEnabled(true);
+                        tilEmail.setError(
+                            usuarioLocal != null
+                                ? "Esta cuenta no existe en el servidor. Regístrate nuevamente con conexión a internet."
+                                : "No existe cuenta con ese correo"
+                        );
+                    });
+                    return;
+                }
+
+                UsuarioDto remoto = resp.body().get(0);
+                if (!isValidRemoteUser(remoto)) {
+                    handler.post(() -> {
+                        if (!isAdded()) return;
+                        if (btnLogin != null) btnLogin.setEnabled(true);
+                        tilEmail.setError("No se pudo establecer conexión con el servidor. Intenta más tarde.");
+                    });
+                    return;
+                }
+
+                String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
+                String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
+                if (!hashIntentoNuevo.equals(remoto.hashContrasena) && !hashIntentoViejo.equals(remoto.hashContrasena)) {
+                    handler.post(() -> {
+                        if (!isAdded()) return;
+                        if (btnLogin != null) btnLogin.setEnabled(true);
+                        tilPassword.setError("Contraseña incorrecta");
+                    });
+                    return;
+                }
+
+                cacheRemoteUserIfNeeded(remoto);
+                sessionManager.saveSession(remoto.correo, remoto.nombre != null ? remoto.nombre : "");
+                sessionManager.saveRemoteUserId(remoto.id);
+                applyRemotePremiumState(remoto);
+
+                handler.post(() -> {
+                    if (!isAdded()) return;
+                    if (btnLogin != null) btnLogin.setEnabled(true);
+                    String bienvenida = "¡Bienvenido, " + (remoto.nombre != null ? remoto.nombre : "") + "!";
+                    if (sessionManager.isPremium()) {
+                        iniciarRestoreConNavegacion(bienvenida + " Premium activo");
+                    } else {
+                        navigateToDashboard(bienvenida);
+                    }
+                });
             } catch (Exception e) {
                 Log.e(TAG, "Error login", e);
                 handler.post(() -> {
                     if (!isAdded()) return;
                     if (btnLogin != null) btnLogin.setEnabled(true);
-                    tilEmail.setError("Error de red. Intenta de nuevo.");
+                    tilEmail.setError("No se pudo establecer conexión con el servidor. Intenta más tarde.");
                 });
             }
         });
+    }
+
+    private boolean isValidRemoteUser(UsuarioDto usuario) {
+        return usuario != null &&
+            usuario.id != null &&
+            usuario.id > 0 &&
+            usuario.correo != null &&
+            !usuario.correo.trim().isEmpty() &&
+            usuario.hashContrasena != null &&
+            !usuario.hashContrasena.trim().isEmpty();
+    }
+
+    private void cacheRemoteUserIfNeeded(UsuarioDto remoto) {
+        UsuarioModel existente = AppDatabase.getInstance(requireContext())
+            .usuarioDao()
+            .findByEmail(remoto.correo);
+        if (existente != null) return;
+
+        UsuarioModel nuevoLocal = new UsuarioModel();
+        nuevoLocal.nombre = remoto.nombre != null ? remoto.nombre : "";
+        nuevoLocal.email = remoto.correo;
+        nuevoLocal.salt = remoto.correo;
+        nuevoLocal.passwordHash = remoto.hashContrasena;
+        nuevoLocal.creadoEn =
+            remoto.creadoEn != null
+                ? remoto.creadoEn
+                : String.valueOf(System.currentTimeMillis());
+        AppDatabase.getInstance(requireContext())
+            .usuarioDao()
+            .insertUsuario(nuevoLocal);
+    }
+
+    private void applyRemotePremiumState(UsuarioDto remoto) {
+        if (isPremiumPlanActive(remoto)) {
+            sessionManager.savePremium(
+                remoto.tipoPlan,
+                remoto.fechaRenovacion != null ? remoto.fechaRenovacion : ""
+            );
+        } else {
+            sessionManager.clearPremium();
+        }
+    }
+
+    private boolean isPremiumPlanActive(UsuarioDto remoto) {
+        return remoto.tipoPlan != null &&
+            !"GRATIS".equalsIgnoreCase(remoto.tipoPlan) &&
+            remoto.estaActivo != null &&
+            remoto.estaActivo;
     }
 
 
@@ -504,12 +499,12 @@ public class PerfilFragment extends Fragment {
                         )
                     );
                     actualizarUltimaSincronizacion();
-                    showSnackbar(root, "✅ " + message);
+                    showSnackbar(root, message);
                     break;
                 case NO_NETWORK:
                     showSnackbar(
                         root,
-                        "📶 Sin conexión a internet. Intenta más tarde."
+                        "Sin conexión a internet. Intenta más tarde."
                     );
                     break;
                 case NOT_PREMIUM:
@@ -520,7 +515,7 @@ public class PerfilFragment extends Fragment {
                 case ERROR:
 
                     new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("⚠️ Error al sincronizar")
+                        .setTitle("Error al sincronizar")
                         .setMessage(message)
                         .setPositiveButton("Entendido", null)
                         .show();
@@ -564,13 +559,13 @@ public class PerfilFragment extends Fragment {
                         )
                     );
                     actualizarUltimaSincronizacion();
-                    showSnackbar(root, "✅ " + message);
+                    showSnackbar(root, message);
                     break;
                 case NO_NETWORK:
-                    showSnackbar(root, "📶 Sin conexión. Intenta más tarde.");
+                    showSnackbar(root, "Sin conexión. Intenta más tarde.");
                     break;
                 case ERROR:
-                    showSnackbar(root, "⚠️ " + message);
+                    showSnackbar(root, message);
                     break;
                 default:
                     break;

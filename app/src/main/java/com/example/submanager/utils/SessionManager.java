@@ -88,6 +88,10 @@ public class SessionManager {
         prefs.edit().putLong(KEY_REMOTE_USER_ID, id).apply();
     }
 
+    public void clearRemoteUserId() {
+        prefs.edit().remove(KEY_REMOTE_USER_ID).apply();
+    }
+
 
 
 

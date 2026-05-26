@@ -1,6 +1,5 @@
 package com.example.submanager.ui.activity;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,13 +16,13 @@ import com.example.submanager.data.remote.SupabaseClient;
 import com.example.submanager.data.remote.dto.UsuarioDto;
 import com.example.submanager.utils.CryptoUtils;
 import com.example.submanager.utils.SessionManager;
-import com.example.submanager.data.repository.RemoteSyncRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import android.util.Patterns;
+import com.example.submanager.utils.NetworkUtils;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -191,24 +190,63 @@ public class AuthActivity extends AppCompatActivity {
         }
         if (!valid) return;
 
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            Snackbar.make(
+                btnIniciarSesion,
+                "Para iniciar sesión necesitas conexión a internet. Intenta más tarde.",
+                Snackbar.LENGTH_LONG
+            ).show();
+            return;
+        }
+
         btnIniciarSesion.setEnabled(false);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
+            try {
+                Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
+                    .getUsuarioPorCorreo("eq." + email)
+                    .execute();
 
-            UsuarioModel usuarioLocal = AppDatabase.getInstance(this)
-                .usuarioDao()
-                .findByEmail(email);
+                if (!resp.isSuccessful() || resp.body() == null) {
+                    Log.e(TAG, "Error en Supabase login: HTTP " + resp.code());
+                    handler.post(() -> {
+                        btnIniciarSesion.setEnabled(true);
+                        tilLoginEmail.setError(
+                            "No se pudo establecer conexión con el servidor. Intenta más tarde."
+                        );
+                    });
+                    return;
+                }
 
-            if (usuarioLocal != null) {
+                if (resp.body().isEmpty()) {
+                    UsuarioModel usuarioLocal = AppDatabase.getInstance(this)
+                        .usuarioDao()
+                        .findByEmail(email);
+                    handler.post(() -> {
+                        btnIniciarSesion.setEnabled(true);
+                        tilLoginEmail.setError(
+                            usuarioLocal != null
+                                ? "Esta cuenta no existe en el servidor. Regístrate nuevamente con conexión a internet."
+                                : "No existe cuenta con ese correo"
+                        );
+                    });
+                    return;
+                }
 
-                if (
-                    !CryptoUtils.hashPassword(
-                        password,
-                        usuarioLocal.salt
-                    ).equals(usuarioLocal.passwordHash)
-                ) {
+                UsuarioDto remoto = resp.body().get(0);
+                if (!isValidRemoteUser(remoto)) {
+                    handler.post(() -> {
+                        btnIniciarSesion.setEnabled(true);
+                        tilLoginEmail.setError(
+                            "No se pudo establecer conexión con el servidor. Intenta más tarde."
+                        );
+                    });
+                    return;
+                }
+
+                if (!isRemotePasswordValid(password, remoto)) {
                     handler.post(() -> {
                         btnIniciarSesion.setEnabled(true);
                         tilLoginPassword.setError("Contraseña incorrecta");
@@ -216,131 +254,90 @@ public class AuthActivity extends AppCompatActivity {
                     return;
                 }
 
+                cacheRemoteUserIfNeeded(remoto);
+
                 SessionManager sm = new SessionManager(this);
-                sm.saveSession(usuarioLocal.email, usuarioLocal.nombre);
-
-
-                try {
-                    Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
-                        .getUsuarioPorCorreo("eq." + email)
-                        .execute();
-                    if (resp.isSuccessful() && resp.body() != null && !resp.body().isEmpty()) {
-                        UsuarioDto remoto = resp.body().get(0);
-                        sm.saveRemoteUserId(remoto.id);
-                        if (remoto.tipoPlan != null && remoto.estaActivo != null && remoto.estaActivo) {
-                            sm.savePremium(remoto.tipoPlan, remoto.fechaRenovacion != null ? remoto.fechaRenovacion : "");
-                        } else {
-                            sm.clearPremium();
-                        }
-                    }
-                } catch (Exception ignored) {}
+                sm.saveSession(remoto.correo, remoto.nombre != null ? remoto.nombre : "");
+                sm.saveRemoteUserId(remoto.id);
+                applyRemotePremiumState(sm, remoto);
 
                 handler.post(() -> {
                     btnIniciarSesion.setEnabled(true);
                     android.content.Intent result = new android.content.Intent();
-                    result.putExtra(RESULT_NOMBRE, usuarioLocal.nombre);
+                    result.putExtra(RESULT_NOMBRE, remoto.nombre);
+                    if (sm.isPremium()) {
+                        result.putExtra("result_premium", true);
+                    }
                     setResult(RESULT_OK, result);
                     finish();
                 });
-            } else {
-
-                try {
-                    Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
-                        .getUsuarioPorCorreo("eq." + email)
-                        .execute();
-
-                    if (
-                        resp.isSuccessful() &&
-                        resp.body() != null &&
-                        !resp.body().isEmpty()
-                    ) {
-                        UsuarioDto remoto = resp.body().get(0);
-
-
-                        String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
-                        String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
-
-                        if (!hashIntentoNuevo.equals(remoto.hashContrasena) && !hashIntentoViejo.equals(remoto.hashContrasena)) {
-                            handler.post(() -> {
-                                btnIniciarSesion.setEnabled(true);
-                                tilLoginPassword.setError(
-                                    "Contraseña incorrecta"
-                                );
-                            });
-                            return;
-                        }
-
-
-                        UsuarioModel nuevoLocal = new UsuarioModel();
-                        nuevoLocal.nombre = remoto.nombre;
-                        nuevoLocal.email = remoto.correo;
-                        nuevoLocal.salt = remoto.correo;
-                        nuevoLocal.passwordHash = remoto.hashContrasena;
-                        nuevoLocal.creadoEn =
-                            remoto.creadoEn != null
-                                ? remoto.creadoEn
-                                : String.valueOf(System.currentTimeMillis());
-                        AppDatabase.getInstance(this)
-                            .usuarioDao()
-                            .insertUsuario(nuevoLocal);
-
-
-                        SessionManager sm = new SessionManager(this);
-                        sm.saveSession(remoto.correo, remoto.nombre);
-                        sm.saveRemoteUserId(remoto.id);
-                        if (
-                            remoto.tipoPlan != null &&
-                            remoto.estaActivo != null &&
-                            remoto.estaActivo
-                        ) {
-                            sm.savePremium(
-                                remoto.tipoPlan,
-                                remoto.fechaRenovacion != null
-                                    ? remoto.fechaRenovacion
-                                    : ""
-                            );
-                        }
-
-                        handler.post(() -> {
-                            btnIniciarSesion.setEnabled(true);
-                            android.content.Intent result = new android.content.Intent();
-                            result.putExtra(RESULT_NOMBRE, remoto.nombre);
-                            if (sm.isPremium()) {
-                                result.putExtra("result_premium", true);
-                            }
-                            setResult(RESULT_OK, result);
-                            finish();
-                        });
-                    } else {
-                        String errBody =
-                            resp.errorBody() != null
-                                ? resp.errorBody().string()
-                                : "sin errorBody";
-                        Log.e(
-                            TAG,
-                            "Error en Supabase login: HTTP " +
-                                resp.code() +
-                                " - " +
-                                errBody
-                        );
-                        handler.post(() -> {
-                            btnIniciarSesion.setEnabled(true);
-                            tilLoginEmail.setError(
-                                "No existe cuenta con ese correo"
-                            );
-                        });
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error login remoto: " + e.getMessage(), e);
-                    handler.post(() -> {
-                        btnIniciarSesion.setEnabled(true);
-                        tilLoginEmail.setError(
-                            "Error de red o la cuenta no existe"
-                        );
-                    });
-                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error login remoto: " + e.getMessage(), e);
+                handler.post(() -> {
+                    btnIniciarSesion.setEnabled(true);
+                    tilLoginEmail.setError(
+                        "No se pudo establecer conexión con el servidor. Intenta más tarde."
+                    );
+                });
             }
         });
+    }
+
+
+
+    private boolean isValidRemoteUser(UsuarioDto usuario) {
+        return usuario != null &&
+            usuario.id != null &&
+            usuario.id > 0 &&
+            usuario.correo != null &&
+            !usuario.correo.trim().isEmpty() &&
+            usuario.hashContrasena != null &&
+            !usuario.hashContrasena.trim().isEmpty();
+    }
+
+    private boolean isRemotePasswordValid(String password, UsuarioDto usuario) {
+        String hashIntentoNuevo = CryptoUtils.hashPassword(password, usuario.correo);
+        String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
+        return hashIntentoNuevo.equals(usuario.hashContrasena) ||
+            hashIntentoViejo.equals(usuario.hashContrasena);
+    }
+
+    private void cacheRemoteUserIfNeeded(UsuarioDto remoto) {
+        UsuarioModel existente = AppDatabase.getInstance(this)
+            .usuarioDao()
+            .findByEmail(remoto.correo);
+        if (existente != null) return;
+
+        UsuarioModel nuevoLocal = new UsuarioModel();
+        nuevoLocal.nombre = remoto.nombre != null ? remoto.nombre : "";
+        nuevoLocal.email = remoto.correo;
+        nuevoLocal.salt = remoto.correo;
+        nuevoLocal.passwordHash = remoto.hashContrasena;
+        nuevoLocal.creadoEn =
+            remoto.creadoEn != null
+                ? remoto.creadoEn
+                : String.valueOf(System.currentTimeMillis());
+        AppDatabase.getInstance(this)
+            .usuarioDao()
+            .insertUsuario(nuevoLocal);
+    }
+
+    private void applyRemotePremiumState(SessionManager sm, UsuarioDto remoto) {
+        if (isPremiumPlanActive(remoto)) {
+            sm.savePremium(
+                remoto.tipoPlan,
+                remoto.fechaRenovacion != null ? remoto.fechaRenovacion : ""
+            );
+        } else {
+            sm.clearPremium();
+        }
+    }
+
+    private boolean isPremiumPlanActive(UsuarioDto remoto) {
+        return remoto.tipoPlan != null &&
+            !"GRATIS".equalsIgnoreCase(remoto.tipoPlan) &&
+            remoto.estaActivo != null &&
+            remoto.estaActivo;
     }
 
 
@@ -394,115 +391,113 @@ public class AuthActivity extends AppCompatActivity {
         }
         if (!valid) return;
 
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            Snackbar.make(
+                btnCrearCuenta,
+                "Para crear una cuenta necesitas conexión a internet. Intenta más tarde.",
+                Snackbar.LENGTH_LONG
+            ).show();
+            return;
+        }
+
         btnCrearCuenta.setEnabled(false);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-
-            UsuarioModel existing = AppDatabase.getInstance(this)
-                .usuarioDao()
-                .findByEmail(email);
-            if (existing != null) {
-                handler.post(() -> {
-                    btnCrearCuenta.setEnabled(true);
-                    tilRegEmail.setError("Ya hay una cuenta con ese correo");
-                });
-                return;
-            }
-
-
-            String salt = CryptoUtils.generateSalt();
-
-            String hashRemoto = CryptoUtils.hashPassword(password, email);
-
-            UsuarioModel nuevo = new UsuarioModel();
-            nuevo.nombre = nombre;
-            nuevo.email = email;
-            nuevo.passwordHash = CryptoUtils.hashPassword(password, salt);
-            nuevo.salt = salt;
-            nuevo.creadoEn = String.valueOf(System.currentTimeMillis());
-            long localId = AppDatabase.getInstance(this)
-                .usuarioDao()
-                .insertUsuario(nuevo);
-
-            if (localId == -1) {
-                handler.post(() -> {
-                    btnCrearCuenta.setEnabled(true);
-                    tilRegEmail.setError("Ya hay una cuenta con ese correo");
-                });
-                return;
-            }
-
-
-            long remoteId = -1;
             try {
-
                 Response<List<UsuarioDto>> checkResp = SupabaseClient.getApi()
                     .getUsuarioPorCorreo("eq." + email)
                     .execute();
 
-                boolean existeRemoto =
-                    checkResp.isSuccessful() &&
-                    checkResp.body() != null &&
-                    !checkResp.body().isEmpty();
-
-                if (!existeRemoto) {
-
-                    UsuarioDto dto = new UsuarioDto();
-                    dto.nombre = nombre;
-                    dto.correo = email;
-                    dto.hashContrasena = hashRemoto;
-                    dto.tipoPlan = "GRATIS";
-                    dto.fechaInicioPlan = null;
-                    dto.fechaRenovacion = null;
-                    dto.estaActivo = true;
-
-                    Response<List<UsuarioDto>> createResp =
-                        SupabaseClient.getApi().createUsuario(dto).execute();
-
-                    if (
-                        createResp.isSuccessful() &&
-                        createResp.body() != null &&
-                        !createResp.body().isEmpty()
-                    ) {
-                        remoteId = createResp.body().get(0).id;
-                        Log.i(TAG, "Usuario creado en Supabase con ID: " + remoteId);
-                    } else {
-                        Log.w(TAG, "No se pudo crear usuario en Supabase");
-                    }
-                } else {
-
-                    remoteId = checkResp.body().get(0).id;
-                    Log.i(TAG, "Cuenta ya existía remotamente, vinculada con ID: " + remoteId);
+                if (!checkResp.isSuccessful() || checkResp.body() == null) {
+                    Log.e(TAG, "Error consultando usuario remoto: HTTP " + checkResp.code());
+                    handler.post(() -> {
+                        btnCrearCuenta.setEnabled(true);
+                        Snackbar.make(
+                            btnCrearCuenta,
+                            "No se pudo establecer conexión con el servidor. Intenta más tarde.",
+                            Snackbar.LENGTH_LONG
+                        ).show();
+                    });
+                    return;
                 }
+
+                if (!checkResp.body().isEmpty()) {
+                    handler.post(() -> {
+                        btnCrearCuenta.setEnabled(true);
+                        tilRegEmail.setError("Ya hay una cuenta con ese correo");
+                    });
+                    return;
+                }
+
+                UsuarioDto dto = new UsuarioDto();
+                dto.nombre = nombre;
+                dto.correo = email;
+                dto.hashContrasena = CryptoUtils.hashPassword(password, email);
+                dto.tipoPlan = "GRATIS";
+                dto.fechaInicioPlan = null;
+                dto.fechaRenovacion = null;
+                dto.estaActivo = true;
+
+                Response<List<UsuarioDto>> createResp =
+                    SupabaseClient.getApi().createUsuario(dto).execute();
+
+                if (
+                    !createResp.isSuccessful() ||
+                    createResp.body() == null ||
+                    createResp.body().isEmpty() ||
+                    createResp.body().get(0).id == null ||
+                    createResp.body().get(0).id <= 0
+                ) {
+                    Log.w(TAG, "No se pudo crear usuario en Supabase");
+                    handler.post(() -> {
+                        btnCrearCuenta.setEnabled(true);
+                        Snackbar.make(
+                            btnCrearCuenta,
+                            "No se pudo establecer conexión con el servidor. Intenta más tarde.",
+                            Snackbar.LENGTH_LONG
+                        ).show();
+                    });
+                    return;
+                }
+
+                UsuarioDto remoto = createResp.body().get(0);
+                UsuarioModel nuevo = new UsuarioModel();
+                nuevo.nombre = nombre;
+                nuevo.email = email;
+                nuevo.passwordHash = dto.hashContrasena;
+                nuevo.salt = email;
+                nuevo.creadoEn = String.valueOf(System.currentTimeMillis());
+                AppDatabase.getInstance(this)
+                    .usuarioDao()
+                    .insertUsuario(nuevo);
+
+                SessionManager sm = new SessionManager(this);
+                sm.saveSession(email, nombre);
+                sm.saveRemoteUserId(remoto.id);
+                sm.clearPremium();
+
+                handler.post(() -> {
+                    btnCrearCuenta.setEnabled(true);
+                    Snackbar.make(
+                        btnCrearCuenta,
+                        "¡Cuenta creada! Bienvenido, " + nombre,
+                        Snackbar.LENGTH_LONG
+                    ).show();
+                    btnCrearCuenta.postDelayed(this::finish, 1200);
+                });
             } catch (Exception e) {
-
-                Log.w(
-                    TAG,
-                    "Supabase no disponible al registrar: " + e.getMessage()
-                );
+                Log.w(TAG, "Supabase no disponible al registrar: " + e.getMessage(), e);
+                handler.post(() -> {
+                    btnCrearCuenta.setEnabled(true);
+                    Snackbar.make(
+                        btnCrearCuenta,
+                        "No se pudo establecer conexión con el servidor. Intenta más tarde.",
+                        Snackbar.LENGTH_LONG
+                    ).show();
+                });
             }
-
-
-            SessionManager sm = new SessionManager(this);
-            sm.saveSession(email, nombre);
-            if (remoteId != -1) sm.saveRemoteUserId(remoteId);
-
-            final long finalRemoteId = remoteId;
-            handler.post(() -> {
-                btnCrearCuenta.setEnabled(true);
-                String extraMsg =
-                    finalRemoteId != -1
-                        ? " Cuenta vinculada a la nube."
-                        : " (sin conexión, solo local)";
-                Snackbar.make(
-                    btnCrearCuenta,
-                    "¡Cuenta creada! Bienvenido, " + nombre + extraMsg,
-                    Snackbar.LENGTH_LONG
-                ).show();
-                btnCrearCuenta.postDelayed(this::finish, 1200);
-            });
         });
     }
 
