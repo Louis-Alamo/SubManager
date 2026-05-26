@@ -2,10 +2,10 @@ package com.example.submanager.data.remote.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * DTO para la tabla `suscripciones` de Supabase.
- * Los nombres de campo coinciden exactamente con el esquema PostgreSQL (snake_case).
- */
+
+
+
+
 public class SuscripcionDto {
 
     @SerializedName("id")
@@ -53,7 +53,7 @@ public class SuscripcionDto {
     @SerializedName("esta_activa")
     public Boolean estaActiva;
 
-    // Nota: icono_res_id en Supabase; nombre_icono en Room (texto). Usamos texto.
+
     @SerializedName("icono_nombre")
     public String iconoNombre;
 

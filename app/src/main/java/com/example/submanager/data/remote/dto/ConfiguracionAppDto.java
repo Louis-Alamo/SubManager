@@ -2,10 +2,10 @@ package com.example.submanager.data.remote.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * DTO para la tabla `configuracion_app` de Supabase.
- * Es un registro Singleton (id siempre = 1).
- */
+
+
+
+
 public class ConfiguracionAppDto {
 
     @SerializedName("id")

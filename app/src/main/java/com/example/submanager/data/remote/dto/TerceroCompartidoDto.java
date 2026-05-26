@@ -2,9 +2,9 @@ package com.example.submanager.data.remote.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * DTO para la tabla `terceros_compartidos` de Supabase.
- */
+
+
+
 public class TerceroCompartidoDto {
 
     @SerializedName("id")

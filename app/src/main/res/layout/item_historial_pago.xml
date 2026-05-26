@@ -7,7 +7,7 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="10dp">
 
-    <!-- Ícono / círculo de color del servicio -->
+
     <ImageView
         android:id="@+id/ivAppIcon"
         android:layout_width="42dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Nombre del servicio -->
+
     <TextView
         android:id="@+id/tvNombre"
         android:layout_width="0dp"
@@ -33,7 +33,7 @@
         app:layout_constraintTop_toTopOf="@id/ivAppIcon"
         app:layout_constraintBottom_toTopOf="@id/tvFechaCategoria" />
 
-    <!-- Fecha · Categoría -->
+
     <TextView
         android:id="@+id/tvFechaCategoria"
         android:layout_width="0dp"
@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvNombre"
         app:layout_constraintBottom_toBottomOf="@id/ivAppIcon" />
 
-    <!-- Monto negativo en rojo -->
+
     <TextView
         android:id="@+id/tvMonto"
         android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Badge "Pagado" verde -->
+
     <TextView
         android:id="@+id/tvBadgePagado"
         android:layout_width="wrap_content"

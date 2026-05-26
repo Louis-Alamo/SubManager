@@ -95,22 +95,22 @@ public class PremiumActivity extends AppCompatActivity {
                         "Premium activo hasta " + sessionManager.getPremiumExpiry(),
                         Snackbar.LENGTH_LONG).show();
             } else {
-                // Intentar recuperar el premium desde Supabase
+
                 recuperarPremiumDesdeNube(v);
             }
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // ACTIVAR PREMIUM
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private void activarPremium() {
         String tipoPlan = planAnualSelected ? "ANUAL"   : "MENSUAL";
         String planLabel = planAnualSelected ? "Premium Anual" : "Premium Mensual";
         String monto    = planAnualSelected ? "500.00" : "50.00";
 
-        // Calcular fechas
+
         Calendar cal = Calendar.getInstance();
         if (planAnualSelected) cal.add(Calendar.YEAR, 1);
         else cal.add(Calendar.MONTH, 1);
@@ -125,10 +125,10 @@ public class PremiumActivity extends AppCompatActivity {
                 ? LocalDate.now().plusYears(1).toString()
                 : LocalDate.now().plusMonths(1).toString();
 
-        // ── 1. Guardar premium en SharedPreferences ───────────────────────────
+
         sessionManager.savePremium(planLabel, expiryLabel);
 
-        // ── 2. Actualizar en Supabase si el usuario tiene cuenta remota ───────
+
         String email = sessionManager.getEmail();
         if (!email.isEmpty()) {
             Executors.newSingleThreadExecutor().execute(() -> {
@@ -149,13 +149,13 @@ public class PremiumActivity extends AppCompatActivity {
                         Log.w(TAG, "No se pudo actualizar premium en Supabase: " + resp.code());
                     }
                 } catch (Exception e) {
-                    // Sin red → premium ya guardado localmente, se sincronizará después
+
                     Log.w(TAG, "Sin conexión al actualizar premium remoto: " + e.getMessage());
                 }
             });
         }
 
-        // ── 3. Ir a pantalla de éxito ─────────────────────────────────────────
+
         Intent intent = new Intent(this, CompraExitosaActivity.class);
         intent.putExtra("plan", planLabel);
         intent.putExtra("monto", monto);
@@ -163,9 +163,9 @@ public class PremiumActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // RESTAURAR COMPRA — busca en Supabase si el usuario tiene plan activo
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private void recuperarPremiumDesdeNube(View anchor) {
         String email = sessionManager.getEmail();
@@ -187,7 +187,7 @@ public class PremiumActivity extends AppCompatActivity {
 
                     if (usuario.estaActivo != null && usuario.estaActivo
                             && usuario.tipoPlan != null) {
-                        // Restaurar premium localmente
+
                         sessionManager.savePremium(usuario.tipoPlan, usuario.fechaRenovacion != null ? usuario.fechaRenovacion : "");
                         sessionManager.saveRemoteUserId(usuario.id);
 

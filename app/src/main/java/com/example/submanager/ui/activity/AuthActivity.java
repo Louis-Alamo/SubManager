@@ -40,13 +40,13 @@ public class AuthActivity extends AppCompatActivity {
     private LinearLayout formLogin, formRegistro;
     private TextView tvAuthTitle, tvAuthSubtitle;
 
-    // Login form
+
     private TextInputLayout tilLoginEmail, tilLoginPassword;
     private TextInputEditText etLoginEmail, etLoginPassword;
     private MaterialButton btnIniciarSesion, btnGoogleLogin;
     private TextView tvOlvideContrasena, tvIrRegistro;
 
-    // Register form
+
     private TextInputLayout tilRegNombre, tilRegEmail, tilRegPassword, tilRegConfirm;
     private TextInputEditText etRegNombre, etRegEmail, etRegPassword, etRegConfirm;
     private MaterialButton btnCrearCuenta;
@@ -159,9 +159,9 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // LOGIN — busca primero en Room, luego en Supabase si no encuentra
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private void handleLogin() {
         clearErrors();
@@ -196,13 +196,13 @@ public class AuthActivity extends AppCompatActivity {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-            // 1. Buscar en Room local
+
             UsuarioModel usuarioLocal = AppDatabase.getInstance(this)
                 .usuarioDao()
                 .findByEmail(email);
 
             if (usuarioLocal != null) {
-                // Verificar contraseña local
+
                 if (
                     !CryptoUtils.hashPassword(
                         password,
@@ -215,11 +215,11 @@ public class AuthActivity extends AppCompatActivity {
                     });
                     return;
                 }
-                // Login exitoso (local)
+
                 SessionManager sm = new SessionManager(this);
                 sm.saveSession(usuarioLocal.email, usuarioLocal.nombre);
 
-                // Intentar recuperar ID remoto y estado Premium silenciosamente si hay internet
+
                 try {
                     Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
                         .getUsuarioPorCorreo("eq." + email)
@@ -243,7 +243,7 @@ public class AuthActivity extends AppCompatActivity {
                     finish();
                 });
             } else {
-                // 2. No encontrado localmente → buscar en Supabase
+
                 try {
                     Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
                         .getUsuarioPorCorreo("eq." + email)
@@ -256,7 +256,7 @@ public class AuthActivity extends AppCompatActivity {
                     ) {
                         UsuarioDto remoto = resp.body().get(0);
 
-                        // Verificar contraseña con el hash remoto (soportando el algoritmo viejo y nuevo)
+
                         String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
                         String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
 
@@ -270,11 +270,11 @@ public class AuthActivity extends AppCompatActivity {
                             return;
                         }
 
-                        // Guardar en Room local para futuros logins offline
+
                         UsuarioModel nuevoLocal = new UsuarioModel();
                         nuevoLocal.nombre = remoto.nombre;
                         nuevoLocal.email = remoto.correo;
-                        nuevoLocal.salt = remoto.correo; // mismo salt que usamos al registrar
+                        nuevoLocal.salt = remoto.correo;
                         nuevoLocal.passwordHash = remoto.hashContrasena;
                         nuevoLocal.creadoEn =
                             remoto.creadoEn != null
@@ -284,7 +284,7 @@ public class AuthActivity extends AppCompatActivity {
                             .usuarioDao()
                             .insertUsuario(nuevoLocal);
 
-                        // Restaurar estado Premium si el plan es activo
+
                         SessionManager sm = new SessionManager(this);
                         sm.saveSession(remoto.correo, remoto.nombre);
                         sm.saveRemoteUserId(remoto.id);
@@ -343,9 +343,9 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // REGISTRO — Room local + Supabase en paralelo
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private void handleRegister() {
         clearErrors();
@@ -399,7 +399,7 @@ public class AuthActivity extends AppCompatActivity {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-            // Verificar si ya existe localmente
+
             UsuarioModel existing = AppDatabase.getInstance(this)
                 .usuarioDao()
                 .findByEmail(email);
@@ -411,9 +411,9 @@ public class AuthActivity extends AppCompatActivity {
                 return;
             }
 
-            // ── 1. Crear en Room local ────────────────────────────────────────
+
             String salt = CryptoUtils.generateSalt();
-            // Para Supabase usamos el email como salt (permite verificar sin salt almacenado)
+
             String hashRemoto = CryptoUtils.hashPassword(password, email);
 
             UsuarioModel nuevo = new UsuarioModel();
@@ -434,10 +434,10 @@ public class AuthActivity extends AppCompatActivity {
                 return;
             }
 
-            // ── 2. Crear en Supabase (intento en background, no bloquea) ──────
+
             long remoteId = -1;
             try {
-                // Verificar si ya existe en Supabase
+
                 Response<List<UsuarioDto>> checkResp = SupabaseClient.getApi()
                     .getUsuarioPorCorreo("eq." + email)
                     .execute();
@@ -448,11 +448,11 @@ public class AuthActivity extends AppCompatActivity {
                     !checkResp.body().isEmpty();
 
                 if (!existeRemoto) {
-                    // Crear cuenta base en Supabase
+
                     UsuarioDto dto = new UsuarioDto();
                     dto.nombre = nombre;
                     dto.correo = email;
-                    dto.hashContrasena = hashRemoto; // hash usando email como salt
+                    dto.hashContrasena = hashRemoto;
                     dto.tipoPlan = "GRATIS";
                     dto.fechaInicioPlan = null;
                     dto.fechaRenovacion = null;
@@ -472,19 +472,19 @@ public class AuthActivity extends AppCompatActivity {
                         Log.w(TAG, "No se pudo crear usuario en Supabase");
                     }
                 } else {
-                    // Ya existe remotamente, jalamos el ID para vincular cuenta
+
                     remoteId = checkResp.body().get(0).id;
                     Log.i(TAG, "Cuenta ya existía remotamente, vinculada con ID: " + remoteId);
                 }
             } catch (Exception e) {
-                // Sin red o error de Supabase → la cuenta local ya está creada, continuar
+
                 Log.w(
                     TAG,
                     "Supabase no disponible al registrar: " + e.getMessage()
                 );
             }
 
-            // ── 3. Guardar sesión ─────────────────────────────────────────────
+
             SessionManager sm = new SessionManager(this);
             sm.saveSession(email, nombre);
             if (remoteId != -1) sm.saveRemoteUserId(remoteId);

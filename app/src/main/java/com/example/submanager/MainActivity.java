@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Registrar lanzador para AuthActivity y mostrar bienvenida al volver
+
         authLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     String nombre = result.getData().getStringExtra(AuthActivity.RESULT_NOMBRE);
                     boolean esPremium = result.getData().getBooleanExtra("result_premium", false);
 
-                    // Asegurarse de que el Dashboard esté visible
+
                     Fragment current = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
                     if (!(current instanceof com.example.submanager.ui.fragment.DashboardFragment)) {
                         getSupportFragmentManager().beginTransaction()
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                         if (bottomNav != null) bottomNav.setSelectedItemId(R.id.nav_inicio);
                     }
 
-                    // Mostrar mensaje de bienvenida en la pantalla del Dashboard
+
                     View anchor = findViewById(R.id.nav_host_fragment);
                     if (anchor != null && nombre != null && !nombre.isEmpty()) {
                         String mensaje = esPremium
@@ -78,29 +78,29 @@ public class MainActivity extends AppCompatActivity {
                             .show();
                     }
 
-                    // Si es premium, iniciar restauración silenciosa en background
+
                     if (esPremium) {
                         new RemoteSyncRepository(this).pullAll((status, message) -> {
-                            // sincronización manejada por el indicador en MainActivity
+
                         });
                     }
                 }
             }
         );
 
-        // Edge-to-edge: el contenido se dibuja detrás de las barras del sistema
+
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         setContentView(R.layout.activity_main);
 
-        // Pedir permisos de notificaciones (Android 13+)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
 
-        // Programar WorkManager (cada 12 horas)
+
         PeriodicWorkRequest alertWorkRequest = new PeriodicWorkRequest.Builder(AlertWorker.class, 12, TimeUnit.HOURS)
                 .build();
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
@@ -111,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        // Aplicar el inset de la barra de navegación del sistema como padding inferior
-        // de la BottomNav, para que el contenido no quede oculto detrás de ella.
+
+
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (v, insets) -> {
             int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
             v.setPadding(
@@ -124,14 +124,14 @@ public class MainActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
-        // Para que el FragmentContainer también respete la barra de estado superior
+
         View fragmentContainer = findViewById(R.id.nav_host_fragment);
         ViewCompat.setOnApplyWindowInsetsListener(fragmentContainer, (v, insets) -> {
             int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
             lp.topMargin = statusBarHeight;
             v.setLayoutParams(lp);
-            return insets; // Permite que otros views (como llSyncIndicator) escuchen los insets
+            return insets;
         });
 
         if (savedInstanceState == null) {
@@ -171,11 +171,11 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        // Observar estado de sincronización global
+
         setupSyncObserver();
     }
 
-    /** Lanza AuthActivity usando el launcher registrado para recibir el resultado. */
+
     public void launchAuthActivity(int startTab) {
         Intent intent = new Intent(this, AuthActivity.class);
         intent.putExtra(AuthActivity.EXTRA_TAB, startTab);
@@ -188,13 +188,13 @@ public class MainActivity extends AppCompatActivity {
         ImageView ivSyncDone = findViewById(R.id.ivSyncDone);
         TextView tvSyncStatus = findViewById(R.id.tvSyncStatus);
 
-        // Asegurarse de que no quede oculto detrás de la barra de estado
+
         ViewCompat.setOnApplyWindowInsetsListener(llSyncIndicator, (v, insets) -> {
             int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            lp.topMargin = statusBarHeight + 16; // 16px extra de margen
+            lp.topMargin = statusBarHeight + 16;
             v.setLayoutParams(lp);
-            return insets; // no consumir para que fragmentContainer también lo reciba
+            return insets;
         });
 
         RemoteSyncRepository.isSyncing.observe(this, isSyncing -> {
@@ -205,42 +205,42 @@ public class MainActivity extends AppCompatActivity {
                     ivSyncDone.setVisibility(View.GONE);
                     tvSyncStatus.setText("Sincronizando...");
                 } else {
-                    // La sincronización acaba de terminar. Mostrar el resultado.
+
                     String result = RemoteSyncRepository.syncResult.getValue();
                     if (result != null) {
                         pbSync.setVisibility(View.GONE);
                         ivSyncDone.setVisibility(View.VISIBLE);
-                        
+
                         if (result.equals("SUCCESS")) {
                             tvSyncStatus.setText("Sincronizado");
                             ivSyncDone.setImageResource(R.drawable.ic_check_circle);
                             ivSyncDone.setColorFilter(ContextCompat.getColor(this, R.color.premium));
                         } else {
                             tvSyncStatus.setText("Error al sincronizar");
-                            ivSyncDone.setImageResource(R.drawable.ic_check_circle); // fallback, Ideally an X icon
+                            ivSyncDone.setImageResource(R.drawable.ic_check_circle);
                             ivSyncDone.setColorFilter(ContextCompat.getColor(this, android.R.color.holo_red_dark));
                         }
 
-                        // Ocultar después de 3 segundos
+
                         new Handler().postDelayed(() -> {
                             if (Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
                                 llSyncIndicator.setVisibility(View.GONE);
                             }
                         }, 3000);
                     } else {
-                        // Si por alguna razón es false y no hay resultado, simplemente ocultamos
+
                         llSyncIndicator.setVisibility(View.GONE);
                     }
                 }
             }
         });
 
-        // Este observador actúa como respaldo por si syncResult se actualiza mucho después
+
         RemoteSyncRepository.syncResult.observe(this, result -> {
             if (result != null && Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
                 pbSync.setVisibility(View.GONE);
                 ivSyncDone.setVisibility(View.VISIBLE);
-                
+
                 if (result.equals("SUCCESS")) {
                     tvSyncStatus.setText("Sincronizado");
                     ivSyncDone.setImageResource(R.drawable.ic_check_circle);

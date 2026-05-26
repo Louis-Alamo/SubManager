@@ -42,36 +42,36 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_suscripcion);
 
-        // Flecha de regreso → cierra esta Activity y vuelve al fragmento anterior
+
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
 
-        // Inicializar Chips de Categoría
+
         ChipGroup chipGroupCategorias = findViewById(R.id.chipGroupCategorias);
         CategoryManager.setupCategoryChips(chipGroupCategorias, this, false, "Entretenimiento");
 
-        // ── Ciclo de Facturación ──────────────────────────────────────────────
+
         setupCicloFacturacion();
 
-        // ── Primera Fecha de Cobro ────────────────────────────────────────────
+
         setupFechaCobro();
 
-        // ── Fecha Límite de Cancelación ───────────────────────────────────────
+
         setupFechaLimiteCancelacion();
 
-        // ── Apariencia (Color Picker) ─────────────────────────────────────────
+
         setupColorPicker();
 
-        // ── Método de Pago ────────────────────────────────────────────────────
+
         setupMetodoPago();
 
-        // ── Icon Picker ───────────────────────────────────────────────────────
+
         setupIconPicker();
 
-        // ── Guardar Suscripción ───────────────────────────────────────────────
+
         setupGuardarButton();
 
-        // ── Modo Edición ──────────────────────────────────────────────────────
+
         checkEditMode();
     }
 
@@ -117,7 +117,7 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         }
         etDiasAnticipacion.setText(String.valueOf(model.getDiasAnticipacion()));
 
-        // Seleccionar categoría
+
         for (int i = 0; i < chipGroupCategorias.getChildCount(); i++) {
             Chip chip = (Chip) chipGroupCategorias.getChildAt(i);
             if (chip.getText().toString().equals(model.getCategoria())) {
@@ -126,11 +126,11 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             }
         }
 
-        // Color
+
         colorSeleccionado = model.getColor();
         ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
 
-        // Icono
+
         int resId = getResources().getIdentifier(model.getNombreIcono(), "drawable", getPackageName());
         if (resId != 0) {
             iconoSeleccionadoResId = resId;
@@ -138,9 +138,9 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Ciclo de facturación: dropdown con opciones predefinidas + personalizado
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
     private void setupCicloFacturacion() {
         AutoCompleteTextView autoCompleteCiclo = findViewById(R.id.autoCompleteCiclo);
 
@@ -152,10 +152,10 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 ciclos);
         autoCompleteCiclo.setAdapter(adapter);
 
-        // Mostrar siempre el desplegable completo al pulsar el campo
+
         autoCompleteCiclo.setOnClickListener(v -> autoCompleteCiclo.showDropDown());
 
-        // Si se elige "Personalizado…" → limpiar y abrir teclado
+
         autoCompleteCiclo.setOnItemClickListener((parent, view, position, id) -> {
             String seleccionado = (String) parent.getItemAtPosition(position);
             if (OPCION_PERSONALIZADO.equals(seleccionado)) {
@@ -173,9 +173,9 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Método de pago: dropdown con opciones predefinidas + personalizado
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
     private void setupMetodoPago() {
         AutoCompleteTextView autoCompletePago = findViewById(R.id.autoCompletePago);
 
@@ -187,10 +187,10 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 metodos);
         autoCompletePago.setAdapter(adapter);
 
-        // Mostrar siempre el desplegable completo al pulsar el campo
+
         autoCompletePago.setOnClickListener(v -> autoCompletePago.showDropDown());
 
-        // Si se elige "Personalizado…" → limpiar y abrir teclado
+
         autoCompletePago.setOnItemClickListener((parent, view, position, id) -> {
             String seleccionado = (String) parent.getItemAtPosition(position);
             if (OPCION_PERSONALIZADO.equals(seleccionado)) {
@@ -206,9 +206,9 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Fecha de cobro: abre MaterialDatePicker al tocar el campo o el ícono
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
     private void setupFechaCobro() {
         TextInputLayout tilFecha = findViewById(R.id.tilFecha);
         TextInputEditText etFecha = findViewById(R.id.etFecha);
@@ -245,9 +245,9 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         tilFecha.setEndIconOnClickListener(showDatePicker);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Fecha límite de cancelación: opcional, material date picker
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
     private void setupFechaLimiteCancelacion() {
         TextInputLayout tilFechaLimite = findViewById(R.id.tilFechaLimite);
         TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
@@ -283,16 +283,16 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         tilFechaLimite.setEndIconOnClickListener(showDatePicker);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Selector de color (Apariencia)
-    // ─────────────────────────────────────────────────────────────────────────
-    private String colorSeleccionado = "#2196F3"; // Por defecto azul
+
+
+
+    private String colorSeleccionado = "#2196F3";
 
     private void setupColorPicker() {
         ImageView ivAvatar = findViewById(R.id.ivSuscripcionAvatar);
-        
+
         int[] colorIds = {
-            R.id.colorBlue, R.id.colorPurple, R.id.colorGreen, 
+            R.id.colorBlue, R.id.colorPurple, R.id.colorGreen,
             R.id.colorOrange, R.id.colorRed, R.id.colorPink
         };
 
@@ -301,28 +301,28 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
             if (colorView == null) continue;
 
             colorView.setOnClickListener(v -> {
-                // Deseleccionar todos
+
                 for (int otherId : colorIds) {
                     ImageView otherView = findViewById(otherId);
                     if (otherView != null) otherView.setAlpha(0.4f);
                 }
-                
-                // Seleccionar el tocado
+
+
                 v.setAlpha(1.0f);
                 colorSeleccionado = (String) v.getTag();
-                
-                // Actualizar avatar
+
+
                 ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
             });
         }
-        
-        // Inicializar el avatar con el color por defecto
+
+
         ivAvatar.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorSeleccionado)));
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Selector de Icono
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
     private void setupIconPicker() {
         FloatingActionButton fabEdit = findViewById(R.id.fabEditAvatar);
         ImageView ivAvatar = findViewById(R.id.ivSuscripcionAvatar);
@@ -366,9 +366,9 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Lógica para Guardar en Base de Datos
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
     private void setupGuardarButton() {
         SuscripcionViewModel viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
 
@@ -402,7 +402,7 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 Toast.makeText(this, "Monto inválido", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
+
             int diasAnticipacion = 3;
             if (!diasStr.isEmpty()) {
                 try {
@@ -412,7 +412,7 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 }
             }
 
-            // Validar categoría seleccionada
+
             int checkedChipId = chipGroupCategorias.getCheckedChipId();
             String categoria = "Otra";
             if (checkedChipId != View.NO_ID) {
@@ -422,13 +422,13 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 }
             }
 
-            // Obtener nombre del icono a partir de su ID
+
             String nombreIcono = getResources().getResourceEntryName(iconoSeleccionadoResId);
 
-            // Fecha de creación ISO básica
+
             String timestampActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
-            // Instanciar o actualizar modelo
+
             if (editSuscripcionId != -1 && editSuscripcionModel != null) {
                 editSuscripcionModel.setNombre(nombre);
                 editSuscripcionModel.setMonto(monto);
@@ -461,24 +461,24 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
         TextInputEditText etFecha = findViewById(R.id.etFecha);
         TextInputEditText etFechaLimite = findViewById(R.id.etFechaLimite);
         AutoCompleteTextView autoCompleteCiclo = findViewById(R.id.autoCompleteCiclo);
-        
+
         String fechaStr = etFecha.getText() != null ? etFecha.getText().toString().trim() : "";
         String ciclo = autoCompleteCiclo.getText() != null ? autoCompleteCiclo.getText().toString().trim() : "";
-        
+
         if (fechaStr.isEmpty() || ciclo.isEmpty() || OPCION_PERSONALIZADO.equals(ciclo)) {
-            return; // No hay suficientes datos para calcular
+            return;
         }
-        
+
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
             Date firstDate = sdf.parse(fechaStr);
             if (firstDate == null) return;
-            
+
             java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
             cal.setTime(firstDate);
-            
-            // Sumar el ciclo de facturación
+
+
             switch (ciclo.toLowerCase(Locale.ROOT)) {
                 case "diario": cal.add(java.util.Calendar.DAY_OF_YEAR, 1); break;
                 case "semanal": cal.add(java.util.Calendar.WEEK_OF_YEAR, 1); break;
@@ -488,12 +488,12 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                 case "trimestral": cal.add(java.util.Calendar.MONTH, 3); break;
                 case "semestral": cal.add(java.util.Calendar.MONTH, 6); break;
                 case "anual": cal.add(java.util.Calendar.YEAR, 1); break;
-                default: return; // No auto-calcular si no está mapeado
+                default: return;
             }
-            
-            // Restar un día
+
+
             cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
-            
+
             etFechaLimite.setText(sdf.format(cal.getTime()));
         } catch (Exception e) {
             e.printStackTrace();

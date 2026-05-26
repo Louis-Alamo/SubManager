@@ -44,7 +44,7 @@ import java.util.Map;
 
 public class HistorialFragment extends Fragment {
 
-    // ─── Modelo Interno ─────────────────────────────────────────────────────────
+
     static class PagoHistorial {
         String nombre;
         String fechaUI;
@@ -52,7 +52,7 @@ public class HistorialFragment extends Fragment {
         String colorHex;
         int iconRes;
         String categoria;
-        
+
         PagoHistorial(String nombre, String fechaUI, double monto, String colorHex, int iconRes, String categoria) {
             this.nombre = nombre;
             this.fechaUI = fechaUI;
@@ -63,21 +63,21 @@ public class HistorialFragment extends Fragment {
         }
     }
 
-    // ─── Vistas ─────────────────────────────────────────────────────────────
+
     private PieChart pieChart;
     private TextView tvMesSeleccionado;
     private RecyclerView rvPagosMes;
     private View emptyState;
     private PagoAdapter adapter;
     private ChipGroup chipGroup;
-    
-    // ─── Datos ──────────────────────────────────────────────────────────────
+
+
     private SuscripcionViewModel viewModel;
     private List<SuscripcionModel> suscripcionesCache = new ArrayList<>();
     private List<RegistrosPagoModel> pagosCache = new ArrayList<>();
     private List<PagoHistorial> pagosProcesadosActuales = new ArrayList<>();
-    
-    // ─── Estado de Fecha ────────────────────────────────────────────────────
+
+
     private Calendar mesSeleccionado;
 
     @Nullable
@@ -92,16 +92,16 @@ public class HistorialFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mesSeleccionado = Calendar.getInstance(); // Mes actual
+        mesSeleccionado = Calendar.getInstance();
 
         bindViews(view);
         setupMenu();
         setupRecyclerView();
         setupChips();
         setupMesNavegacion();
-        
+
         viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
-        
+
         viewModel.getTodasLasSuscripciones().observe(getViewLifecycleOwner(), suscripciones -> {
             suscripcionesCache = suscripciones != null ? suscripciones : new ArrayList<>();
             procesarDatosDelMes();
@@ -111,7 +111,7 @@ public class HistorialFragment extends Fragment {
             pagosCache = pagos != null ? pagos : new ArrayList<>();
             procesarDatosDelMes();
         });
-        
+
         actualizarTextoMes();
     }
 
@@ -123,7 +123,7 @@ public class HistorialFragment extends Fragment {
         chipGroup          = root.findViewById(R.id.cgFiltros);
     }
 
-    // ─── Menú ⋮ ─────────────────────────────────────────────────────────────
+
     private void setupMenu() {
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -142,32 +142,32 @@ public class HistorialFragment extends Fragment {
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    // ─── Lógica Principal: Procesar Datos del Mes ───────────────────────────
+
     private void procesarDatosDelMes() {
         if (!isAdded()) return;
 
         SimpleDateFormat sdfDB = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat sdfUI = new SimpleDateFormat("d MMM", Locale.getDefault());
-        
+
         int targetMonth = mesSeleccionado.get(Calendar.MONTH);
         int targetYear = mesSeleccionado.get(Calendar.YEAR);
-        
+
         List<PagoHistorial> pagosDelMes = new ArrayList<>();
-        
+
         for (RegistrosPagoModel pago : pagosCache) {
-            // Usamos la fecha de vencimiento (para qué mes era el pago) en lugar del día físico en que se apretó el botón
-            String fechaBase = pago.getFechaVencimiento() != null && !pago.getFechaVencimiento().isEmpty() ? 
+
+            String fechaBase = pago.getFechaVencimiento() != null && !pago.getFechaVencimiento().isEmpty() ?
                                pago.getFechaVencimiento() : pago.getFechaPago();
-            
+
             if (!"Pagado".equalsIgnoreCase(pago.getEstado()) || fechaBase == null) continue;
-            
+
             try {
                 Date d = sdfDB.parse(fechaBase);
                 if (d == null) continue;
-                
+
                 Calendar c = Calendar.getInstance();
                 c.setTime(d);
-                
+
                 if (c.get(Calendar.MONTH) == targetMonth && c.get(Calendar.YEAR) == targetYear) {
                     SuscripcionModel sub = null;
                     if (pago.getSuscripcionId() != null) {
@@ -178,14 +178,14 @@ public class HistorialFragment extends Fragment {
                             }
                         }
                     }
-                    
+
                     String fechaTxt = sdfUI.format(d) + " · " + pago.getCategoria();
                     int iconRes = R.drawable.ic_service_otro;
                     if (sub != null && sub.getNombreIcono() != null) {
                         iconRes = getResources().getIdentifier(sub.getNombreIcono(), "drawable", requireContext().getPackageName());
                         if (iconRes == 0) iconRes = R.drawable.ic_service_otro;
                     }
-                    
+
                     pagosDelMes.add(new PagoHistorial(
                             pago.getNombreOrigen(),
                             fechaTxt,
@@ -197,13 +197,13 @@ public class HistorialFragment extends Fragment {
                 }
             } catch (Exception ignored) {}
         }
-        
+
         pagosProcesadosActuales = pagosDelMes;
         aplicarFiltros();
         generarGraficaDona(pagosProcesadosActuales);
     }
 
-    // ─── Generar Gráfica Dinámica ───────────────────────────────────────────
+
     private void generarGraficaDona(List<PagoHistorial> listaPagos) {
         if (listaPagos.isEmpty()) {
             pieChart.clear();
@@ -215,7 +215,7 @@ public class HistorialFragment extends Fragment {
 
         Map<String, Double> sumasPorCat = new HashMap<>();
         Map<String, String> colorPorCat = new HashMap<>();
-        
+
         double total = 0;
         for (PagoHistorial p : listaPagos) {
             double current = sumasPorCat.containsKey(p.categoria) ? sumasPorCat.get(p.categoria) : 0.0;
@@ -229,9 +229,9 @@ public class HistorialFragment extends Fragment {
 
         List<PieEntry> entradas = new ArrayList<>();
         List<Integer> colores = new ArrayList<>();
-        
+
         double sumaOtros = 0;
-        
+
         for (int i = 0; i < listaOrdenada.size(); i++) {
             Map.Entry<String, Double> entry = listaOrdenada.get(i);
             if (i < 3) {
@@ -246,7 +246,7 @@ public class HistorialFragment extends Fragment {
                 sumaOtros += entry.getValue();
             }
         }
-        
+
         if (sumaOtros > 0) {
             float porcentaje = (float) ((sumaOtros / total) * 100);
             entradas.add(new PieEntry(porcentaje, "Otros"));
@@ -268,12 +268,12 @@ public class HistorialFragment extends Fragment {
         pieChart.setHoleRadius(58f);
         pieChart.setTransparentCircleRadius(62f);
         pieChart.setHoleColor(Color.WHITE);
-        
+
         SimpleDateFormat sdfMes = new SimpleDateFormat("MMMM\nyyyy", new Locale("es", "ES"));
         pieChart.setCenterText(capitalize(sdfMes.format(mesSeleccionado.getTime())));
         pieChart.setCenterTextSize(14f);
         pieChart.setCenterTextColor(Color.parseColor("#0F172A"));
-        
+
         pieChart.getDescription().setEnabled(false);
         pieChart.getLegend().setEnabled(false);
         pieChart.setRotationEnabled(true);
@@ -281,23 +281,23 @@ public class HistorialFragment extends Fragment {
         pieChart.setDrawEntryLabels(false);
         pieChart.animateY(800);
         pieChart.invalidate();
-        
-        // Actualizar la leyenda visual debajo de la dona
+
+
         updateLegend(entradas, colores);
     }
-    
+
     private void updateLegend(List<PieEntry> entradas, List<Integer> colores) {
         View view = getView();
         if (view == null) return;
-        
+
         LinearLayout llLegend1 = view.findViewById(R.id.llLegend1);
         View vColor1 = view.findViewById(R.id.vLegendColor1);
         TextView tvText1 = view.findViewById(R.id.tvLegendText1);
-        
+
         LinearLayout llLegend2 = view.findViewById(R.id.llLegend2);
         View vColor2 = view.findViewById(R.id.vLegendColor2);
         TextView tvText2 = view.findViewById(R.id.tvLegendText2);
-        
+
         LinearLayout llLegend3 = view.findViewById(R.id.llLegend3);
         View vColor3 = view.findViewById(R.id.vLegendColor3);
         TextView tvText3 = view.findViewById(R.id.tvLegendText3);
@@ -305,7 +305,7 @@ public class HistorialFragment extends Fragment {
         if (llLegend1 != null) llLegend1.setVisibility(View.GONE);
         if (llLegend2 != null) llLegend2.setVisibility(View.GONE);
         if (llLegend3 != null) llLegend3.setVisibility(View.GONE);
-        
+
         if (entradas.size() > 0 && llLegend1 != null) {
             llLegend1.setVisibility(View.VISIBLE);
             tvText1.setText(entradas.get(0).getLabel());
@@ -322,13 +322,13 @@ public class HistorialFragment extends Fragment {
             vColor3.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colores.get(2)));
         }
     }
-    
+
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    // ─── RecyclerView ───────────────────────────────────────────────────────
+
     private void setupRecyclerView() {
         adapter = new PagoAdapter(new ArrayList<>());
         rvPagosMes.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -336,7 +336,7 @@ public class HistorialFragment extends Fragment {
         rvPagosMes.setNestedScrollingEnabled(false);
     }
 
-    // ─── Chips de filtro ────────────────────────────────────────────────────
+
     private void setupChips() {
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             aplicarFiltros();
@@ -345,10 +345,10 @@ public class HistorialFragment extends Fragment {
 
     private void aplicarFiltros() {
         if (pagosProcesadosActuales == null) return;
-        
+
         List<PagoHistorial> filtrados = new ArrayList<>();
         List<Integer> checkedIds = chipGroup.getCheckedChipIds();
-        
+
         if (checkedIds.isEmpty() || checkedIds.get(0) == R.id.chipTodos) {
             filtrados.addAll(pagosProcesadosActuales);
         } else {
@@ -362,14 +362,14 @@ public class HistorialFragment extends Fragment {
                 }
             }
         }
-        
+
         adapter.updateItems(filtrados);
         boolean sinDatos = filtrados.isEmpty();
         rvPagosMes.setVisibility(sinDatos ? View.GONE : View.VISIBLE);
         emptyState.setVisibility(sinDatos ? View.VISIBLE : View.GONE);
     }
 
-    // ─── Navegación de mes con flechas ──────────────────────────────────────
+
     private void setupMesNavegacion() {
         View btnAnterior  = requireView().findViewById(R.id.btnMesAnterior);
         View btnSiguiente = requireView().findViewById(R.id.btnMesSiguiente);
@@ -379,20 +379,20 @@ public class HistorialFragment extends Fragment {
             actualizarTextoMes();
             procesarDatosDelMes();
         });
-        
+
         btnSiguiente.setOnClickListener(v -> {
             mesSeleccionado.add(Calendar.MONTH, 1);
             actualizarTextoMes();
             procesarDatosDelMes();
         });
     }
-    
+
     private void actualizarTextoMes() {
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", new Locale("es", "ES"));
         tvMesSeleccionado.setText(capitalize(sdf.format(mesSeleccionado.getTime())));
     }
 
-    // ─── Adapter interno ────────────────────────────────────────────────────
+
     private static class PagoAdapter extends RecyclerView.Adapter<PagoAdapter.VH> {
 
         private final List<PagoHistorial> items;
@@ -418,7 +418,7 @@ public class HistorialFragment extends Fragment {
             h.tvNombre.setText(p.nombre);
             h.tvFechaCategoria.setText(p.fechaUI);
             h.tvMonto.setText(String.format(Locale.getDefault(), "-$%.2f", p.monto));
-            
+
             if (p.iconRes != 0) {
                 h.ivAppIcon.setBackground(null);
                 h.ivAppIcon.setImageResource(p.iconRes);

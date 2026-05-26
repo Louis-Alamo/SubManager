@@ -31,26 +31,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 import retrofit2.Call;
 import retrofit2.Response;
 
-/**
- * Repositorio central de sincronización remota.
- *
- * Estrategia: "Replace-All" offline-first con doble protección contra HTTP 409
- *
- *  PUSH (Respaldar) — doble capa de seguridad:
- *    1. DELETE en Supabase del usuario → verificado: si falla, se aborta
- *    2. POST con UPSERT (on_conflict=id + resolution=merge-duplicates) → tolerante a duplicados residuales
- *    3. Actualiza ultima_sincronizacion en Room y Supabase
- *
- * Para el Pull (Restaurar):
- *  1. Descarga todos los datos de Supabase
- *  2. Borra los datos locales en Room
- *  3. Inserta los datos remotos en Room
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class RemoteSyncRepository {
 
     private static final String TAG = "RemoteSyncRepo";
 
-    /** Resultado de una operación de sincronización */
+
     public enum SyncStatus {
         SUCCESS,
         NO_NETWORK,
@@ -58,7 +58,7 @@ public class RemoteSyncRepository {
         ERROR,
     }
 
-    /** Callback para notificar el resultado en el hilo principal */
+
     public interface SyncCallback {
         void onResult(SyncStatus status, String message);
     }
@@ -69,21 +69,21 @@ public class RemoteSyncRepository {
     private final SessionManager session;
     private final Handler mainHandler;
 
-    // Estado global de sincronización para observar desde la UI
+
     public static final MutableLiveData<Boolean> isSyncing = new MutableLiveData<>(false);
     public static final MutableLiveData<String> syncResult = new MutableLiveData<>(null);
 
-    /**
-     * Executor estático (singleton) → un único hilo de sync compartido entre todas las
-     * instancias del repositorio. Evita que múltiples operaciones (insertar, actualizar,
-     * eliminar) encolen syncAll() en hilos separados y colisionen.
-     */
+
+
+
+
+
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    /**
-     * Bandera atómica que evita ejecuciones concurrentes de syncAll().
-     * Si ya hay una sync en curso, la nueva invocación retorna inmediatamente.
-     */
+
+
+
+
     private static final AtomicBoolean isSyncRunning = new AtomicBoolean(false);
 
     public RemoteSyncRepository(Context context) {
@@ -94,16 +94,16 @@ public class RemoteSyncRepository {
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PUSH — Local → Supabase (Respaldar)
-    // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Sincroniza todos los datos locales con Supabase.
-     * Solo funciona si el usuario es Premium y hay conexión.
-     *
-     * @param callback Resultado en el hilo principal.
-     */
+
+
+
+
+
+
+
+
+
     public void syncAll(SyncCallback callback) {
         if (!session.isPremium()) {
             notifyCallback(
@@ -123,7 +123,7 @@ public class RemoteSyncRepository {
         }
 
         executor.execute(() -> {
-            // Anti-concurrencia: si ya hay una sync activa, ignorar esta invocación
+
             if (!isSyncRunning.compareAndSet(false, true)) {
                 notifyCallback(callback, SyncStatus.SUCCESS, "Sincronización ya en progreso.");
                 return;
@@ -153,11 +153,11 @@ public class RemoteSyncRepository {
                 String userFilter = "eq." + userId;
                 int total = 0;
 
-                // ── UPSERT (Insertar o Actualizar) ──
-                // Ya no borramos la base de datos remotamente. 
-                // Usamos Supabase UPSERT: Si el ID ya existe, lo actualiza. Si no existe, lo inserta.
 
-                // 1. Insertar/Actualizar Suscripciones
+
+
+
+
                 List<SuscripcionModel> suscripciones = db.suscripcionDao().getAllSuscripcionesSync();
                 if (!suscripciones.isEmpty()) {
                     List<SuscripcionDto> dtos = new ArrayList<>();
@@ -170,7 +170,7 @@ public class RemoteSyncRepository {
                     total += dtos.size();
                 }
 
-                // 2. Insertar/Actualizar Servicios Físicos
+
                 List<ServicioFisicoModel> servicios = db.suscripcionDao().getAllServiciosFisicosSync();
                 if (!servicios.isEmpty()) {
                     List<ServicioFisicoDto> dtos = new ArrayList<>();
@@ -183,7 +183,7 @@ public class RemoteSyncRepository {
                     total += dtos.size();
                 }
 
-                // 3. Insertar/Actualizar Terceros Compartidos
+
                 List<TercerosCompartidosModel> terceros = db.suscripcionDao().getAllTercerosSync();
                 if (!terceros.isEmpty()) {
                     List<TerceroCompartidoDto> dtos = new ArrayList<>();
@@ -196,7 +196,7 @@ public class RemoteSyncRepository {
                     total += dtos.size();
                 }
 
-                // 4. Insertar/Actualizar Registros de Pago
+
                 List<RegistrosPagoModel> registros = db.suscripcionDao().getAllRegistrosPagoSyncValidos();
                 if (!registros.isEmpty()) {
                     List<RegistroPagoDto> dtos = new ArrayList<>();
@@ -209,7 +209,7 @@ public class RemoteSyncRepository {
                     total += dtos.size();
                 }
 
-                // ── 5. Configuracion App ──────────────────────────────────────
+
                 ConfiguracionAppModel configuracion = db
                     .suscripcionDao()
                     .getConfiguracionSync();
@@ -223,11 +223,11 @@ public class RemoteSyncRepository {
                     }
                 }
 
-                // ── 6. Actualizar ultima_sincronizacion ───────────────────────
+
                 String ahora = Instant.now().toString();
                 actualizarUltimaSincronizacion(ahora);
 
-                // Señalamos el éxito (lo procesará el bloque finally para evitar problemas de timing con la UI)
+
                 final boolean isSuccess = true;
 
                 final int totalFinal = total;
@@ -252,29 +252,29 @@ public class RemoteSyncRepository {
                     "Error inesperado: " + e.getMessage()
                 );
             } finally {
-                // Siempre liberar el lock y el estado de la UI
+
                 isSyncRunning.set(false);
                 mainHandler.post(() -> {
                     if (Boolean.TRUE.equals(isSyncing.getValue())) {
                         isSyncing.setValue(false);
-                        // IMPORTANTE: syncResult ya se actualiza correctamente dentro de notifyCallback()
-                        // en todas las rutas (éxito o error).
+
+
                     }
                 });
             }
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PULL — Supabase → Local (Restaurar)
-    // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Restaura todos los datos desde Supabase a Room.
-     * Solo funciona si el usuario es Premium y hay conexión.
-     *
-     * @param callback Resultado en el hilo principal.
-     */
+
+
+
+
+
+
+
+
+
     public void pullAll(SyncCallback callback) {
         if (!session.isPremium()) {
             notifyCallback(
@@ -314,7 +314,7 @@ public class RemoteSyncRepository {
                 }
                 String userFilter = "eq." + userId;
 
-                // ── 1. Suscripciones ──────────────────────────────────────────
+
                 Response<List<SuscripcionDto>> susResp = api
                     .getSuscripciones(userFilter)
                     .execute();
@@ -327,7 +327,7 @@ public class RemoteSyncRepository {
                     db.suscripcionDao().insertAllSuscripciones(models);
                 }
 
-                // ── 2. Servicios físicos ──────────────────────────────────────
+
                 Response<List<ServicioFisicoDto>> srvResp = api
                     .getServiciosFisicos(userFilter)
                     .execute();
@@ -340,7 +340,7 @@ public class RemoteSyncRepository {
                     db.suscripcionDao().insertAllServiciosFisicos(models);
                 }
 
-                // ── 3. Registros de pago ──────────────────────────────────────
+
                 Response<List<RegistroPagoDto>> regResp = api
                     .getRegistrosPago(userFilter)
                     .execute();
@@ -353,7 +353,7 @@ public class RemoteSyncRepository {
                     db.suscripcionDao().insertAllRegistrosPago(models);
                 }
 
-                // ── 4. Actualizar timestamp ───────────────────────────────────
+
                 actualizarUltimaSincronizacion(Instant.now().toString());
 
                 mainHandler.post(() -> {
@@ -377,12 +377,12 @@ public class RemoteSyncRepository {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers internos
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private void actualizarUltimaSincronizacion(String timestamp) {
-        // Room local
+
         ConfiguracionAppModel config = db
             .suscripcionDao()
             .getConfiguracionSync();
@@ -392,16 +392,16 @@ public class RemoteSyncRepository {
         config.setUltimaSincronizacion(timestamp);
         db.suscripcionDao().upsertConfiguracion(config);
 
-        // Remoto Supabase
+
         try {
             long userId = session.getRemoteUserId();
             String userFilter = "eq." + userId;
-            
+
             ConfiguracionAppDto dto = new ConfiguracionAppDto();
             if (userId != -1) dto.usuarioId = userId;
             dto.ultimaSincronizacion = timestamp;
-            
-            // Intentar PATCH primero, si falla hacer POST
+
+
             Response<Void> patchResp = api
                 .updateConfiguracion(userFilter, dto)
                 .execute();
@@ -422,7 +422,7 @@ public class RemoteSyncRepository {
         SyncStatus status,
         String message
     ) {
-        // Actualizar el estado global para la UI (como MainActivity)
+
         mainHandler.post(() -> {
             if (status == SyncStatus.SUCCESS) {
                 syncResult.setValue("SUCCESS");
@@ -431,14 +431,14 @@ public class RemoteSyncRepository {
             }
         });
 
-        // Notificar al llamador original si existe (no silencioso)
+
         if (callback == null) return;
         mainHandler.post(() -> callback.onResult(status, message));
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Convertidores Model → DTO
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private SuscripcionDto toDto(SuscripcionModel m) {
         SuscripcionDto dto = new SuscripcionDto();
@@ -539,9 +539,9 @@ public class RemoteSyncRepository {
         return dto;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Convertidores DTO → Model (para Pull)
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     private SuscripcionModel toModel(SuscripcionDto dto) {
         SuscripcionModel m = new SuscripcionModel();

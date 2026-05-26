@@ -33,10 +33,10 @@ public class NotificationHelper {
     }
 
     public static void sendNotification(Context context, int notificationId, String title, String message) {
-        // Verificar permiso en Android 13+ (API 33+)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                return; // No hay permiso
+                return;
             }
         }
 
@@ -50,7 +50,7 @@ public class NotificationHelper {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notifications) // Icono vectorial válido para notificaciones
+                .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

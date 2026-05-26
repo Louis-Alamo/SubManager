@@ -49,7 +49,7 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
             holder.ivLogo.setImageResource(R.mipmap.ic_launcher);
         }
 
-        // Navigate to detail on tap
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetalleSuscripcionActivity.class);
             intent.putExtra("suscripcion_id", sub.getId());

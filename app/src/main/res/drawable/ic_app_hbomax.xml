@@ -3,10 +3,10 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Fondo negro redondeado -->
+
   <path android:pathData="M0,20 Q0,0 20,0 L88,0 Q108,0 108,20 L108,88 Q108,108 88,108 L20,108 Q0,108 0,88 Z"
       android:fillColor="#000000"/>
-  <!-- Letra M blanca estilizada - Max -->
+
   <path android:pathData="M20,34 L20,74 L30,74 L30,50 L44,74 L54,74 L54,34 L44,34 L44,58 L30,34 Z"
       android:fillColor="#FFFFFF"/>
   <path android:pathData="M58,34 L58,74 L88,74 L88,64 L68,64 L68,34 Z"

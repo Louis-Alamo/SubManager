@@ -7,7 +7,7 @@
     android:paddingHorizontal="18dp"
     android:paddingVertical="12dp">
 
-    <!-- Icono Check -->
+
     <FrameLayout
         android:layout_width="38dp"
         android:layout_height="38dp">
@@ -25,7 +25,7 @@
             android:contentDescription="@null"/>
     </FrameLayout>
 
-    <!-- Información de Fecha -->
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:layout_marginTop="2dp"/>
     </LinearLayout>
 
-    <!-- Monto -->
+
     <TextView
         android:id="@+id/tvMontoPago"
         android:layout_width="wrap_content"

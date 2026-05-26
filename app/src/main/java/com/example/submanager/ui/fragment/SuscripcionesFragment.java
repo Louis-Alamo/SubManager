@@ -36,10 +36,10 @@ public class SuscripcionesFragment extends Fragment {
     private SearchView svBuscar;
     private String currentQuery = "";
 
-    // El cerebro de nuestra pantalla
+
     private SuscripcionViewModel viewModel;
 
-    // Aquí guardaremos la copia fresca que nos mande la base de datos
+
     private List<SuscripcionModel> listaMaestra = new ArrayList<>();
 
     @Nullable
@@ -56,14 +56,14 @@ public class SuscripcionesFragment extends Fragment {
         adaptador = new SuscripcionAdapter(new ArrayList<>());
         rvSuscripciones.setAdapter(adaptador);
 
-        // Botón flotante → abrir pantalla de nueva suscripción
+
         FloatingActionButton fabAgregar = view.findViewById(R.id.fabAgregar);
         fabAgregar.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), NuevaSuscripcionActivity.class);
             startActivity(intent);
         });
 
-        // Configurar el buscador
+
         svBuscar = view.findViewById(R.id.svBuscar);
         svBuscar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -87,22 +87,22 @@ public class SuscripcionesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Instanciamos el ViewModel
+
         viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
 
-        // 2. Observamos la base de datos de Room en tiempo real
+
         viewModel.getTodasLasSuscripciones().observe(getViewLifecycleOwner(), suscripciones -> {
             if (suscripciones != null) {
-                // Actualizamos nuestra lista maestra con los datos reales de SQLite
+
                 listaMaestra.clear();
                 listaMaestra.addAll(suscripciones);
 
-                // Aplicamos el filtro dependiendo de qué Chip esté seleccionado en este momento
+
                 aplicarFiltroActual();
             }
         });
 
-        // 3. Escuchamos los clics en los Chips
+
         cgCategorias.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (!checkedIds.isEmpty()) {
                 aplicarFiltroActual();
@@ -110,7 +110,7 @@ public class SuscripcionesFragment extends Fragment {
         });
     }
 
-    // Método auxiliar con tu lógica exacta de filtrado
+
     private void aplicarFiltroActual() {
         if (listaMaestra.isEmpty())
             return;
@@ -142,7 +142,7 @@ public class SuscripcionesFragment extends Fragment {
             }
         }
 
-        // Finalmente, mandamos la lista filtrada al RecyclerView
+
         adaptador.actualizarLista(listaFiltrada);
     }
 }

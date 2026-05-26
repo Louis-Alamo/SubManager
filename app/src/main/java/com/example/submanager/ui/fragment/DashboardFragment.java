@@ -76,7 +76,7 @@ public class DashboardFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
 
-        // Resumen general desde la tabla completa
+
         viewModel.getTodasLasSuscripciones().observe(getViewLifecycleOwner(), suscripciones -> {
             if (suscripciones != null) {
                 suscripcionesCache = suscripciones;
@@ -93,7 +93,7 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        // Proximos vencimientos directamente desde Room
+
         viewModel.getSuscripcionesProximas().observe(getViewLifecycleOwner(), suscripcionesProximas -> {
             if (suscripcionesProximas != null) {
                 setupUpcomingList(suscripcionesProximas);
@@ -185,7 +185,7 @@ public class DashboardFragment extends Fragment {
             if (!s.isEstaActiva()) continue;
 
             long dias = getDiasRestantes(s.getFechaProximoCobro());
-            // Mostrar solo si vence en los próximos 7 días
+
             if (dias >= 0 && dias <= 7) {
                 proximos.add(s);
             }
@@ -258,7 +258,7 @@ public class DashboardFragment extends Fragment {
         if (cardServ != null) cardServ.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), NuevoServicioActivity.class)));
 
-        // Chips de acceso rapido nuevos
+
         View chipSubs   = root.findViewById(R.id.cardShortcutSubs);
         View chipAlertas = root.findViewById(R.id.cardShortcutAlertas);
         if (chipSubs != null)    chipSubs.setOnClickListener(v -> navigateTo(R.id.nav_suscripciones));
@@ -267,7 +267,7 @@ public class DashboardFragment extends Fragment {
         View tvSeeAll = root.findViewById(R.id.tvSeeAll);
         if (tvSeeAll != null) tvSeeAll.setOnClickListener(v -> navigateTo(R.id.nav_alertas));
 
-        // Rellenar label del mes en la Hero Card
+
         TextView tvMes = root.findViewById(R.id.tvMesActual);
         if (tvMes != null) {
             java.text.SimpleDateFormat sdfMes = new java.text.SimpleDateFormat("MMMM yyyy", new java.util.Locale("es", "MX"));

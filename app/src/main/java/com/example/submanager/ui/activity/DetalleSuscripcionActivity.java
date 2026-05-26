@@ -71,7 +71,7 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
                     currentModel = model;
                     loadData(model);
                 } else {
-                    finish(); // Si fue eliminada, el model será null
+                    finish();
                 }
             });
 
@@ -172,7 +172,7 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
             .show();
     }
 
-    // ─── Utilidades de Fechas ───────────────────────────────────────────────
+
 
     private String formatearFecha(String fechaStr) {
         if (fechaStr == null || fechaStr.isEmpty()) return "N/A";
@@ -192,7 +192,7 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         ImageView ivSyncDone = findViewById(R.id.ivSyncDone);
         TextView tvSyncStatus = findViewById(R.id.tvSyncStatus);
 
-        if (llSyncIndicator == null) return; // Por precaución
+        if (llSyncIndicator == null) return;
 
         ViewCompat.setOnApplyWindowInsetsListener(llSyncIndicator, (v, insets) -> {
             int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
@@ -214,7 +214,7 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
                     if (result != null) {
                         pbSync.setVisibility(View.GONE);
                         ivSyncDone.setVisibility(View.VISIBLE);
-                        
+
                         if (result.equals("SUCCESS")) {
                             tvSyncStatus.setText("Sincronizado");
                             ivSyncDone.setImageResource(R.drawable.ic_check_circle);
@@ -241,7 +241,7 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
             if (result != null && Boolean.FALSE.equals(RemoteSyncRepository.isSyncing.getValue())) {
                 pbSync.setVisibility(View.GONE);
                 ivSyncDone.setVisibility(View.VISIBLE);
-                
+
                 if (result.equals("SUCCESS")) {
                     tvSyncStatus.setText("Sincronizado");
                     ivSyncDone.setImageResource(R.drawable.ic_check_circle);

@@ -46,7 +46,7 @@ public class CompraExitosaActivity extends AppCompatActivity {
         tvCompraMonto.setText("$" + monto + " MXN");
         tvCompraPago.setText("Tarjeta de crédito");
 
-        // Compute renewal date if not passed
+
         if (expiry == null) {
             Calendar cal = Calendar.getInstance();
             if (plan.contains("Anual")) cal.add(Calendar.YEAR, 1);
@@ -59,13 +59,13 @@ public class CompraExitosaActivity extends AppCompatActivity {
         }
         tvCompraRenovacion.setText(expiry);
 
-        // Ensure Premium is persisted (safety net if launched independently)
+
         new SessionManager(this).savePremium(plan, expiry);
     }
 
     private void setupListeners() {
         btnComenzar.setOnClickListener(v -> {
-            // Return to home — clear all activities on top of MainActivity
+
             android.content.Intent intent = new android.content.Intent(this,
                     com.example.submanager.MainActivity.class);
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP

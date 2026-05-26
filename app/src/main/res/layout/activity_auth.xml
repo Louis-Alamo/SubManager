@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="@color/background">
 
-    <!-- BACK BUTTON -->
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -26,7 +26,7 @@
             android:background="?attr/selectableItemBackgroundBorderless" />
     </RelativeLayout>
 
-    <!-- HEADER -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             android:layout_marginTop="6dp"/>
     </LinearLayout>
 
-    <!-- TABS -->
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
@@ -91,7 +91,7 @@
             android:text="Crear cuenta"/>
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- FORM CONTAINER — scroll wraps both forms -->
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -106,7 +106,7 @@
             android:paddingHorizontal="16dp"
             android:paddingBottom="32dp">
 
-            <!-- ─── LOGIN FORM ─── -->
+
             <LinearLayout
                 android:id="@+id/formLogin"
                 android:layout_width="match_parent"
@@ -192,7 +192,7 @@
                     android:backgroundTint="@color/primary"
                     app:cornerRadius="16dp" />
 
-                <!-- divider con "o continúa con" -->
+
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:gravity="center_vertical"
                     android:layout_marginBottom="16dp">
@@ -232,7 +232,7 @@
                     android:paddingVertical="10dp"/>
             </LinearLayout>
 
-            <!-- ─── REGISTER FORM ─── -->
+
             <LinearLayout
                 android:id="@+id/formRegistro"
                 android:layout_width="match_parent"

@@ -3,13 +3,13 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Fondo naranja Crunchyroll -->
+
   <path android:pathData="M54,4 C26.4,4 4,26.4 4,54 C4,81.6 26.4,104 54,104 C81.6,104 104,81.6 104,54 C104,26.4 81.6,4 54,4 Z"
       android:fillColor="#F47521"/>
-  <!-- Círculo exterior blanco -->
+
   <path android:pathData="M54,18 C34,18 18,34 18,54 C18,74 34,90 54,90 C74,90 90,74 90,54 C90,34 74,18 54,18 Z M54,26 C69.5,26 82,38.5 82,54 C82,69.5 69.5,82 54,82 C38.5,82 26,69.5 26,54 C26,38.5 38.5,26 54,26 Z"
       android:fillColor="#FFFFFF"/>
-  <!-- Triángulo play -->
+
   <path android:pathData="M46,40 L46,68 L72,54 Z"
       android:fillColor="#FFFFFF"/>
 </vector>

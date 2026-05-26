@@ -3,17 +3,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Fondo azul Paramount -->
+
   <path android:pathData="M0,20 Q0,0 20,0 L88,0 Q108,0 108,20 L108,88 Q108,108 88,108 L20,108 Q0,108 0,88 Z"
       android:fillColor="#0064FF"/>
-  <!-- Montaña Paramount -->
+
   <path android:pathData="M54,18 L80,60 L28,60 Z"
       android:fillColor="#FFFFFF"/>
-  <!-- Estrellas alrededor de la montaña -->
+
   <path android:pathData="M30,50 L32,44 L34,50 L40,50 L35,54 L37,60 L32,56 L27,60 L29,54 L24,50 Z"
       android:fillColor="#FFD700"
       android:fillAlpha="0.0"/>
-  <!-- Texto P+ simplificado -->
+
   <path android:pathData="M26,68 L26,88 L34,88 L34,80 L42,80 L42,74 C42,70 40,68 36,68 Z M34,72 L36,72 C37,72 38,73 38,74 L38,76 L34,76 Z"
       android:fillColor="#FFFFFF"/>
   <path android:pathData="M50,68 L50,88 L58,88 L58,80 L62,88 L72,88 L66,78 C69,76 70,74 70,72 C70,70 68,68 64,68 Z M58,72 L64,72 C65,72 66,73 66,74 C66,75 65,76 64,76 L58,76 Z"

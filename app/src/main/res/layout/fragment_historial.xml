@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- ════════════════════════════════════════════════════ -->
-    <!--  TOOLBAR                                             -->
-    <!-- ════════════════════════════════════════════════════ -->
+
+
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:background="@color/background"
             app:contentInsetStart="20dp">
 
-            <!-- Título a la izquierda -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,14 +32,14 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <!-- Menú ⋮ (overflow) alineado a la derecha dentro del Toolbar -->
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ════════════════════════════════════════════════════ -->
-    <!--  CONTENIDO CON SCROLL                               -->
-    <!-- ════════════════════════════════════════════════════ -->
+
+
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -53,9 +53,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  SELECTOR DE MES                            -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                     android:textSize="13sp"
                     android:layout_marginEnd="10dp" />
 
-                <!-- Botón flecha izquierda -->
+
                 <ImageView
                     android:id="@+id/btnMesAnterior"
                     android:layout_width="36dp"
@@ -84,7 +84,7 @@
                     android:padding="8dp"
                     android:contentDescription="Mes anterior" />
 
-                <!-- Mes seleccionado -->
+
                 <TextView
                     android:id="@+id/tvMesSeleccionado"
                     android:layout_width="0dp"
@@ -98,7 +98,7 @@
                     android:clickable="true"
                     android:focusable="true" />
 
-                <!-- Botón flecha derecha -->
+
                 <ImageView
                     android:id="@+id/btnMesSiguiente"
                     android:layout_width="36dp"
@@ -111,9 +111,9 @@
 
             </LinearLayout>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  CARD GRÁFICA DE DONA                       -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,13 +129,13 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <!-- Gráfica de dona (MPAndroidChart) -->
+
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/pieChart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp" />
 
-                    <!-- Leyenda: 3 ítems en fila -->
+
                     <LinearLayout
                         android:id="@+id/llLeyendaContainer"
                         android:layout_width="match_parent"
@@ -144,7 +144,7 @@
                         android:gravity="center"
                         android:layout_marginTop="12dp">
 
-                        <!-- Item 1 -->
+
                         <LinearLayout
                             android:id="@+id/llLegend1"
                             android:layout_width="0dp"
@@ -169,7 +169,7 @@
                                 android:layout_marginStart="6dp" />
                         </LinearLayout>
 
-                        <!-- Item 2 -->
+
                         <LinearLayout
                             android:id="@+id/llLegend2"
                             android:layout_width="0dp"
@@ -194,7 +194,7 @@
                                 android:layout_marginStart="6dp" />
                         </LinearLayout>
 
-                        <!-- Item 3 -->
+
                         <LinearLayout
                             android:id="@+id/llLegend3"
                             android:layout_width="0dp"
@@ -224,9 +224,9 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  CHIPS DE FILTRO                            -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/cgFiltros"
                 android:layout_width="match_parent"
@@ -260,9 +260,9 @@
 
             </com.google.android.material.chip.ChipGroup>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  HEADER: "Detalle Mensual"  +  "Ver todos+" -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -298,9 +298,9 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  LISTA DE PAGOS DEL MES                     -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -320,9 +320,9 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  EMPTY STATE: sin datos en el mes           -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <LinearLayout
                 android:id="@+id/emptyStateHistorial"
                 android:layout_width="match_parent"

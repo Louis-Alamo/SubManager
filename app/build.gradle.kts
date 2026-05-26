@@ -47,32 +47,32 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.viewpager2)
 
-    // Room
+
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
 
-    // Lifecycle
+
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
 
-    // Navigation
+
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
-    // WorkManager
+
     implementation("androidx.work:work-runtime:2.9.0")
 
-    // Charts
+
     implementation(libs.mpandroidchart)
 
-    // Image Loading
+
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
 
-    // Shimmer Effect
+
     implementation(libs.shimmer)
 
-    // Network — Supabase REST via Retrofit
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.logging)

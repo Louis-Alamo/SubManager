@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Repositorio de Suscripciones — offline-first.
- *
- * Las escrituras van siempre primero a Room.
- * Si el usuario es Premium y hay red, se delega al RemoteSyncRepository
- * para una sincronización completa tras cada operación de escritura.
- */
+
+
+
+
+
+
+
 public class SuscripcionRepository {
 
     private final SuscripcionDao suscripcionDao;
@@ -31,7 +31,7 @@ public class SuscripcionRepository {
     private final LiveData<Double> montoTotalActivas;
     private final ExecutorService executorService;
 
-    // Para sincronización remota
+
     private final RemoteSyncRepository remoteSyncRepository;
     private final SessionManager sessionManager;
     private final Application application;
@@ -46,15 +46,15 @@ public class SuscripcionRepository {
         suscripcionesProximas           = suscripcionDao.getSuscripcionesProximas();
         montoTotalActivas               = suscripcionDao.getMontoTotalActivas();
 
-        // Un único hilo para operaciones Room → evita concurrencia en DB
-        // y reduce los sync triggers simultáneos cuando el usuario hace
-        // varias operaciones rápidas (p.ej. insertar + actualizar en marcarComoPagado).
+
+
+
         executorService         = Executors.newSingleThreadExecutor();
         remoteSyncRepository    = new RemoteSyncRepository(application);
         sessionManager          = new SessionManager(application);
     }
 
-    // ─── LECTURA (LiveData — ya asíncronas) ───────────────────────────────────
+
 
     public LiveData<List<SuscripcionModel>> getTodasLasSuscripciones() {
         return todasLasSuscripciones;
@@ -76,12 +76,12 @@ public class SuscripcionRepository {
         return suscripcionDao.getSuscripcionById(id);
     }
 
-    // ─── ESCRITURA (hilo secundario + sync opcional) ──────────────────────────
 
-    /**
-     * Inserta una suscripción en Room y, si el usuario es Premium y hay red,
-     * dispara una sincronización completa con Supabase.
-     */
+
+
+
+
+
     public void insertar(SuscripcionModel suscripcion) {
         executorService.execute(() -> {
             suscripcionDao.insertarSuscripcion(suscripcion);
@@ -89,9 +89,9 @@ public class SuscripcionRepository {
         });
     }
 
-    /**
-     * Actualiza una suscripción en Room y dispara sync si procede.
-     */
+
+
+
     public void actualizar(SuscripcionModel suscripcion) {
         executorService.execute(() -> {
             suscripcionDao.updateSuscripcion(suscripcion);
@@ -99,9 +99,9 @@ public class SuscripcionRepository {
         });
     }
 
-    /**
-     * Elimina una suscripción por ID de Room y dispara sync si procede.
-     */
+
+
+
     public void eliminar(int id) {
         executorService.execute(() -> {
             suscripcionDao.deleteSuscripcionById(id);
@@ -109,7 +109,7 @@ public class SuscripcionRepository {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+
 
     public LiveData<List<RegistrosPagoModel>> getPagosBySuscripcion(int suscripcionId) {
         return suscripcionDao.getPagosBySuscripcion(suscripcionId);
@@ -126,20 +126,20 @@ public class SuscripcionRepository {
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Si el usuario es Premium y hay conexión, dispara una sincronización
-     * completa silenciosa (sin callback de UI).
-     *
-     * Se usa un Handler para agregar un pequeño delay (300ms) sin bloquear
-     * el hilo de la base de datos. Esto agrupa operaciones rápidas
-     * consecutivas en un único sync.
-     */
+
+
+
+
+
+
+
+
+
     private void triggerSyncIfNeeded() {
         if (sessionManager.isPremium() && NetworkUtils.isNetworkAvailable(application)) {
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                remoteSyncRepository.syncAll(null); // callback null = sincronización silenciosa
+                remoteSyncRepository.syncAll(null);
             }, 300);
         }
     }

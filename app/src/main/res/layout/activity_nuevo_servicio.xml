@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- TOOLBAR -->
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -43,7 +43,7 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <!-- SUBTITLE -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="12dp" />
 
-        <!-- TIPO DE SERVICIO -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- Each service type chip -->
+
                 <LinearLayout android:id="@+id/chipLuz"
                     android:layout_width="80dp" android:layout_height="76dp"
                     android:orientation="vertical" android:gravity="center"
@@ -160,7 +160,7 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <!-- FORM CARD -->
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -176,7 +176,7 @@
                 android:orientation="vertical"
                 android:padding="18dp">
 
-                <!-- Nombre del servicio -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -195,7 +195,7 @@
                         android:inputType="textCapSentences"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Proveedor -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
                         android:inputType="textCapSentences"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Toggle monto variable -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -238,7 +238,7 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <!-- Monto -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilMonto"
                     android:layout_width="match_parent"
@@ -269,7 +269,7 @@
                     android:visibility="gone"
                     android:layout_marginBottom="14dp" />
 
-                <!-- Fecha de corte -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -291,7 +291,7 @@
                         android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Notas -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
         </androidx.cardview.widget.CardView>
 
 
-        <!-- GASTOS COMPARTIDOS -->
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -354,7 +354,7 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <!-- Personas compartidas (visible cuando switch ON) -->
+
                 <LinearLayout
                     android:id="@+id/containerPersonas"
                     android:layout_width="match_parent"
@@ -413,7 +413,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- SAVE BUTTON -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGuardarServicio"
             android:layout_width="match_parent"
