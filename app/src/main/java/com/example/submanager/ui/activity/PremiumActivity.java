@@ -92,7 +92,7 @@ public class PremiumActivity extends AppCompatActivity {
         tvRestaurar.setOnClickListener(v -> {
             if (sessionManager.isPremium()) {
                 Snackbar.make(tvRestaurar,
-                        "✅ Premium activo hasta " + sessionManager.getPremiumExpiry(),
+                        "Premium activo hasta " + sessionManager.getPremiumExpiry(),
                         Snackbar.LENGTH_LONG).show();
             } else {
                 // Intentar recuperar el premium desde Supabase
@@ -194,7 +194,7 @@ public class PremiumActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             showAlreadyPremiumState();
                             Snackbar.make(anchor,
-                                    "✅ ¡Premium restaurado! Plan: " + usuario.tipoPlan + " hasta " + usuario.fechaRenovacion,
+                                    "Premium restaurado. Plan: " + usuario.tipoPlan + " hasta " + usuario.fechaRenovacion,
                                     Snackbar.LENGTH_LONG).show();
                         });
                     } else {
@@ -217,7 +217,7 @@ public class PremiumActivity extends AppCompatActivity {
     }
 
     private void showAlreadyPremiumState() {
-        btnSuscribirse.setText("Ya eres Premium 👑");
+        btnSuscribirse.setText("Ya eres Premium");
         btnSuscribirse.setEnabled(false);
         btnSuscribirse.setAlpha(0.6f);
         cardPlanMensual.setVisibility(View.GONE);

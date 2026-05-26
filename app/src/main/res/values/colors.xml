@@ -35,6 +35,7 @@
     <!--         SEMANTIC — Warning        -->
     <!--  ===============================  -->
     <color name="warning">#F97316</color>
+    <color name="warning_bg">#FFF7ED</color>
 
     <!--  ===============================  -->
     <!--         SEMANTIC — Selected       -->
@@ -50,6 +51,7 @@
     <color name="text_hint">#9CA3AF</color>
     <color name="text_on_primary">#FFFFFF</color>
     <color name="border">#E5E7EB</color>
+    <color name="surface_stroke">#EEF2F7</color>
     <color name="divider">#D1D5DB</color>
     <color name="background">#F4F5F7</color>
     <color name="surface">#FFFFFF</color>

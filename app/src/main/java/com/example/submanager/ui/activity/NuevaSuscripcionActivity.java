@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.graphics.Color;
 import android.content.res.ColorStateList;
 import androidx.appcompat.app.AppCompatActivity;
@@ -76,7 +77,10 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
 
     private void checkEditMode() {
         editSuscripcionId = getIntent().getIntExtra("suscripcion_id", -1);
+        TextView tvTitle = findViewById(R.id.tvTitle);
         if (editSuscripcionId != -1) {
+            tvTitle.setText(R.string.form_subscription_edit_title);
+
             MaterialButton btnSubmit = findViewById(R.id.btnSubmit);
             btnSubmit.setText("Actualizar");
 
@@ -87,6 +91,8 @@ public class NuevaSuscripcionActivity extends AppCompatActivity {
                     prefillData(model);
                 }
             });
+        } else {
+            tvTitle.setText(R.string.form_subscription_title);
         }
     }
 

@@ -468,11 +468,12 @@
                         android:padding="16dp"
                         android:gravity="center">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="&#x1F4CB;"
-                            android:textSize="28sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_subscriptions"
+                            android:contentDescription="@null"
+                            app:tint="@color/primary_dark" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -507,11 +508,12 @@
                         android:padding="16dp"
                         android:gravity="center">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="&#x1F514;"
-                            android:textSize="28sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_notifications"
+                            android:contentDescription="@null"
+                            app:tint="@color/success" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -589,11 +591,12 @@
                     android:paddingHorizontal="24dp"
                     android:visibility="gone">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="&#x1F389;"
-                        android:textSize="40sp" />
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_empty_state"
+                        android:contentDescription="@null"
+                        app:tint="@color/text_hint" />
 
                     <TextView
                         android:layout_width="wrap_content"

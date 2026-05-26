@@ -387,7 +387,7 @@ public class PerfilFragment extends Fragment {
                         String bienvenida = "¡Bienvenido, " + usuarioLocal.nombre + "!";
                         if (sessionManager.isPremium()) {
                             // Restaurar datos y navegar al Dashboard al terminar
-                            iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
+                            iniciarRestoreConNavegacion(bienvenida + " Premium activo");
                         } else {
                             navigateToDashboard(bienvenida);
                         }
@@ -457,7 +457,7 @@ public class PerfilFragment extends Fragment {
                         String bienvenida = "¡Bienvenido, " + remoto.nombre + "!";
                         if (sessionManager.isPremium()) {
                             // Restaurar datos y navegar al Dashboard al terminar
-                            iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
+                            iniciarRestoreConNavegacion(bienvenida + " Premium activo");
                         } else {
                             navigateToDashboard(bienvenida);
                         }
@@ -504,12 +504,12 @@ public class PerfilFragment extends Fragment {
                         )
                     );
                     actualizarUltimaSincronizacion();
-                    showSnackbar(root, "✅ " + message);
+                    showSnackbar(root, message);
                     break;
                 case NO_NETWORK:
                     showSnackbar(
                         root,
-                        "📶 Sin conexión a internet. Intenta más tarde."
+                        "Sin conexión a internet. Intenta más tarde."
                     );
                     break;
                 case NOT_PREMIUM:
@@ -520,7 +520,7 @@ public class PerfilFragment extends Fragment {
                 case ERROR:
                     // Mostrar error completo en Dialog (puede contener instrucciones largas)
                     new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("⚠️ Error al sincronizar")
+                        .setTitle("Error al sincronizar")
                         .setMessage(message)
                         .setPositiveButton("Entendido", null)
                         .show();
@@ -564,13 +564,13 @@ public class PerfilFragment extends Fragment {
                         )
                     );
                     actualizarUltimaSincronizacion();
-                    showSnackbar(root, "✅ " + message);
+                    showSnackbar(root, message);
                     break;
                 case NO_NETWORK:
-                    showSnackbar(root, "📶 Sin conexión. Intenta más tarde.");
+                    showSnackbar(root, "Sin conexión. Intenta más tarde.");
                     break;
                 case ERROR:
-                    showSnackbar(root, "⚠️ " + message);
+                    showSnackbar(root, message);
                     break;
                 default:
                     break;

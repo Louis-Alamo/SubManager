@@ -6,48 +6,62 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardBackgroundColor="@color/bg_card"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/border">
+    android:layout_marginVertical="7dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@color/surface"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="1dp"
+    app:strokeColor="@color/surface_stroke"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:minHeight="96dp"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="18dp">
 
         <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:background="@drawable/bg_status_badge"
+            android:backgroundTint="@color/primary_tint"
+            android:padding="10dp"
             android:scaleType="centerInside"
-            tools:src="@drawable/ic_app_spotify"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            tools:src="@drawable/ic_app_spotify" />
 
         <TextView
             android:id="@+id/tvTitulo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/text_primary"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tvPrecio"
             app:layout_constraintStart_toEndOf="@id/ivLogo"
             app:layout_constraintTop_toTopOf="@id/ivLogo"
-            app:layout_constraintEnd_toStartOf="@id/tvPrecio"
             tools:text="Netflix Premium" />
 
         <TextView
             android:id="@+id/tvCategoria"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/text_muted"
-            android:textSize="14sp"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="@id/tvTitulo"
             app:layout_constraintStart_toStartOf="@id/tvTitulo"
             app:layout_constraintTop_toBottomOf="@id/tvTitulo"
             tools:text="Entretenimiento" />
@@ -56,61 +70,37 @@
             android:id="@+id/ivCalendario"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:layout_marginTop="8dp"
-            android:src="@android:drawable/ic_menu_today"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_calendar_today"
             app:layout_constraintStart_toStartOf="@id/tvTitulo"
             app:layout_constraintTop_toBottomOf="@id/tvCategoria"
             app:tint="@color/text_hint" />
 
         <TextView
             android:id="@+id/tvLeyendaCobro"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="Próximo cobro: "
+            android:layout_marginStart="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/text_hint"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/ivCalendario"
+            app:layout_constraintEnd_toEndOf="@id/tvTitulo"
             app:layout_constraintStart_toEndOf="@id/ivCalendario"
-            app:layout_constraintTop_toTopOf="@id/ivCalendario" />
-
-        <TextView
-            android:id="@+id/tvFecha"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_hint"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/tvLeyendaCobro"
-            app:layout_constraintStart_toEndOf="@id/tvLeyendaCobro"
-            app:layout_constraintTop_toTopOf="@id/tvLeyendaCobro"
-            tools:text="15 Oct" />
+            app:layout_constraintTop_toTopOf="@id/ivCalendario"
+            tools:text="Próximo cobro: 26 may 2026" />
 
         <TextView
             android:id="@+id/tvPrecio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvTitulo"
             tools:text="-$199.00" />
-
-        <TextView
-            android:id="@+id/tvEstado"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_status_badge"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:textColor="@color/success"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvPrecio"
-            tools:text="Pagado" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

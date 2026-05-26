@@ -116,9 +116,9 @@ public class DashboardFragment extends Fragment {
     private void setupGreeting() {
         int hora = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         String saludo;
-        if (hora >= 6 && hora < 12)       saludo = "Buenos días ☀️";
-        else if (hora >= 12 && hora < 20) saludo = "Buenas tardes 👋";
-        else                              saludo = "Buenas noches 🌙";
+        if (hora >= 6 && hora < 12)       saludo = "Buenos días";
+        else if (hora >= 12 && hora < 20) saludo = "Buenas tardes";
+        else                              saludo = "Buenas noches";
         tvGreeting.setText(saludo);
     }
 

@@ -90,7 +90,7 @@ public class SuscripcionesFragment extends Fragment {
         // 1. Instanciamos el ViewModel
         viewModel = new ViewModelProvider(this).get(SuscripcionViewModel.class);
 
-        // 2. Observamos la base de datos de Room en tiempo real 🪄
+        // 2. Observamos la base de datos de Room en tiempo real
         viewModel.getTodasLasSuscripciones().observe(getViewLifecycleOwner(), suscripciones -> {
             if (suscripciones != null) {
                 // Actualizamos nuestra lista maestra con los datos reales de SQLite

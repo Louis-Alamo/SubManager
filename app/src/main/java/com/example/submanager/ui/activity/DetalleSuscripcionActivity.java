@@ -151,7 +151,7 @@ public class DetalleSuscripcionActivity extends AppCompatActivity {
         btnMarcarPagado.setOnClickListener(v -> {
             if (currentModel != null) {
                 viewModel.marcarComoPagado(currentModel);
-                Snackbar.make(btnMarcarPagado, "✅ Pago registrado correctamente", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(btnMarcarPagado, "Pago registrado correctamente", Snackbar.LENGTH_SHORT).show();
             }
         });
 

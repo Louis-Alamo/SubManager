@@ -141,7 +141,7 @@
                     <ImageView android:layout_width="28dp" android:layout_height="28dp"
                         android:src="@drawable/ic_service_telefono" app:tint="@color/text_secondary" android:contentDescription="@null"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="TelÃ©fono" android:textColor="@color/text_secondary"
+                        android:text="Teléfono" android:textColor="@color/text_secondary"
                         android:textSize="11sp" android:textStyle="bold" android:layout_marginTop="6dp"/>
                 </LinearLayout>
 

@@ -169,7 +169,7 @@ public class NuevoServicioActivity extends AppCompatActivity {
                 return;
             }
 
-            Snackbar.make(btnGuardarServicio, "✅ Servicio guardado correctamente", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(btnGuardarServicio, "Servicio guardado correctamente", Snackbar.LENGTH_SHORT).show();
             finish();
         });
     }

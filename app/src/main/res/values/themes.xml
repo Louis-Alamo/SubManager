@@ -85,6 +85,24 @@
         <item name="android:textColor">@color/text_secondary</item>
     </style>
 
+    <style name="SubManagerTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxBackgroundColor">@color/bg_input</item>
+        <item name="hintTextColor">@color/text_muted</item>
+    </style>
+
+    <style name="SubManagerTextInputLayout.ExposedDropdown" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxBackgroundColor">@color/bg_input</item>
+        <item name="hintTextColor">@color/text_muted</item>
+    </style>
+
     <!-- FAB Style -->
     <style name="FABStyle" parent="Widget.Material3.FloatingActionButton.Primary">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.FAB</item>

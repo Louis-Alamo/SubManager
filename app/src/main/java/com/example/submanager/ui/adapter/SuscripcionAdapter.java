@@ -39,7 +39,6 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
         holder.tvTitulo.setText(sub.getNombre());
         holder.tvCategoria.setText(sub.getCategoria());
         holder.tvPrecio.setText(String.format("-$%.2f", sub.getMonto()));
-        holder.tvEstado.setText("Modificado: " + formatearFecha(sub.getActualizadoEn()));
         holder.tvFecha.setText("Próximo cobro: " + formatearFecha(sub.getFechaProximoCobro()));
         android.content.Context context = holder.itemView.getContext();
         String nombreIcono = sub.getNombreIcono();
@@ -84,7 +83,7 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
 
     public static class SuscripcionViewHolder extends RecyclerView.ViewHolder {
         ImageView ivLogo;
-        TextView tvTitulo, tvCategoria, tvPrecio, tvEstado, tvFecha;
+        TextView tvTitulo, tvCategoria, tvPrecio, tvFecha;
 
         public SuscripcionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -92,8 +91,7 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
             tvTitulo = itemView.findViewById(R.id.tvTitulo);
             tvCategoria = itemView.findViewById(R.id.tvCategoria);
             tvPrecio = itemView.findViewById(R.id.tvPrecio);
-            tvEstado = itemView.findViewById(R.id.tvEstado);
-            tvFecha = itemView.findViewById(R.id.tvFecha);
+            tvFecha = itemView.findViewById(R.id.tvLeyendaCobro);
         }
     }
 }

@@ -5,43 +5,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"> <TextView
-    android:id="@+id/tvTituloSuscripciones"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="20dp"
-    android:layout_marginTop="24dp"
-    android:text="Suscripciones"
-    android:textColor="@color/text_primary" android:textSize="24sp"
-    android:textStyle="bold"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    android:background="@color/background">
+
+    <TextView
+        android:id="@+id/tvTituloSuscripciones"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:text="Suscripciones"
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/svBuscar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
         android:layout_marginEnd="16dp"
-        app:queryHint="Buscar suscripción..."
+        android:background="@drawable/bg_search_surface"
+        android:elevation="1dp"
+        android:padding="2dp"
         app:iconifiedByDefault="true"
         app:layout_constraintBottom_toBottomOf="@id/tvTituloSuscripciones"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvTituloSuscripciones" />
+        app:layout_constraintStart_toEndOf="@id/tvTituloSuscripciones"
+        app:layout_constraintTop_toTopOf="@id/tvTituloSuscripciones"
+        app:queryHint="Buscar suscripción..." />
+
+    <TextView
+        android:id="@+id/tvSubtituloSuscripciones"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="20dp"
+        android:text="Administra tus pagos recurrentes"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTituloSuscripciones" />
 
     <HorizontalScrollView
         android:id="@+id/hsvCategorias"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
         android:clipToPadding="false"
         android:paddingHorizontal="20dp"
         android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/tvTituloSuscripciones">
+        app:layout_constraintTop_toBottomOf="@id/tvSubtituloSuscripciones">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/cgCategorias"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:chipSpacingHorizontal="8dp"
             app:singleSelection="true"
             app:selectionRequired="true" />
     </HorizontalScrollView>
@@ -50,11 +73,14 @@
         android:id="@+id/rvSuscripciones"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"
+        android:overScrollMode="never"
+        android:paddingTop="2dp"
+        android:paddingBottom="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hsvCategorias" />
+        app:layout_constraintTop_toBottomOf="@id/hsvCategorias"
+        tools:listitem="@layout/item_suscripcion" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAgregar"
@@ -62,8 +88,13 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/primary" app:tint="@color/text_on_primary" app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:contentDescription="@string/dashboard_add_subscription"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/primary"
+        app:elevation="8dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/text_on_primary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

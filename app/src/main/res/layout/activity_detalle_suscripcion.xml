@@ -19,7 +19,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:paddingHorizontal="4dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -35,7 +36,8 @@
                     android:rotation="180"
                     android:tint="@color/text_primary"
                     android:contentDescription="@string/cd_back_button"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
+                    android:background="@drawable/bg_toolbar_icon"
+                    android:foreground="?attr/selectableItemBackgroundBorderless" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -56,7 +58,8 @@
                     android:src="@drawable/ic_edit"
                     android:tint="@color/primary"
                     android:contentDescription="@string/cd_more_options"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
+                    android:background="@drawable/bg_toolbar_icon"
+                    android:foreground="?attr/selectableItemBackgroundBorderless" />
 
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
@@ -82,9 +85,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="18dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="2dp"
+                app:cardElevation="1dp"
                 app:cardBackgroundColor="@color/primary">
 
                 <LinearLayout
@@ -92,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="28dp">
+                    android:padding="30dp">
 
                     <!-- Ícono -->
                     <ImageView
@@ -170,7 +173,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="14dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="1dp"
                 app:cardBackgroundColor="@color/surface">

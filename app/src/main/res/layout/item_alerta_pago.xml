@@ -4,15 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="12dp"
-    android:background="@color/surface">
+    android:minHeight="78dp"
+    android:background="@color/surface"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingHorizontal="18dp"
+    android:paddingVertical="14dp">
 
     <!-- Ícono del servicio -->
     <ImageView
         android:id="@+id/ivAlertaIcon"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:scaleType="fitCenter"
         android:contentDescription="@null"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +29,7 @@
         android:layout_marginStart="12dp"
         android:text="Netflix"
         android:textColor="@color/text_primary"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/ivAlertaIcon"
         app:layout_constraintEnd_toStartOf="@id/tvAlertaMonto"
@@ -42,7 +44,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="2dp"
         android:text="Vence 15 Mar"
-        android:textSize="11sp"
+        android:textSize="12sp"
         android:textColor="@color/text_muted"
         app:layout_constraintStart_toEndOf="@id/ivAlertaIcon"
         app:layout_constraintEnd_toStartOf="@id/tvAlertaMonto"
@@ -55,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="$199.00"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
         android:layout_marginEnd="10dp"
@@ -66,7 +68,7 @@
     <!-- Badge de estado -->
     <TextView
         android:id="@+id/tvAlertaBadge"
-        android:layout_width="72dp"
+        android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:text="Pendiente"
         android:textSize="10sp"

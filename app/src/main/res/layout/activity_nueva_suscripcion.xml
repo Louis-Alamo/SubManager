@@ -6,13 +6,14 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:fitsSystemWindows="true"
-    android:background="@android:color/white">
+    android:overScrollMode="never"
+    android:background="@color/background">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="32dp">
 
@@ -20,14 +21,15 @@
             android:id="@+id/btnBack"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_toolbar_icon"
+            android:elevation="1dp"
             android:src="@drawable/ic_arrow_back"
             android:padding="12dp"
             android:scaleType="centerInside"
             android:contentDescription="@string/cd_back_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@android:color/black" />
+            app:tint="@color/text_secondary" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -36,7 +38,7 @@
             android:text="@string/form_subscription_title"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="@color/text_primary"
             app:layout_constraintBottom_toBottomOf="@+id/btnBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,9 +50,10 @@
             android:layout_height="wrap_content"
             android:text="@string/form_save"
             android:textAllCaps="true"
-            android:textColor="#3F51B5"
+            android:textColor="@color/primary"
             android:textStyle="bold"
             android:padding="8dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tvTitle" />
@@ -59,7 +62,7 @@
             android:id="@+id/avatarContainer"
             android:layout_width="110dp"
             android:layout_height="110dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle">
@@ -81,7 +84,7 @@
                 app:fabCustomSize="36dp"
                 app:srcCompat="@android:drawable/ic_menu_edit"
                 app:tint="@android:color/white"
-                android:backgroundTint="#2196F3"
+                android:backgroundTint="@color/primary"
                 android:contentDescription="@string/cd_user_avatar" />
         </FrameLayout>
 
@@ -90,11 +93,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_form_card"
+            android:elevation="1dp"
+            android:padding="18dp"
             app:layout_constraintTop_toBottomOf="@+id/avatarContainer">
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/SubManagerTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -106,13 +112,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/SubManagerTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:hint="@string/form_field_amount_label"
                 app:prefixText="@string/form_field_amount_prefix"
-                app:prefixTextColor="@android:color/black">
+                app:prefixTextColor="@color/text_primary">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etMonto"
                     android:layout_width="match_parent"
@@ -121,7 +127,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                style="@style/SubManagerTextInputLayout.ExposedDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -136,7 +142,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilFecha"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/SubManagerTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -153,7 +159,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilFechaLimite"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/SubManagerTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
@@ -170,7 +176,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDiasAnticipacion"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/SubManagerTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
@@ -189,7 +195,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/form_field_appearance_label"
-                android:textColor="#3F51B5"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
@@ -216,7 +223,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/form_field_category_label"
-                android:textColor="#3F51B5"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
@@ -233,7 +241,7 @@
             </HorizontalScrollView>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                style="@style/SubManagerTextInputLayout.ExposedDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/form_field_payment_method_label">
@@ -250,8 +258,8 @@
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#EEEEEE"
-            android:layout_marginTop="32dp"
+            android:background="@color/border"
+            android:layout_marginTop="28dp"
             app:layout_constraintTop_toBottomOf="@+id/formFields" />
 
         <com.google.android.material.button.MaterialButton
@@ -259,10 +267,11 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:text="@string/form_save"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/primary"
             android:textStyle="bold"
-            app:cornerRadius="12dp"
+            app:cornerRadius="16dp"
             app:layout_constraintTop_toBottomOf="@+id/divider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="1.0" />

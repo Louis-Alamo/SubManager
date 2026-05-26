@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                     View anchor = findViewById(R.id.nav_host_fragment);
                     if (anchor != null && nombre != null && !nombre.isEmpty()) {
                         String mensaje = esPremium
-                            ? "¡Bienvenido, " + nombre + "! 👑 Premium activo"
+                            ? "¡Bienvenido, " + nombre + "! Premium activo"
                             : "¡Bienvenido, " + nombre + "!";
                         com.google.android.material.snackbar.Snackbar
                             .make(anchor, mensaje, com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
