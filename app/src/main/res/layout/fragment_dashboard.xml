@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- ════════════════════════════════════════════════════ -->
-    <!--  SHIMMER — visible mientras cargan los datos        -->
-    <!-- ════════════════════════════════════════════════════ -->
+
+
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerDashboard"
         android:layout_width="match_parent"
@@ -21,9 +21,9 @@
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <!-- ════════════════════════════════════════════════════ -->
-    <!--  CONTENIDO REAL — visible con datos                 -->
-    <!-- ════════════════════════════════════════════════════ -->
+
+
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollDashboard"
         android:layout_width="match_parent"
@@ -38,9 +38,9 @@
             android:orientation="vertical"
             android:paddingBottom="100dp">
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  HEADER: Saludo + Botón Ajustes             -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,9 +94,9 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  HERO CARD — Resumen mensual (Gradiente)    -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
-                    <!-- Fila superior: label + mes -->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
                             android:paddingVertical="4dp" />
                     </LinearLayout>
 
-                    <!-- Monto TOTAL grande -->
+
                     <TextView
                         android:id="@+id/tvMontoTotal"
                         android:layout_width="wrap_content"
@@ -153,20 +153,20 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="20dp" />
 
-                    <!-- Separador -->
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#3A5A90"
                         android:layout_marginBottom="16dp" />
 
-                    <!-- Fila: Pendiente | Pagado -->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <!-- Pendiente -->
+
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -214,14 +214,14 @@
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
 
-                        <!-- Divider vertical -->
+
                         <View
                             android:layout_width="1dp"
                             android:layout_height="match_parent"
                             android:background="#3A5A90"
                             android:layout_marginHorizontal="16dp" />
 
-                        <!-- Pagado -->
+
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -273,9 +273,9 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  SECCIÓN: ACCIÓN PRINCIPAL                  -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -287,7 +287,7 @@
                 android:paddingHorizontal="20dp"
                 android:paddingBottom="10dp" />
 
-            <!-- Card: Agregar Suscripcion — prominente en azul -->
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardAgregarSuscripcion"
                 android:layout_width="match_parent"
@@ -351,7 +351,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Card: Servicio Fisico — OCULTA, codigo preservado -->
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardAgregarServicio"
                 android:layout_width="match_parent"
@@ -426,9 +426,9 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  ACCESOS RAPIDOS (nuevo contenido)          -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -447,7 +447,7 @@
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="20dp">
 
-                <!-- Chip: Mis Suscripciones -->
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardShortcutSubs"
                     android:layout_width="0dp"
@@ -486,7 +486,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Chip: Alertas de pago -->
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardShortcutAlertas"
                     android:layout_width="0dp"
@@ -527,9 +527,9 @@
 
             </LinearLayout>
 
-            <!-- ─────────────────────────────────────────── -->
-            <!--  SECCION: PROXIMOS VENCIMIENTOS             -->
-            <!-- ─────────────────────────────────────────── -->
+
+
+
             <LinearLayout
                 android:id="@+id/sectionProximos"
                 android:layout_width="match_parent"

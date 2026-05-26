@@ -3,13 +3,13 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Fondo amarillo Mercado Libre -->
+
   <path android:pathData="M54,4 C26.4,4 4,26.4 4,54 C4,81.6 26.4,104 54,104 C81.6,104 104,81.6 104,54 C104,26.4 81.6,4 54,4 Z"
       android:fillColor="#FFE600"/>
-  <!-- Letra M azul -->
+
   <path android:pathData="M16,30 L16,78 L28,78 L28,52 L40,70 L52,52 L52,78 L64,78 L64,30 L52,30 L40,52 L28,30 Z"
       android:fillColor="#2D3277"/>
-  <!-- Letra L azul -->
+
   <path android:pathData="M68,30 L68,78 L94,78 L94,68 L80,68 L80,30 Z"
       android:fillColor="#2D3277"/>
 </vector>

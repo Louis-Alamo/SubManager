@@ -3,13 +3,13 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Fondo morado Twitch -->
+
   <path android:pathData="M0,20 Q0,0 20,0 L88,0 Q108,0 108,20 L108,88 Q108,108 88,108 L20,108 Q0,108 0,88 Z"
       android:fillColor="#9146FF"/>
-  <!-- Globo de Twitch simplificado -->
+
   <path android:pathData="M28,20 L28,68 L44,68 L44,80 L56,68 L80,68 L80,20 Z"
       android:fillColor="#FFFFFF"/>
-  <!-- Barras del logo -->
+
   <path android:pathData="M46,36 L46,54 L52,54 L52,36 Z"
       android:fillColor="#9146FF"/>
   <path android:pathData="M60,36 L60,54 L66,54 L66,36 Z"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Fondo flotante para la barra de navegación inferior.
-     Se usa una sombra (elevation) vía el atributo app:elevation en el layout,
-     por lo que aquí solo definimos forma y color puro sin borde visible. -->
+
+
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/surface" />
     <corners

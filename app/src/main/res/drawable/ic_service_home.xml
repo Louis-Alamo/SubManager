@@ -3,10 +3,10 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <!-- Círculo gris para gastos generales -->
+
   <path android:pathData="M54,4 C26.4,4 4,26.4 4,54 C4,81.6 26.4,104 54,104 C81.6,104 104,81.6 104,54 C104,26.4 81.6,4 54,4 Z"
       android:fillColor="#64748B"/>
-  <!-- Casa simplificada -->
+
   <path android:pathData="M54,20 L20,52 L32,52 L32,88 L50,88 L50,68 L58,68 L58,88 L76,88 L76,52 L88,52 Z"
       android:fillColor="#FFFFFF"/>
 </vector>

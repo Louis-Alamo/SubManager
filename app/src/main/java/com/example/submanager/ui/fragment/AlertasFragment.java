@@ -28,12 +28,12 @@ import java.util.Locale;
 
 public class AlertasFragment extends Fragment {
 
-    // ─── Estado de pago ──────────────────────────────────────────────────────
+
     static final String PENDIENTE = "pendiente";
     static final String PAGADO    = "pagado";
     static final String VENCIDO   = "vencido";
 
-    // ─── Model interno para la lista ─────────────────────────────────────────
+
     static class PagoAlerta {
         String nombre, fecha, monto, estado, colorHex;
         int iconRes;
@@ -51,7 +51,7 @@ public class AlertasFragment extends Fragment {
         }
     }
 
-    // ─── Vistas ──────────────────────────────────────────────────────────────
+
     private RecyclerView rvPendiente, rvVencido, rvPagado;
     private View sectionPendiente, sectionVencido, sectionPagado, emptyState;
     private TextView tvTotalPendiente, tvTotalPagado, tvTotalVencido;
@@ -72,7 +72,7 @@ public class AlertasFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Bind vistas
+
         rvPendiente       = view.findViewById(R.id.rvPendiente);
         rvVencido         = view.findViewById(R.id.rvVencido);
         rvPagado          = view.findViewById(R.id.rvPagado);
@@ -107,10 +107,10 @@ public class AlertasFragment extends Fragment {
         Date today = new Date();
         try { today = sdfDB.parse(sdfDB.format(today)); } catch (Exception ignored) {}
 
-        // 1. Procesar Suscripciones Activas (Vencidos y Pendientes)
+
         for (SuscripcionModel s : cachedSuscripciones) {
             if (s.getFechaProximoCobro() == null || s.getFechaProximoCobro().isEmpty()) continue;
-            
+
             try {
                 Date fechaCobro = sdfDB.parse(s.getFechaProximoCobro());
                 if (fechaCobro == null) continue;
@@ -119,7 +119,7 @@ public class AlertasFragment extends Fragment {
                 String estado = isVencido ? VENCIDO : PENDIENTE;
                 String prefix = isVencido ? "Venció " : "Vence ";
                 String fechaTexto = prefix + sdfUI.format(fechaCobro);
-                
+
                 int iconRes = getResources().getIdentifier(s.getNombreIcono(), "drawable", requireContext().getPackageName());
                 if (iconRes == 0) iconRes = R.drawable.ic_service_otro;
 
@@ -129,7 +129,7 @@ public class AlertasFragment extends Fragment {
             }
         }
 
-        // 2. Procesar Pagos (Pagados)
+
         for (RegistrosPagoModel p : cachedPagos) {
             if ("Pagado".equalsIgnoreCase(p.getEstado())) {
                 String fechaTexto = "Pagado";
@@ -139,8 +139,8 @@ public class AlertasFragment extends Fragment {
                         if (d != null) fechaTexto = "Pagado " + sdfUI.format(d);
                     } catch (Exception ignored) {}
                 }
-                
-                // Tratar de buscar icon
+
+
                 int iconRes = R.drawable.ic_service_otro;
                 if (p.getSuscripcionId() != null) {
                     for (SuscripcionModel s : cachedSuscripciones) {
@@ -160,24 +160,24 @@ public class AlertasFragment extends Fragment {
         List<PagoAlerta> pagados    = filtrar(todos, PAGADO);
         List<PagoAlerta> vencidos   = filtrar(todos, VENCIDO);
 
-        // Totales en cards
+
         tvTotalPendiente.setText(sumar(pendientes));
         tvTotalPagado.setText(sumar(pagados));
         tvTotalVencido.setText(sumar(vencidos));
 
-        // Sección VENCIDO
+
         montarLista(rvVencido, vencidos);
         sectionVencido.setVisibility(vencidos.isEmpty() ? View.GONE : View.VISIBLE);
 
-        // Sección PENDIENTE
+
         montarLista(rvPendiente, pendientes);
         sectionPendiente.setVisibility(pendientes.isEmpty() ? View.GONE : View.VISIBLE);
 
-        // Sección PAGADO
+
         montarLista(rvPagado, pagados);
         sectionPagado.setVisibility(pagados.isEmpty() ? View.GONE : View.VISIBLE);
 
-        // Empty state si todo está vacío
+
         boolean hayAlgo = !pendientes.isEmpty() || !pagados.isEmpty() || !vencidos.isEmpty();
         emptyState.setVisibility(hayAlgo ? View.GONE : View.VISIBLE);
     }
@@ -188,7 +188,7 @@ public class AlertasFragment extends Fragment {
         rv.setNestedScrollingEnabled(false);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────────────
+
     private List<PagoAlerta> filtrar(List<PagoAlerta> todos, String estado) {
         List<PagoAlerta> resultado = new ArrayList<>();
         for (PagoAlerta p : todos) {
@@ -206,7 +206,7 @@ public class AlertasFragment extends Fragment {
         return String.format(Locale.getDefault(), "$%.2f", total);
     }
 
-    // ─── Adapter ─────────────────────────────────────────────────────────────
+
     private class AlertaAdapter extends RecyclerView.Adapter<AlertaAdapter.VH> {
 
         private final List<PagoAlerta> items;
@@ -227,11 +227,11 @@ public class AlertasFragment extends Fragment {
             h.tvFecha.setText(p.fecha);
             h.tvMonto.setText("$" + p.monto);
 
-            // Ícono
+
             h.ivIcon.setBackground(null);
             h.ivIcon.setImageResource(p.iconRes);
 
-            // Badge por estado
+
             switch (p.estado) {
                 case VENCIDO:
                     h.tvBadge.setText(getString(R.string.status_overdue));
@@ -257,7 +257,7 @@ public class AlertasFragment extends Fragment {
                     break;
             }
 
-            // Tap → snackbar de "Marcar pagado" para pendientes/vencidos
+
             if (!PAGADO.equals(p.estado) && p.suscripcionOriginal != null) {
                 h.itemView.setOnClickListener(v ->
                         Snackbar.make(requireView(),

@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:paddingBottom="36dp">
 
-        <!-- TOOLBAR -->
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -34,7 +34,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless" />
         </RelativeLayout>
 
-        <!-- HERO HEADER -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                 android:layout_marginTop="6dp" />
         </LinearLayout>
 
-        <!-- FEATURES CARD -->
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="14dp"/>
 
-                <!-- Feature rows -->
+
                 <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
                     android:orientation="horizontal" android:gravity="center_vertical"
                     android:layout_marginBottom="2dp">
@@ -152,7 +152,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- PLANS TITLE -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -164,7 +164,7 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="12dp" />
 
-        <!-- PLAN MENSUAL -->
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPlanMensual"
             android:layout_width="match_parent"
@@ -214,7 +214,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- PLAN ANUAL -->
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPlanAnual"
             android:layout_width="match_parent"
@@ -232,7 +232,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Badge popular -->
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -290,7 +290,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- CTA BUTTON -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSuscribirse"
             android:layout_width="match_parent"
@@ -303,7 +303,7 @@
             android:backgroundTint="@color/primary"
             app:cornerRadius="16dp" />
 
-        <!-- RESTORE LINK -->
+
         <TextView
             android:id="@+id/tvRestaurar"
             android:layout_width="wrap_content"
@@ -315,7 +315,7 @@
             android:paddingVertical="8dp"
             android:layout_marginBottom="10dp"/>
 
-        <!-- TERMS NOTE -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

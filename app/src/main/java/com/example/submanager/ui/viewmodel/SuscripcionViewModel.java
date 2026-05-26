@@ -73,7 +73,7 @@ public class SuscripcionViewModel extends AndroidViewModel {
     public void marcarComoPagado(SuscripcionModel suscripcion) {
         java.text.SimpleDateFormat sdfDate = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
         String fechaPago = sdfDate.format(new java.util.Date());
-        
+
         java.text.SimpleDateFormat sdfFull = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US);
         sdfFull.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         String timestampActual = sdfFull.format(new java.util.Date());
@@ -96,7 +96,7 @@ public class SuscripcionViewModel extends AndroidViewModel {
 
         repository.insertRegistroPago(pago);
 
-        // Avanzar la fecha de próximo cobro
+
         String nuevaFecha = calcularProximaFecha(suscripcion.getFechaProximoCobro(), suscripcion.getCicloFacturacion());
         if (!nuevaFecha.isEmpty()) {
             suscripcion.setFechaProximoCobro(nuevaFecha);

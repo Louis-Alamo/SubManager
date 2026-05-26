@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- APP BAR -->
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- SCROLL -->
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -62,7 +62,7 @@
             android:orientation="vertical"
             android:paddingTop="8dp">
 
-            <!-- TARJETA PERFIL / LOGIN -->
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <!-- Avatar + info -->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -146,14 +146,14 @@
                         android:background="@color/border"
                         android:layout_marginBottom="18dp" />
 
-                    <!-- Formulario de login (visible cuando no hay sesión) -->
+
                     <LinearLayout
                         android:id="@+id/loginSection"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                    <!-- Email -->
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilEmail"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -174,7 +174,7 @@
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Contraseña -->
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilPassword"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -196,7 +196,7 @@
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Boton Login -->
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLogin"
                         android:layout_width="match_parent"
@@ -221,7 +221,7 @@
 
                     </LinearLayout>
 
-                    <!-- Vista de sesión activa (visible cuando hay sesión) -->
+
                     <LinearLayout
                         android:id="@+id/loggedInSection"
                         android:layout_width="match_parent"
@@ -246,7 +246,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- BANNER PREMIUM -->
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -318,7 +318,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- HEADER SINCRONIZACION -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -482,7 +482,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Timestamp de última sincronización -->
+
             <TextView
                 android:id="@+id/tvUltimaSincronizacion"
                 android:layout_width="wrap_content"
@@ -494,7 +494,7 @@
                 android:textSize="11sp"
                 android:visibility="gone" />
 
-            <!-- HEADER NOTIFICACIONES -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -520,7 +520,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Switch alertas -->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
@@ -583,7 +583,7 @@
                         android:layout_marginHorizontal="18dp"
                         android:background="@color/border" />
 
-                    <!-- Hora del recordatorio -->
+
                     <LinearLayout
                         android:id="@+id/rowTime"
                         android:layout_width="match_parent"
@@ -647,7 +647,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- HEADER PRIVACIDAD -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -832,7 +832,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- VERSION -->
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

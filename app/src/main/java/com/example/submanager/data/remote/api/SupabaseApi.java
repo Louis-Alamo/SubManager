@@ -18,23 +18,23 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-/**
- * Interfaz Retrofit para la API REST de Supabase (PostgREST).
- *
- * Convenciones de Supabase PostgREST:
- *   - GET    /tabla             → SELECT *
- *   - POST   /tabla             → INSERT
- *   - PATCH  /tabla?id=eq.{n}  → UPDATE WHERE id = n
- *   - DELETE /tabla?id=eq.{n}  → DELETE WHERE id = n
- *
- * Los filtros siguen el patrón: campo=operador.valor
- *   Ej: id=eq.5, correo=eq.usuario@email.com
- */
+
+
+
+
+
+
+
+
+
+
+
+
 public interface SupabaseApi {
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // SUSCRIPCIONES
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @GET("suscripciones")
     Call<List<SuscripcionDto>> getSuscripciones(@Query("usuario_id") String filter);
@@ -57,9 +57,9 @@ public interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     Call<Void> deleteAllSuscripciones(@Query("usuario_id") String filter);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // SERVICIOS FÍSICOS
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @GET("servicios_fisicos")
     Call<List<ServicioFisicoDto>> getServiciosFisicos(@Query("usuario_id") String filter);
@@ -75,9 +75,9 @@ public interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     Call<Void> deleteAllServiciosFisicos(@Query("usuario_id") String filter);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // TERCEROS COMPARTIDOS
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @GET("terceros_compartidos")
     Call<List<TerceroCompartidoDto>> getTercerosCompartidos(@Query("usuario_id") String filter);
@@ -93,9 +93,9 @@ public interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     Call<Void> deleteAllTerceros(@Query("usuario_id") String filter);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // REGISTROS DE PAGO
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @GET("registros_pago")
     Call<List<RegistroPagoDto>> getRegistrosPago(@Query("usuario_id") String filter);
@@ -111,9 +111,9 @@ public interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     Call<Void> deleteAllRegistrosPago(@Query("usuario_id") String filter);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // CONFIGURACIÓN APP
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @GET("configuracion_app")
     Call<List<ConfiguracionAppDto>> getConfiguracion();
@@ -126,9 +126,9 @@ public interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     Call<Void> updateConfiguracion(@Query("usuario_id") String filter, @Body ConfiguracionAppDto dto);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // USUARIOS (solo Premium)
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @GET("usuarios")
     Call<List<UsuarioDto>> getUsuarioPorCorreo(@Query("correo") String correoFilter);

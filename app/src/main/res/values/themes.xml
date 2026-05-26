@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.SubManager" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
@@ -13,17 +13,17 @@
         <item name="colorError">@color/error</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
-        <!-- Barra de sistema transparente para integración edge-to-edge -->
+
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <!-- Estilo global de la BottomNavigationView -->
+
         <item name="bottomNavigationStyle">@style/BottomNavStyle</item>
         <item name="elevationOverlayEnabled">false</item>
     </style>
 
     <style name="Theme.SubManager" parent="Base.Theme.SubManager" />
 
-    <!-- Card Styles -->
+
     <style name="CardStyle">
         <item name="cardCornerRadius">16dp</item>
         <item name="cardElevation">2dp</item>
@@ -37,7 +37,7 @@
         <item name="contentPadding">24dp</item>
     </style>
 
-    <!-- Text Styles -->
+
     <style name="TextAppearance.Hero.Title" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textColor">@color/text_on_primary</item>
         <item name="android:textStyle">bold</item>
@@ -62,7 +62,7 @@
         <item name="android:textSize">18sp</item>
     </style>
 
-    <!-- Button Styles -->
+
     <style name="ButtonStyle" parent="Widget.Material3.Button">
         <item name="cornerRadius">12dp</item>
         <item name="android:minHeight">56dp</item>
@@ -78,14 +78,14 @@
         <item name="strokeWidth">2dp</item>
     </style>
 
-    <!-- Chip Styles -->
+
     <style name="ChipStyle" parent="Widget.Material3.Chip.Filter">
         <item name="chipCornerRadius">20dp</item>
         <item name="chipBackgroundColor">@color/surface_variant</item>
         <item name="android:textColor">@color/text_secondary</item>
     </style>
 
-    <!-- FAB Style -->
+
     <style name="FABStyle" parent="Widget.Material3.FloatingActionButton.Primary">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.FAB</item>
         <item name="elevation">6dp</item>
@@ -95,13 +95,13 @@
         <item name="cornerSize">16dp</item>
     </style>
 
-    <!-- ===================================================== -->
-    <!-- Bottom Navigation Bar — diseño moderno con pill       -->
-    <!-- ===================================================== -->
+
+
+
     <style name="BottomNavStyle" parent="Widget.Material3.BottomNavigationView">
-        <!-- Fondo con esquinas superiores redondeadas -->
+
         <item name="android:background">@drawable/bg_bottom_nav</item>
-        <!-- Elevación para sombra suave -->
+
         <item name="elevation">12dp</item>
     </style>
 </resources>

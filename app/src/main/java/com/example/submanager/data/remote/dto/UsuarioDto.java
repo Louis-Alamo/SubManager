@@ -2,10 +2,10 @@ package com.example.submanager.data.remote.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * DTO para la tabla `usuarios` de Supabase.
- * Solo usuarios Premium tienen registro aquí.
- */
+
+
+
+
 public class UsuarioDto {
 
     @SerializedName("id")

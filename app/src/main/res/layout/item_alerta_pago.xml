@@ -8,7 +8,7 @@
     android:paddingVertical="12dp"
     android:background="@color/surface">
 
-    <!-- Ícono del servicio -->
+
     <ImageView
         android:id="@+id/ivAlertaIcon"
         android:layout_width="46dp"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Nombre -->
+
     <TextView
         android:id="@+id/tvAlertaNombre"
         android:layout_width="0dp"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="@id/ivAlertaIcon"
         app:layout_constraintBottom_toTopOf="@id/tvAlertaFecha" />
 
-    <!-- Fecha de vencimiento -->
+
     <TextView
         android:id="@+id/tvAlertaFecha"
         android:layout_width="0dp"
@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvAlertaNombre"
         app:layout_constraintBottom_toBottomOf="@id/ivAlertaIcon" />
 
-    <!-- Monto -->
+
     <TextView
         android:id="@+id/tvAlertaMonto"
         android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Badge de estado -->
+
     <TextView
         android:id="@+id/tvAlertaBadge"
         android:layout_width="72dp"

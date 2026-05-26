@@ -35,20 +35,20 @@ Busca el botón de Logout en `setupListeners` y modifícalo para limpiar la base
 View btnLogout = root.findViewById(R.id.btnLogout);
 if (btnLogout != null) {
     btnLogout.setOnClickListener(v -> {
-        // 1. Borrar preferencias de sesión
+
         sessionManager.clearSession();
-        
-        // 2. Borrar base de datos local en hilo secundario (Room no permite hacerlo en el principal)
+
+
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(requireContext());
-            
-            // Borrado selectivo (Mantiene a los usuarios registrados localmente en UsuarioModel para login offline)
+
+
             db.suscripcionDao().deleteAllSuscripciones();
             db.suscripcionDao().deleteAllServiciosFisicos();
             db.suscripcionDao().deleteAllTerceros();
             db.suscripcionDao().deleteAllRegistrosPago();
-            
-            // Volver al hilo principal para actualizar la UI
+
+
             new Handler(Looper.getMainLooper()).post(() -> {
                 updateAuthUI();
                 showSnackbar(root, "Sesión cerrada de forma segura");
@@ -59,5 +59,5 @@ if (btnLogout != null) {
 ```
 
 ### Consideración Adicional tras el Login
-Con esta solución, cada vez que un usuario inicie sesión, entrará a un panel vacío (sin suscripciones locales). 
+Con esta solución, cada vez que un usuario inicie sesión, entrará a un panel vacío (sin suscripciones locales).
 Si el usuario es **Premium**, deberás recordarle que presione el botón de **"Restaurar"** para traer su información desde la nube, o bien, invocar `remoteSyncRepository.pullAll(...)` automáticamente después del inicio de sesión exitoso si detectas que es Premium.

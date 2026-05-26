@@ -19,9 +19,9 @@ import java.util.List;
 @Dao
 public interface SuscripcionDao {
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // SUSCRIPCIONES — Reactivo (LiveData)
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @Query("SELECT * FROM suscripciones")
     LiveData<List<SuscripcionModel>> getAllSuscripciones();
@@ -38,9 +38,9 @@ public interface SuscripcionDao {
     @Query("SELECT * FROM suscripciones WHERE id = :id LIMIT 1")
     LiveData<SuscripcionModel> getSuscripcionById(int id);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // SUSCRIPCIONES — Síncrono (para sincronización remota)
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @Query("SELECT * FROM suscripciones")
     List<SuscripcionModel> getAllSuscripcionesSync();
@@ -60,9 +60,9 @@ public interface SuscripcionDao {
     @Query("DELETE FROM suscripciones WHERE id = :id")
     void deleteSuscripcionById(int id);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // SERVICIOS FÍSICOS — Síncrono
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @Query("SELECT * FROM servicios_fisicos")
     List<ServicioFisicoModel> getAllServiciosFisicosSync();
@@ -73,9 +73,9 @@ public interface SuscripcionDao {
     @Query("DELETE FROM servicios_fisicos")
     void deleteAllServiciosFisicos();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // TERCEROS COMPARTIDOS — Síncrono
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @Query("SELECT * FROM terceros_compartidos")
     List<TercerosCompartidosModel> getAllTercerosSync();
@@ -86,20 +86,20 @@ public interface SuscripcionDao {
     @Query("DELETE FROM terceros_compartidos")
     void deleteAllTerceros();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // REGISTROS DE PAGO — Síncrono y Reactivo
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @Query("SELECT * FROM registros_pago")
     List<RegistrosPagoModel> getAllRegistrosPagoSync();
 
-    /**
-     * Solo registros que tienen al menos un origen válido (suscripcion_id o servicio_id no nulo).
-     * Usar esta query para el push remoto a Supabase, ya que la tabla tiene:
-     *   CHECK CONSTRAINT chk_un_origen:
-     *     (suscripcion_id IS NOT NULL OR servicio_id IS NOT NULL)
-     * Los registros huérfanos (ambos null, causados por ForeignKey.SET_NULL) se excluyen.
-     */
+
+
+
+
+
+
+
     @Query("SELECT * FROM registros_pago WHERE suscripcion_id IS NOT NULL OR servicio_id IS NOT NULL")
     List<RegistrosPagoModel> getAllRegistrosPagoSyncValidos();
 
@@ -118,9 +118,9 @@ public interface SuscripcionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertRegistroPago(RegistrosPagoModel registro);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // CONFIGURACIÓN APP — Síncrono
-    // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
     @Query("SELECT * FROM configuracion_app WHERE id = 1 LIMIT 1")
     ConfiguracionAppModel getConfiguracionSync();

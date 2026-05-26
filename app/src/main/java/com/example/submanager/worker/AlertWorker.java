@@ -54,7 +54,7 @@ public class AlertWorker extends Worker {
                 int diasAnticipacion = s.getDiasAnticipacion() > 0 ? s.getDiasAnticipacion() : 3;
 
                 if (diasFaltantes < 0) {
-                    // Vencido
+
                     NotificationHelper.sendNotification(
                             context,
                             s.getId() + 1000,
@@ -62,7 +62,7 @@ public class AlertWorker extends Worker {
                             "El pago debió realizarse hace " + Math.abs(diasFaltantes) + " días."
                     );
                 } else if (diasFaltantes <= diasAnticipacion) {
-                    // Próximo a vencer
+
                     String mensaje = diasFaltantes == 0
                             ? "¡Atención! El cobro es hoy."
                             : "Faltan " + diasFaltantes + " días para el próximo cobro.";

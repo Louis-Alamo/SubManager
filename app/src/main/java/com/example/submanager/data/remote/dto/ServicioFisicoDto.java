@@ -2,9 +2,9 @@ package com.example.submanager.data.remote.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * DTO para la tabla `servicios_fisicos` de Supabase.
- */
+
+
+
 public class ServicioFisicoDto {
 
     @SerializedName("id")

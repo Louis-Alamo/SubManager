@@ -9,13 +9,13 @@ import com.google.android.material.chip.ChipGroup;
 
 public class CategoryManager {
 
-    /**
-     * Llena dinámicamente un ChipGroup con las categorías.
-     * @param group El ChipGroup donde se insertarán.
-     * @param context Contexto.
-     * @param includeAllOption Si es true, añade al principio un Chip con "Todas" y lo selecciona.
-     * @param selectedCategory El nombre de la categoría a seleccionar por defecto (o null).
-     */
+
+
+
+
+
+
+
     public static void setupCategoryChips(ChipGroup group, Context context, boolean includeAllOption, String selectedCategory) {
         group.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(context);

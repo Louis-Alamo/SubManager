@@ -4,17 +4,17 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 
-/**
- * Utilidades para verificar el estado de la conexión a internet.
- */
+
+
+
 public class NetworkUtils {
 
     private NetworkUtils() {}
 
-    /**
-     * Devuelve true si el dispositivo tiene conexión a internet activa.
-     * Compatible con Android 6+ (API 23+).
-     */
+
+
+
+
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);

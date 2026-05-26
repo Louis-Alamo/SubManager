@@ -37,7 +37,7 @@ import retrofit2.Response;
 
 public class PerfilFragment extends Fragment {
 
-    // ── UI references ─────────────────────────────────────────────────────────
+
     private MaterialSwitch switchNotificaciones;
     private TextView tvHoraRecordatorio;
     private LinearLayout rowTime;
@@ -48,23 +48,23 @@ public class PerfilFragment extends Fragment {
     private LinearLayout rowSupport;
     private View btnHelp;
 
-    // ── Campos de login en-pantalla ───────────────────────────────────────────
+
     private TextInputLayout tilEmail;
     private TextInputLayout tilPassword;
     private TextInputEditText etEmail;
     private TextInputEditText etPassword;
 
-    // ── Auth & sesión ───────────────────────────────────────────────────────────
+
     private SessionManager sessionManager;
     private LinearLayout loginSection;
     private LinearLayout loggedInSection;
     private TextView tvUserName;
     private TextView tvUserEmail;
 
-    // ── Estado notificaciones ─────────────────────────────────────────────────
+
     private boolean notificacionesActivas = true;
 
-    // ── Sincronización remota ─────────────────────────────────────────────────
+
     private RemoteSyncRepository remoteSyncRepository;
     private TextView tvUltimaSincronizacion;
 
@@ -97,7 +97,7 @@ public class PerfilFragment extends Fragment {
         updateAuthUI();
     }
 
-    // ── Binding ───────────────────────────────────────────────────────────────
+
 
     private void bindViews(View root) {
         switchNotificaciones = root.findViewById(R.id.switchNotificaciones);
@@ -115,35 +115,35 @@ public class PerfilFragment extends Fragment {
         loginSection = root.findViewById(R.id.loginSection);
         loggedInSection = root.findViewById(R.id.loggedInSection);
 
-        // Campos de login inline
+
         tilEmail = root.findViewById(R.id.tilEmail);
         tilPassword = root.findViewById(R.id.tilPassword);
         etEmail = root.findViewById(R.id.etEmail);
         etPassword = root.findViewById(R.id.etPassword);
 
-        // Estado inicial del switch
+
         switchNotificaciones.setChecked(notificacionesActivas);
 
-        // Última sincronización
+
         tvUltimaSincronizacion = root.findViewById(R.id.tvUltimaSincronizacion);
     }
 
-    // ── Listeners ─────────────────────────────────────────────────────────────
+
 
     private void setupListeners(View root) {
-        // Switch notificaciones ──────────────────────────────────────────────
+
         switchNotificaciones.setOnCheckedChangeListener((btn, checked) -> {
             notificacionesActivas = checked;
             String msg = checked ? "Alertas activadas" : "Alertas desactivadas";
             showSnackbar(root, msg);
         });
 
-        // Hora del recordatorio ──────────────────────────────────────────────
+
         rowTime.setOnClickListener(v ->
             showSnackbar(root, "Selector de hora próximamente")
         );
 
-        // Respaldar ───────────────────────────────────────────────────────────
+
         rowBackup.setOnClickListener(v -> {
             if (sessionManager.isPremium()) {
                 iniciarBackup(root);
@@ -154,7 +154,7 @@ public class PerfilFragment extends Fragment {
             }
         });
 
-        // Restaurar ───────────────────────────────────────────────────────────
+
         rowRestore.setOnClickListener(v -> {
             if (sessionManager.isPremium()) {
                 confirmarRestore(root);
@@ -165,22 +165,22 @@ public class PerfilFragment extends Fragment {
             }
         });
 
-        // Términos ────────────────────────────────────────────────────────────
+
         rowTerms.setOnClickListener(v ->
             showSnackbar(root, "Abriendo Términos de Servicio…")
         );
 
-        // Privacidad ──────────────────────────────────────────────────────────
+
         rowPrivacy.setOnClickListener(v ->
             showSnackbar(root, "Abriendo Política de Privacidad…")
         );
 
-        // Soporte ─────────────────────────────────────────────────────────────
+
         rowSupport.setOnClickListener(v ->
             showSnackbar(root, "Abriendo Centro de Soporte…")
         );
 
-        // Botón Ayuda (toolbar) ───────────────────────────────────────────────
+
         if (btnHelp != null) {
             btnHelp.setOnClickListener(v ->
                 showSnackbar(
@@ -190,14 +190,14 @@ public class PerfilFragment extends Fragment {
             );
         }
 
-        // Login inline (usar campos ya en el fragment) ──────────────────────
+
         View btnLogin = root.findViewById(R.id.btnLogin);
         View tvRegister = root.findViewById(R.id.tvRegister);
 
         if (btnLogin != null) {
             btnLogin.setOnClickListener(v -> handleInlineLogin(root));
         }
-        // "¿No tienes cuenta?" → abrir AuthActivity directo en tab Registro
+
         if (tvRegister != null) {
             tvRegister.setOnClickListener(v -> {
                 if (getActivity() instanceof com.example.submanager.MainActivity) {
@@ -210,7 +210,7 @@ public class PerfilFragment extends Fragment {
             });
         }
 
-        // Premium banner ──────────────────────────────────────────────────────
+
         View bannerPremium = root.findViewById(R.id.bannerPremium);
         if (bannerPremium != null) {
             bannerPremium.setOnClickListener(v ->
@@ -219,13 +219,13 @@ public class PerfilFragment extends Fragment {
                 )
             );
         }
-        // Logout ──────────────────────────────────────────────────────────
+
         View btnLogout = root.findViewById(R.id.btnLogout);
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> {
                 sessionManager.clearSession();
 
-                // Limpiar la base de datos local y resetear fecha de sincronización
+
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 Handler handler = new Handler(Looper.getMainLooper());
                 executor.execute(() -> {
@@ -235,7 +235,7 @@ public class PerfilFragment extends Fragment {
                     db.suscripcionDao().deleteAllTerceros();
                     db.suscripcionDao().deleteAllRegistrosPago();
 
-                    // Resetear la fecha de sincronización local
+
                     ConfiguracionAppModel config = db
                         .suscripcionDao()
                         .getConfiguracionSync();
@@ -255,7 +255,7 @@ public class PerfilFragment extends Fragment {
         }
     }
 
-    // ── Estado de sesión ──────────────────────────────────────────────────────
+
 
     private void updateAuthUI() {
         if (!isAdded()) return;
@@ -283,7 +283,7 @@ public class PerfilFragment extends Fragment {
             );
         }
 
-        // Banner Premium — oculto si ya es suscriptor
+
         View banner =
             getView() != null
                 ? getView().findViewById(R.id.bannerPremium)
@@ -295,14 +295,14 @@ public class PerfilFragment extends Fragment {
             );
         }
 
-        // Ocultar los pequeños badges de PREMIUM en los botones si ya es premium
+
         View badgeBackup = getView() != null ? getView().findViewById(R.id.tvBadgeBackup) : null;
         View badgeRestore = getView() != null ? getView().findViewById(R.id.tvBadgeRestore) : null;
         if (badgeBackup != null) badgeBackup.setVisibility(sessionManager.isPremium() ? View.GONE : View.VISIBLE);
         if (badgeRestore != null) badgeRestore.setVisibility(sessionManager.isPremium() ? View.GONE : View.VISIBLE);
     }
 
-    // ── Login inline ──────────────────────────────────────────────────────────
+
 
     private static final String TAG = "PerfilFragment";
 
@@ -344,7 +344,7 @@ public class PerfilFragment extends Fragment {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-            // ── Paso 1: buscar en Room local ─────────────────────────────────
+
             UsuarioModel usuarioLocal = AppDatabase.getInstance(
                 requireContext()
             )
@@ -352,14 +352,14 @@ public class PerfilFragment extends Fragment {
                 .findByEmail(email);
 
             if (usuarioLocal != null) {
-                // Verificar contraseña local
+
                 boolean passOk = CryptoUtils.hashPassword(
                     password,
                     usuarioLocal.salt
                 ).equals(usuarioLocal.passwordHash);
 
                 if (passOk) {
-                    // Recuperar silenciosamente el ID remoto y estado Premium
+
                     try {
                         Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
                             .getUsuarioPorCorreo("eq." + email)
@@ -386,7 +386,7 @@ public class PerfilFragment extends Fragment {
                         );
                         String bienvenida = "¡Bienvenido, " + usuarioLocal.nombre + "!";
                         if (sessionManager.isPremium()) {
-                            // Restaurar datos y navegar al Dashboard al terminar
+
                             iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
                         } else {
                             navigateToDashboard(bienvenida);
@@ -396,7 +396,7 @@ public class PerfilFragment extends Fragment {
                 return;
             }
 
-            // ── Paso 2: no está local → consultar Supabase ───────────────────
+
             try {
                 Response<List<UsuarioDto>> resp = SupabaseClient.getApi()
                     .getUsuarioPorCorreo("eq." + email)
@@ -409,7 +409,7 @@ public class PerfilFragment extends Fragment {
                 ) {
                     UsuarioDto remoto = resp.body().get(0);
 
-                    // Verificar contraseña (salt = correo para cuentas nuevas, "remote" para compatibilidad)
+
                     String hashIntentoNuevo = CryptoUtils.hashPassword(password, remoto.correo);
                     String hashIntentoViejo = CryptoUtils.hashPassword(password, "remote");
 
@@ -422,11 +422,11 @@ public class PerfilFragment extends Fragment {
                         return;
                     }
 
-                    // Guardar en Room local para futuros logins offline
+
                     UsuarioModel nuevoLocal = new UsuarioModel();
                     nuevoLocal.nombre = remoto.nombre;
                     nuevoLocal.email = remoto.correo;
-                    nuevoLocal.salt = remoto.correo; // mismo salt usado al registrar
+                    nuevoLocal.salt = remoto.correo;
                     nuevoLocal.passwordHash = remoto.hashContrasena;
                     nuevoLocal.creadoEn =
                         remoto.creadoEn != null
@@ -456,7 +456,7 @@ public class PerfilFragment extends Fragment {
                         if (btnLogin != null) btnLogin.setEnabled(true);
                         String bienvenida = "¡Bienvenido, " + remoto.nombre + "!";
                         if (sessionManager.isPremium()) {
-                            // Restaurar datos y navegar al Dashboard al terminar
+
                             iniciarRestoreConNavegacion(bienvenida + " 👑 Premium activo");
                         } else {
                             navigateToDashboard(bienvenida);
@@ -480,7 +480,7 @@ public class PerfilFragment extends Fragment {
         });
     }
 
-    // ── Sincronización real ───────────────────────────────────────────────────
+
 
     @SuppressWarnings("deprecation")
     private void iniciarBackup(View root) {
@@ -518,7 +518,7 @@ public class PerfilFragment extends Fragment {
                     );
                     break;
                 case ERROR:
-                    // Mostrar error completo en Dialog (puede contener instrucciones largas)
+
                     new MaterialAlertDialogBuilder(requireContext())
                         .setTitle("⚠️ Error al sincronizar")
                         .setMessage(message)
@@ -589,16 +589,16 @@ public class PerfilFragment extends Fragment {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+
 
     private void showSnackbar(View anchor, String message) {
         Snackbar.make(anchor, message, Snackbar.LENGTH_SHORT).show();
     }
 
-    /**
-     * Navega al tab Dashboard y muestra el mensaje de bienvenida una vez
-     * que la transacción del fragmento se ha completado.
-     */
+
+
+
+
     private void navigateToDashboard(String welcomeMessage) {
         if (getActivity() == null) return;
         com.google.android.material.bottomnavigation.BottomNavigationView nav =
@@ -606,7 +606,7 @@ public class PerfilFragment extends Fragment {
         if (nav != null) {
             nav.setSelectedItemId(R.id.nav_inicio);
         }
-        // Mostrar el Snackbar después de que el fragment transaction termine
+
         View rootView = getActivity().findViewById(android.R.id.content);
         if (rootView != null && welcomeMessage != null) {
             rootView.post(() ->
@@ -615,10 +615,10 @@ public class PerfilFragment extends Fragment {
         }
     }
 
-    /**
-     * Muestra ProgressDialog de restauración y, al terminar con éxito,
-     * navega al Dashboard con el mensaje de bienvenida.
-     */
+
+
+
+
     @SuppressWarnings("deprecation")
     private void iniciarRestoreConNavegacion(String welcomeMessage) {
         if (!isAdded()) return;
@@ -644,12 +644,12 @@ public class PerfilFragment extends Fragment {
                     navigateToDashboard(welcomeMessage);
                     break;
                 case NO_NETWORK:
-                    // Sin red: navegar igual pero sin datos actualizados
+
                     navigateToDashboard(welcomeMessage);
                     break;
                 case ERROR:
                 default:
-                    // Error: navegar de todas formas para no quedar atascado
+
                     navigateToDashboard(welcomeMessage);
                     break;
             }

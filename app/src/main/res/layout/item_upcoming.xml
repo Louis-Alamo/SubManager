@@ -8,7 +8,7 @@
     android:paddingVertical="11dp"
     android:background="?attr/selectableItemBackground">
 
-    <!-- Ícono / círculo de color -->
+
     <ImageView
         android:id="@+id/ivUpcomingIcon"
         android:layout_width="46dp"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Nombre del servicio -->
+
     <TextView
         android:id="@+id/tvNombreServicio"
         android:layout_width="0dp"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="@id/ivUpcomingIcon"
         app:layout_constraintBottom_toTopOf="@id/tvDiasRestantes" />
 
-    <!-- Subtítulo: categoría / freq -->
+
     <TextView
         android:id="@+id/tvDiasRestantes"
         android:layout_width="0dp"
@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvNombreServicio"
         app:layout_constraintBottom_toBottomOf="@id/ivUpcomingIcon" />
 
-    <!-- Columna derecha: monto + badge días -->
+
     <LinearLayout
         android:id="@+id/llRight"
         android:layout_width="wrap_content"

@@ -27,7 +27,7 @@ public class NuevoServicioActivity extends AppCompatActivity {
     private MaterialButton btnGuardarServicio, btnAgregarPersona;
     private android.widget.TextView tvMontoVariableNote;
 
-      // background
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class NuevoServicioActivity extends AppCompatActivity {
     }
 
     private void setupChipSelection() {
-        // Default selection: Luz
+
         selectChip(chipLuz);
 
         View.OnClickListener chipListener = v -> {
@@ -80,30 +80,30 @@ public class NuevoServicioActivity extends AppCompatActivity {
     }
 
         private void selectChip(LinearLayout chip) {
-        // Deselect previous
+
         if (selectedChip != null) {
             selectedChip.setBackgroundTintList(
                 androidx.core.content.ContextCompat.getColorStateList(this, R.color.background));
-            
-            // Get inner views (assuming index 0 is ImageView, index 1 is TextView)
+
+
             if (selectedChip.getChildCount() >= 2) {
                 android.widget.ImageView icon = (android.widget.ImageView) selectedChip.getChildAt(0);
                 android.widget.TextView text = (android.widget.TextView) selectedChip.getChildAt(1);
-                
+
                 icon.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(this, R.color.text_secondary));
                 text.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_secondary));
             }
         }
-        
-        // Select new
+
+
         selectedChip = chip;
         chip.setBackgroundTintList(
             androidx.core.content.ContextCompat.getColorStateList(this, R.color.primary_tint));
-            
+
         if (chip.getChildCount() >= 2) {
             android.widget.ImageView icon = (android.widget.ImageView) chip.getChildAt(0);
             android.widget.TextView text = (android.widget.TextView) chip.getChildAt(1);
-            
+
             icon.setImageTintList(androidx.core.content.ContextCompat.getColorStateList(this, R.color.primary));
             text.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.primary));
         }

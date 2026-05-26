@@ -8,7 +8,7 @@
     android:background="@color/background"
     android:gravity="center">
 
-    <!-- CONFETTI AREA - top area with icon -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -17,7 +17,7 @@
         android:gravity="center"
         android:paddingHorizontal="24dp">
 
-        <!-- Crown icon big -->
+
         <FrameLayout
             android:layout_width="110dp"
             android:layout_height="110dp"
@@ -55,7 +55,7 @@
             android:paddingHorizontal="16dp"/>
     </LinearLayout>
 
-    <!-- DETAILS CARD -->
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             android:orientation="vertical"
             android:padding="18dp">
 
-            <!-- Fila Plan -->
+
             <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
                 android:orientation="horizontal" android:gravity="center_vertical">
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             <View android:layout_width="match_parent" android:layout_height="1dp"
                 android:background="@color/border"/>
 
-            <!-- Fila Monto -->
+
             <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
                 android:orientation="horizontal" android:gravity="center_vertical">
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             <View android:layout_width="match_parent" android:layout_height="1dp"
                 android:background="@color/border"/>
 
-            <!-- Fila Próxima renovación -->
+
             <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
                 android:orientation="horizontal" android:gravity="center_vertical">
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
             <View android:layout_width="match_parent" android:layout_height="1dp"
                 android:background="@color/border"/>
 
-            <!-- Fila Método de pago -->
+
             <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
                 android:orientation="horizontal" android:gravity="center_vertical">
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- CTA BUTTON -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnComenzar"
         android:layout_width="match_parent"
@@ -144,7 +144,7 @@
         android:backgroundTint="@color/primary"
         app:cornerRadius="16dp" />
 
-    <!-- VER FACTURA LINK -->
+
     <TextView
         android:id="@+id/tvVerFactura"
         android:layout_width="wrap_content"

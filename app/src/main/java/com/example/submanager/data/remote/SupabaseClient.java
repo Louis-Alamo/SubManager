@@ -8,15 +8,15 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Singleton que provee el cliente Retrofit configurado para la API REST de Supabase.
- *
- * Supabase PostgREST usa autenticación por header:
- *   apikey: <tu-anon-key>
- *   Authorization: Bearer <tu-anon-key>
- *   Content-Type: application/json
- *   Prefer: return=minimal  (para INSERTs/UPDATEs sin respuesta de body)
- */
+
+
+
+
+
+
+
+
+
 public class SupabaseClient {
 
     private static volatile SupabaseApi INSTANCE;
@@ -42,15 +42,15 @@ public class SupabaseClient {
                             .header("apikey", BuildConfig.SUPABASE_KEY)
                             .header("Authorization", "Bearer " + BuildConfig.SUPABASE_KEY)
                             .header("Content-Type", "application/json")
-                            // No se fuerza un Prefer global: cada endpoint en SupabaseApi
-                            // define su propio @Headers("Prefer: ...") para controlar
-                            // return=minimal o resolution=merge-duplicates según necesite.
+
+
+
                             .method(original.method(), original.body())
                             .build();
                     return chain.proceed(request);
                 });
 
-        // Logging solo en builds de debug
+
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
